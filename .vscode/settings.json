@@ -1,0 +1,9 @@
+{
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "editor.wordWrapColumn": 120,
+    "cSpell.words": [
+        "datamodel",
+        "Hasher"
+    ],
+}
