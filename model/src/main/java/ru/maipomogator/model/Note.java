@@ -1,4 +1,4 @@
-package ru.maipomogator.datamodel.notes;
+package ru.maipomogator.model;
 
 import java.awt.Color;
 import java.time.LocalDateTime;
@@ -14,7 +14,6 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.maipomogator.datamodel.timetable.Lesson;
 
 @Data
 @NoArgsConstructor

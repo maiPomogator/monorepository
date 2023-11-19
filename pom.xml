@@ -21,7 +21,7 @@
 
 
   <modules>
-    <module>datamodel</module>
+    <module>model</module>
   </modules>
 
 

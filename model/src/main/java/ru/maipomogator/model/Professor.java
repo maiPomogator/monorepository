@@ -1,4 +1,4 @@
-package ru.maipomogator.datamodel.timetable;
+package ru.maipomogator.model;
 
 import java.util.Collection;
 import java.util.SortedSet;
@@ -28,6 +28,17 @@ import lombok.ToString;
 @Entity
 @Table(name = "professors", schema = "public")
 public class Professor {
+
+    public static Professor copyOf(Professor original) {
+        Professor copy = new Professor();
+        copy.id = original.id;
+        copy.lastName = original.lastName;
+        copy.firstName = original.firstName;
+        copy.middleName = original.middleName;
+        copy.siteId = original.siteId;
+        copy.lessons = new TreeSet<>();
+        return copy;
+    }
 
     /**
      * Идентификатор группы
@@ -60,7 +71,7 @@ public class Professor {
      * Идентификатор преподавателя, используемый на mai.ru
      */
     @NonNull
-    @Column(name = "site_id", unique = true)
+    @Column(name = "site_id"/* , unique = true */)
     private UUID siteId;
 
     /**

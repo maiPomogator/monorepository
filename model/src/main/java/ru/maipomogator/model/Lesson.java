@@ -1,4 +1,4 @@
-package ru.maipomogator.datamodel.timetable;
+package ru.maipomogator.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -12,6 +12,7 @@ import java.util.Set;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -30,13 +31,27 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
-import ru.maipomogator.datamodel.timetable.enums.LessonType;
 
 @Data
 
 @Entity
 @Table(name = "lessons", schema = "public")
 public class Lesson implements Comparable<Lesson> {
+
+    public static Lesson copyOf(Lesson original) {
+        Lesson copy = new Lesson();
+        copy.id = original.id;
+        copy.name = original.name;
+        copy.types = new ArrayList<>(original.types);
+        copy.day = original.day;
+        copy.timeStart = original.timeStart;
+        copy.timeEnd = original.timeEnd;
+        copy.groups = new HashSet<>();
+        copy.professors = new HashSet<>();
+        copy.rooms = new ArrayList<>(original.rooms);
+        copy.cancelled = original.cancelled;
+        return copy;
+    }
 
     /**
      * Идентификатор группы
@@ -86,7 +101,7 @@ public class Lesson implements Comparable<Lesson> {
      */
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "lessons_professors", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "professor_id"))
     private Set<Group> groups = new HashSet<>();
 
@@ -95,14 +110,13 @@ public class Lesson implements Comparable<Lesson> {
      */
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "lessons_groups", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
     private Set<Professor> professors = new HashSet<>();
 
     /**
      * Аудитории занятия
      */
-    // TODO подумать над необходимостью абстракции над аудиторией
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "room")
     private List<String> rooms = new ArrayList<>();

@@ -1,4 +1,4 @@
-package ru.maipomogator.datamodel.timetable;
+package ru.maipomogator.model;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -24,7 +24,6 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import ru.maipomogator.datamodel.timetable.enums.GroupType;
 
 @Data
 @NoArgsConstructor

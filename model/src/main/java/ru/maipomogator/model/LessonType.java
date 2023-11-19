@@ -1,4 +1,4 @@
-package ru.maipomogator.datamodel.timetable.enums;
+package ru.maipomogator.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
