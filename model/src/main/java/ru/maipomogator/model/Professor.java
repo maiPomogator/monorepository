@@ -71,7 +71,7 @@ public class Professor {
      * Идентификатор преподавателя, используемый на mai.ru
      */
     @NonNull
-    @Column(name = "site_id"/* , unique = true */)
+    @Column(name = "site_id", unique = true)
     private UUID siteId;
 
     /**
