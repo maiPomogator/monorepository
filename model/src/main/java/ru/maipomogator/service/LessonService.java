@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ru.maipomogator.dao.LessonDao;
 import ru.maipomogator.model.Lesson;
 import ru.maipomogator.repo.LessonRepo;
 
@@ -14,10 +15,12 @@ import ru.maipomogator.repo.LessonRepo;
 @Transactional(readOnly = true)
 public class LessonService {
     private final LessonRepo lessonRepo;
+    private final LessonDao lessonDao;
 
     @Autowired
-    public LessonService(LessonRepo lessonRepo) {
+    public LessonService(LessonRepo lessonRepo, LessonDao lessonDao) {
         this.lessonRepo = lessonRepo;
+        this.lessonDao = lessonDao;
     }
 
     public Optional<Lesson> findById(Long id) {
@@ -26,6 +29,10 @@ public class LessonService {
 
     public List<Lesson> findAll() {
         return lessonRepo.findAll();
+    }
+
+    public List<Lesson> bulkFindAll() {
+        return lessonDao.findAll();
     }
 
     @Transactional
