@@ -2,11 +2,9 @@ package ru.maipomogator.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import com.google.common.hash.Hasher;
@@ -25,6 +23,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -42,14 +41,14 @@ public class Lesson implements Comparable<Lesson> {
         Lesson copy = new Lesson();
         copy.id = original.id;
         copy.name = original.name;
-        copy.types = new ArrayList<>(original.types);
+        copy.types = new HashSet<>(original.types);
         copy.day = original.day;
         copy.timeStart = original.timeStart;
         copy.timeEnd = original.timeEnd;
         copy.groups = new HashSet<>();
         copy.professors = new HashSet<>();
-        copy.rooms = new ArrayList<>(original.rooms);
-        copy.cancelled = original.cancelled;
+        copy.rooms = new HashSet<>(original.rooms);
+        copy.status = original.status;
         return copy;
     }
 
@@ -76,7 +75,7 @@ public class Lesson implements Comparable<Lesson> {
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     @Column(name = "lesson_type")
-    private List<LessonType> types = new ArrayList<>();
+    private Set<LessonType> types = new HashSet<>();
 
     /**
      * День занятия
@@ -101,7 +100,7 @@ public class Lesson implements Comparable<Lesson> {
      */
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "lessons_professors", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "professor_id"))
     private Set<Group> groups = new HashSet<>();
 
@@ -110,7 +109,7 @@ public class Lesson implements Comparable<Lesson> {
      */
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "lessons_groups", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
     private Set<Professor> professors = new HashSet<>();
 
@@ -119,14 +118,20 @@ public class Lesson implements Comparable<Lesson> {
      */
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "room")
-    private List<String> rooms = new ArrayList<>();
+    private Set<String> rooms = new HashSet<>();
 
     /**
      * Флаг, указывающий на удаление занятия после обновления расписания (возможно, будет заменен на
      * ENUM состояний в дальнейшем)
      */
-    @Column(name = "is_cancelled")
-    private boolean cancelled = false;
+    @Column
+    @Enumerated(EnumType.STRING)
+    private LessonStatus status = LessonStatus.CREATED;
+
+    @PrePersist
+    private void prePersistLesson() {
+        this.status = LessonStatus.SAVED;
+    }
 
     public void setGroups(Set<Group> newGroups) {
         this.groups = newGroups;
