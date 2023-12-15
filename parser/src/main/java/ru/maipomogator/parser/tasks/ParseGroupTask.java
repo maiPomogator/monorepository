@@ -37,7 +37,6 @@ public class ParseGroupTask implements Callable<ParsedGroup> {
         try (BufferedReader reader = Files.newBufferedReader(filePath, StandardCharsets.UTF_8)) {
             return gson.fromJson(reader, new TypeToken<ParsedGroup>() {});
         } catch (JsonSyntaxException e) {
-            System.out.println("Exception " + e.getMessage());
             throw new IllegalStateException(
                     "Error while parsing file %s".formatted(filePath.getFileName().toString()), e);
         }
