@@ -31,8 +31,12 @@ public class LessonService {
         return lessonRepo.findAll();
     }
 
-    public List<Lesson> bulkFindAll() {
-        return lessonDao.findAll();
+    public List<Lesson> bulkFindAllWithRoomsAndTypes() {
+        return lessonDao.fetchAllWithRoomsAndTypes();
+    }
+
+    public List<Lesson> bulkFindAllWithAllFields() {
+        return lessonDao.fetchAllWithAllFields();
     }
 
     @Transactional

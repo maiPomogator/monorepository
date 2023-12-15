@@ -18,11 +18,15 @@ public class LessonDao {
         this.em = em;
     }
 
-    public List<Lesson> findAll() {
-        System.out.println("Custom query");
+    public List<Lesson> fetchAllWithRoomsAndTypes() {
+        return em.createQuery(
+                "select l from Lesson l LEFT JOIN FETCH l.rooms LEFT JOIN FETCH l.types",
+                Lesson.class).getResultList();
+    }
+
+    public List<Lesson> fetchAllWithAllFields() {
         return em.createQuery(
                 "select l from Lesson l LEFT JOIN FETCH l.groups LEFT JOIN FETCH l.professors LEFT JOIN FETCH l.rooms LEFT JOIN FETCH l.types",
                 Lesson.class).getResultList();
     }
-
 }
