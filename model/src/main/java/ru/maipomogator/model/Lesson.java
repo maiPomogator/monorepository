@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
@@ -200,33 +202,38 @@ public class Lesson implements Comparable<Lesson> {
     /**
      * Сравнение занятий производится по дню и номеру
      * 
-     * @param otherLesson занятие для сравнения
+     * @param other занятие для сравнения
      */
     @Override
-    public int compareTo(@NonNull Lesson otherLesson) {
-        return Comparator.comparing(Lesson::getDay).thenComparing(Lesson::getTimeStart).compare(this, otherLesson);
+    public int compareTo(@NonNull Lesson other) {
+        return Comparator.comparing(Lesson::getDay).thenComparing(Lesson::getTimeStart).compare(this, other);
     }
 
     public long getHash() {
         Hasher hasher = Hashing.murmur3_128().newHasher();
         hasher.putUnencodedChars(name);
-        hasher.putUnencodedChars(types.toString());
+        hasher.putUnencodedChars(streamToString(types.stream().sorted().map(LessonType::name)));
         hasher.putUnencodedChars(day.toString());
         hasher.putUnencodedChars(timeStart.toString());
-        hasher.putUnencodedChars(rooms.toString());
+        hasher.putUnencodedChars(streamToString(rooms.stream().sorted(String::compareTo)));
         return hasher.hash().asLong();
+    }
+
+    private String streamToString(Stream<String> stream) {
+        return stream.collect(Collectors.joining(","));
     }
 
     @Override
     public String toString() {
         return "Lesson{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", types=" + types.toString() +
                 ", day=" + day +
                 ", timeStart=" + timeStart +
                 ", timeEnd=" + timeEnd +
-                ", number_of_groups=" + groups.size() +
-                ", number_of_professors=" + professors.size() +
+                ", groups=[" + streamToString(groups.stream().sorted().map(Group::getName)) + "]" +
+                ", professors=[" + streamToString(professors.stream().sorted().map(Professor::getFullName)) + "]" +
                 ", rooms=" + rooms.toString() +
                 '}';
     }

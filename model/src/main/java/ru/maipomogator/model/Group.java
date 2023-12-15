@@ -31,7 +31,7 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "groups", schema = "public")
-public class Group {
+public class Group implements Comparable<Group> {
 
     /**
      * Идентификатор группы
@@ -100,5 +100,10 @@ public class Group {
 
     public String getMd5OfName() {
         return DigestUtils.md5DigestAsHex(name.getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Override
+    public int compareTo(Group other) {
+        return this.name.compareTo(other.name);
     }
 }

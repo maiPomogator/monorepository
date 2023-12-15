@@ -27,7 +27,7 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "professors", schema = "public")
-public class Professor {
+public class Professor implements Comparable<Professor> {
 
     public static Professor copyOf(Professor original) {
         Professor copy = new Professor();
@@ -105,5 +105,10 @@ public class Professor {
             lessons.add(lsn);
             lsn.addProfessor(this);
         }
+    }
+
+    @Override
+    public int compareTo(Professor other) {
+        return getFullName().compareTo(other.getFullName());
     }
 }
