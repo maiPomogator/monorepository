@@ -1,4 +1,4 @@
-package ru.maipomogator.parser.processing;
+package ru.maipomogator.parser.mai;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,12 +19,10 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Future.State;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -34,18 +32,18 @@ import com.google.gson.reflect.TypeToken;
 import lombok.extern.log4j.Log4j2;
 import ru.maipomogator.model.Group;
 import ru.maipomogator.model.Lesson;
-import ru.maipomogator.model.MaiTimetable;
 import ru.maipomogator.model.Professor;
-import ru.maipomogator.model.Timetable;
 import ru.maipomogator.parser.adapters.GroupListAdapter;
-import ru.maipomogator.parser.adapters.ParsedGroupAdapter;
 import ru.maipomogator.parser.adapters.ParsedGroup;
+import ru.maipomogator.parser.adapters.ParsedGroupAdapter;
+import ru.maipomogator.parser.interfaces.Timetable;
+import ru.maipomogator.parser.interfaces.TimetableParser;
 import ru.maipomogator.parser.tasks.DownloadFileTask;
 import ru.maipomogator.parser.tasks.ParseGroupTask;
 
 @Log4j2
 @Component
-public class MaiProcessor implements Processor {
+public class MaiParser implements TimetableParser {
     private static final String BASE_URL = "https://public.mai.ru/schedule/data/";
     private static final String GROUPS_JSON_FILENAME = "groups.json";
 
@@ -53,7 +51,7 @@ public class MaiProcessor implements Processor {
     private final Path basePath;
     private final Path groupsFilesBasePath;
 
-    public MaiProcessor(@Value("${parser.basepath}") Path basePath) {
+    public MaiParser(@Value("${parser.basepath}") Path basePath) {
         this.basePath = basePath.resolve(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         this.groupsFilesBasePath = this.basePath.resolve("groups");
         this.gson = getCustomGson();
@@ -61,7 +59,6 @@ public class MaiProcessor implements Processor {
         prepareFolders();
     }
 
-    @Scheduled(fixedRate = 12, timeUnit = TimeUnit.HOURS)
     @Override
     public Timetable getTimetable() {
         LocalTime timeStart = LocalTime.now();
