@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableJpaRepositories(basePackages = { "ru.maipomogator.repo" })
 @EnableScheduling
 public class ParserApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(ParserApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ParserApplication.class, args);
+    }
 }
