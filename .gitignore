@@ -1,3 +1,5 @@
+parser/src/main/resources/application.properties
+
 #################### Maven ####################
 
 target/

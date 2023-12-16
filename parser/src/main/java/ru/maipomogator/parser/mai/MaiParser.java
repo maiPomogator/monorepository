@@ -36,14 +36,12 @@ import ru.maipomogator.model.Professor;
 import ru.maipomogator.parser.adapters.GroupListAdapter;
 import ru.maipomogator.parser.adapters.ParsedGroup;
 import ru.maipomogator.parser.adapters.ParsedGroupAdapter;
-import ru.maipomogator.parser.interfaces.Timetable;
-import ru.maipomogator.parser.interfaces.TimetableParser;
 import ru.maipomogator.parser.tasks.DownloadFileTask;
 import ru.maipomogator.parser.tasks.ParseGroupTask;
 
 @Log4j2
 @Component
-public class MaiParser implements TimetableParser {
+public class MaiParser {
     private static final String BASE_URL = "https://public.mai.ru/schedule/data/";
     private static final String GROUPS_JSON_FILENAME = "groups.json";
 
@@ -59,13 +57,12 @@ public class MaiParser implements TimetableParser {
         prepareFolders();
     }
 
-    @Override
-    public Timetable getTimetable() {
+    public MaiTimetable getTimetable() {
         LocalTime timeStart = LocalTime.now();
         Map<String, Group> rawGroups = getRawGroups();
         List<ParsedGroup> parsedGroups = getParsedGroups(rawGroups.values());
         log.info("Raw number of lessons: {} ", parsedGroups.stream().mapToInt(gr -> gr.getLessons().size()).sum());
-        Timetable maiTimetable = processParsedGroups(parsedGroups, rawGroups);
+        MaiTimetable maiTimetable = processParsedGroups(parsedGroups, rawGroups);
 
         log.info("Successfully processed timetable.");
         log.info("Time spent: {} seconds", timeStart.until(LocalTime.now(), java.time.temporal.ChronoUnit.SECONDS));
@@ -76,7 +73,7 @@ public class MaiParser implements TimetableParser {
         return maiTimetable;
     }
 
-    private Timetable processParsedGroups(List<ParsedGroup> parsedGroups, Map<String, Group> rawGroups) {
+    private MaiTimetable processParsedGroups(List<ParsedGroup> parsedGroups, Map<String, Group> rawGroups) {
         Map<Long, Lesson> allLessons = new HashMap<>();
         Map<UUID, Professor> allProfessors = new HashMap<>();
         List<Group> allGroups = new ArrayList<>();
