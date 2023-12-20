@@ -1,9 +1,16 @@
 {
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "automatic",
-    "editor.wordWrapColumn": 120,
+    "java.format.settings.url": ".vscode/java-formatter.xml",
     "cSpell.words": [
-        "datamodel",
-        "Hasher"
+        "basepath",
+        "Hasher",
+        "парсинга",
+        "парсинге",
+        "Распарсивает",
+        "бэкенд*"
     ],
+    "[java]": {
+        "editor.detectIndentation": false
+    },
 }

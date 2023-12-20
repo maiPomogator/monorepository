@@ -115,6 +115,7 @@ fabric.properties
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+!.vscode/java-formatter.xml
 !.vscode/*.code-snippets
 
 # Local History for Visual Studio Code
