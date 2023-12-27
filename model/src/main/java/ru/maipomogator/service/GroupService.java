@@ -3,23 +3,21 @@ package ru.maipomogator.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
+import ru.maipomogator.dao.GroupDao;
 import ru.maipomogator.model.Group;
 import ru.maipomogator.model.GroupType;
 import ru.maipomogator.repo.GroupRepo;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class GroupService {
-    GroupRepo groupRepo;
-
-    @Autowired
-    public GroupService(GroupRepo groupRepo) {
-        this.groupRepo = groupRepo;
-    }
+    private final GroupRepo groupRepo;
+    private final GroupDao groupDao;
 
     public Optional<Group> findById(Long id) {
         return groupRepo.findById(id);
@@ -27,6 +25,10 @@ public class GroupService {
 
     public List<Group> findAll() {
         return groupRepo.findAll();
+    }
+
+    public List<Group> findAllWithAllFields() {
+        return groupDao.fetchAllWithAllFields();
     }
 
     public List<Group> findByCourseAndFaculty(Integer course, Integer faculty) {

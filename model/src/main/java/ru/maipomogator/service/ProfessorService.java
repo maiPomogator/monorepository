@@ -4,25 +4,27 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
+import ru.maipomogator.dao.ProfessorDao;
 import ru.maipomogator.model.Professor;
 import ru.maipomogator.repo.ProfessorRepo;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ProfessorService {
-    ProfessorRepo professorRepo;
-
-    @Autowired
-    public ProfessorService(ProfessorRepo professorRepo) {
-        this.professorRepo = professorRepo;
-    }
+    private final ProfessorRepo professorRepo;
+    private final ProfessorDao professorDao;
 
     public Optional<Professor> findById(Long id) {
         return professorRepo.findById(id);
+    }
+
+    public List<Professor> findAllWithAllFields() {
+        return professorDao.fetchAllWithAllFields();
     }
 
     public Optional<Professor> findBySiteId(UUID siteId) {
