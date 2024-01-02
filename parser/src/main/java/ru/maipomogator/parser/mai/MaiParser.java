@@ -22,13 +22,13 @@ import java.util.concurrent.Future;
 import java.util.concurrent.Future.State;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import ru.maipomogator.model.Group;
 import ru.maipomogator.model.Lesson;
@@ -49,12 +49,14 @@ public class MaiParser {
     private final Path basePath;
     private final Path groupsFilesBasePath;
 
-    public MaiParser(@Value("${parser.basepath}") Path basePath) {
-        this.basePath = basePath.resolve(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+    @SneakyThrows
+    public MaiParser() {
+        Path basePathStarter = Path.of("C:\\projects\\maipomogator\\json-files");
+        this.basePath = basePathStarter.resolve(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         this.groupsFilesBasePath = this.basePath.resolve("groups");
         this.gson = getCustomGson();
 
-        prepareFolders();
+        Files.createDirectories(groupsFilesBasePath);
     }
 
     public MaiTimetable getTimetable() {
@@ -76,7 +78,7 @@ public class MaiParser {
     private MaiTimetable processParsedGroups(List<ParsedGroup> parsedGroups, Map<String, Group> rawGroups) {
         Map<Long, Lesson> allLessons = new HashMap<>();
         Map<UUID, Professor> allProfessors = new HashMap<>();
-        List<Group> allGroups = new ArrayList<>();
+        Map<String, Group> allGroups = new HashMap<>();
         for (final ParsedGroup parsedGroup : parsedGroups) {
             Group targetGroup = rawGroups.get(parsedGroup.getGroupName());
 
@@ -91,9 +93,9 @@ public class MaiParser {
                     targetLesson.addProfessor(targetProfessor);
                 }
             }
-            allGroups.add(targetGroup);
+            allGroups.put(targetGroup.getName(), targetGroup);
         }
-        return new MaiTimetable(allLessons.values(), allProfessors.values(), allGroups);
+        return new MaiTimetable(allLessons, allProfessors, allGroups);
     }
 
     private Map<String, Group> getRawGroups() {
@@ -187,13 +189,5 @@ public class MaiParser {
         builder.registerTypeAdapter(new TypeToken<List<Group>>() {}.getType(), new GroupListAdapter())
                 .registerTypeAdapter(new TypeToken<ParsedGroup>() {}.getType(), new ParsedGroupAdapter());
         return builder.create();
-    }
-
-    private void prepareFolders() {
-        try {
-            Files.createDirectories(groupsFilesBasePath);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        }
     }
 }
