@@ -5,6 +5,11 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -27,6 +32,7 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "professors", schema = "public")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Professor implements Comparable<Professor> {
 
     public static Professor copyOf(Professor original) {
@@ -80,6 +86,7 @@ public class Professor implements Comparable<Professor> {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "professors", fetch = FetchType.LAZY)
+    @JsonBackReference
     private SortedSet<Lesson> lessons = new TreeSet<>();
 
     /**
@@ -87,6 +94,7 @@ public class Professor implements Comparable<Professor> {
      *
      * @return ФИО
      */
+    @JsonIgnore
     public String getFullName() {
         return lastName + " " + firstName + " " + middleName;
     }

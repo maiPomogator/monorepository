@@ -7,6 +7,11 @@ import java.util.TreeSet;
 
 import org.springframework.util.DigestUtils;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -31,6 +36,7 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "groups", schema = "public")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Group implements Comparable<Group> {
 
     /**
@@ -80,6 +86,7 @@ public class Group implements Comparable<Group> {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "groups", fetch = FetchType.LAZY)
+    @JsonBackReference
     private SortedSet<Lesson> lessons = new TreeSet<>();
 
     public void setLessons(SortedSet<Lesson> newLessons) {
@@ -98,6 +105,7 @@ public class Group implements Comparable<Group> {
         }
     }
 
+    @JsonIgnore
     public String getMd5OfName() {
         return DigestUtils.md5DigestAsHex(name.getBytes(StandardCharsets.UTF_8));
     }

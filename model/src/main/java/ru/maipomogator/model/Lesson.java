@@ -9,6 +9,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 
@@ -37,6 +41,7 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "lessons", schema = "public")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Lesson implements Comparable<Lesson> {
 
     public static Lesson copyOf(Lesson original) {
@@ -104,6 +109,7 @@ public class Lesson implements Comparable<Lesson> {
     @EqualsAndHashCode.Exclude
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "lessons_professors", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "professor_id"))
+    @JsonManagedReference
     private Set<Group> groups = new HashSet<>();
 
     /**
@@ -113,6 +119,7 @@ public class Lesson implements Comparable<Lesson> {
     @EqualsAndHashCode.Exclude
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "lessons_groups", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
+    @JsonManagedReference
     private Set<Professor> professors = new HashSet<>();
 
     /**
@@ -209,6 +216,8 @@ public class Lesson implements Comparable<Lesson> {
         return Comparator.comparing(Lesson::getDay).thenComparing(Lesson::getTimeStart).compare(this, other);
     }
 
+    @SuppressWarnings("null")
+    @JsonIgnore
     public long getHash() {
         Hasher hasher = Hashing.murmur3_128().newHasher();
         hasher.putUnencodedChars(name);
