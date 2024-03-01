@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import ru.maipomogator.dao.GroupDao;
 import ru.maipomogator.model.Group;
 import ru.maipomogator.model.GroupType;
 import ru.maipomogator.repo.GroupRepo;
@@ -17,7 +16,6 @@ import ru.maipomogator.repo.GroupRepo;
 @RequiredArgsConstructor
 public class GroupService {
     private final GroupRepo groupRepo;
-    private final GroupDao groupDao;
 
     public Optional<Group> findById(Long id) {
         return groupRepo.findById(id);
@@ -25,10 +23,6 @@ public class GroupService {
 
     public List<Group> findAll() {
         return groupRepo.findAll();
-    }
-
-    public List<Group> findAllWithAllFields() {
-        return groupDao.fetchAllWithAllFields();
     }
 
     public List<Group> findByCourseAndFaculty(Integer course, Integer faculty) {

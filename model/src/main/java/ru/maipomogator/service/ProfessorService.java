@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import ru.maipomogator.dao.ProfessorDao;
 import ru.maipomogator.model.Professor;
 import ru.maipomogator.repo.ProfessorRepo;
 
@@ -17,14 +16,9 @@ import ru.maipomogator.repo.ProfessorRepo;
 @RequiredArgsConstructor
 public class ProfessorService {
     private final ProfessorRepo professorRepo;
-    private final ProfessorDao professorDao;
 
     public Optional<Professor> findById(Long id) {
         return professorRepo.findById(id);
-    }
-
-    public List<Professor> findAllWithAllFields() {
-        return professorDao.fetchAllWithAllFields();
     }
 
     public Optional<Professor> findBySiteId(UUID siteId) {
