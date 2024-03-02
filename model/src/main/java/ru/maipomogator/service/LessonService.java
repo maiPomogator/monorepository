@@ -1,5 +1,6 @@
 package ru.maipomogator.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,5 +42,13 @@ public class LessonService {
     @Transactional
     public void delete(Long id) {
         lessonRepo.deleteById(id);
+    }
+
+    public List<Lesson> findForGroupBetweenDates(LocalDate startDate, LocalDate endDate, Long groupId) {
+        return lessonRepo.findByDateBetweenAndGroupsId(startDate, endDate, groupId);
+    }
+
+    public List<Lesson> findForProfessorBetweenDates(LocalDate startDate, LocalDate endDate, Long professorId) {
+        return lessonRepo.findByDateBetweenAndProfessorsId(startDate, endDate, professorId);
     }
 }

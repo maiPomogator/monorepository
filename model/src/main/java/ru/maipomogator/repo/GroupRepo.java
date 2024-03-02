@@ -10,6 +10,7 @@ import ru.maipomogator.model.GroupType;
 
 @Repository
 public interface GroupRepo extends JpaRepository<Group, Long> {
+
     List<Group> findByCourseAndFaculty(Integer course, Integer faculty);
 
     List<Group> findByCourseAndFacultyAndType(Integer course, Integer faculty, GroupType type);

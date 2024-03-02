@@ -1,5 +1,6 @@
 package ru.maipomogator.repo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -18,4 +19,27 @@ public interface LessonRepo extends JpaRepository<Lesson, Long> {
     @EntityGraph(attributePaths = { "types", "rooms", "professors", "groups" })
     List<Lesson> findAll();
 
+    /**
+     * Возвращает список всех занятий между указанными датами для группы с указанным ID
+     * 
+     * @implNote выполняет EAGER загрузку всех полей Lesson
+     * @param startDate - начальная дата
+     * @param endDate   - конечная дата
+     * @param groupId   - ID группы
+     * @return - список занятий
+     */
+    @EntityGraph(attributePaths = { "types", "rooms", "professors", "groups" })
+    List<Lesson> findByDateBetweenAndGroupsId(LocalDate startDate, LocalDate endDate, long groupId);
+
+    /**
+     * Возвращает список всех занятий между указанными датами для преподавателя с указанным ID
+     * 
+     * @implNote выполняет EAGER загрузку всех полей Lesson
+     * @param startDate   - начальная дата
+     * @param endDate     - конечная дата
+     * @param professorId - ID преподавателя
+     * @return - список занятий
+     */
+    @EntityGraph(attributePaths = { "types", "rooms", "professors", "groups" })
+    List<Lesson> findByDateBetweenAndProfessorsId(LocalDate startDate, LocalDate endDate, Long professorId);
 }
