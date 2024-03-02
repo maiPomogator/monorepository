@@ -22,7 +22,12 @@ public class GroupListAdapter extends TypeAdapter<List<Group>> {
         GroupAdapter groupAdapter = new GroupAdapter();
         in.beginArray();
         while (in.hasNext()) {
-            groups.add(groupAdapter.read(in));
+            Group group = groupAdapter.read(in);
+            if (group.getCourse() != 0) {
+                groups.add(group);
+            } else {
+                log.info("Group with empty course and faculty was dropped");
+            }
         }
         in.endArray();
 

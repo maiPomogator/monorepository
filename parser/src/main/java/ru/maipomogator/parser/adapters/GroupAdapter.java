@@ -27,14 +27,28 @@ public class GroupAdapter extends TypeAdapter<Group> {
                     gr.setName(in.nextString());
                     break;
                 case "fac":
-                    int facNumber = Integer.parseInt(in.nextString().replaceAll("\\D", ""));
-                    gr.setFaculty(facNumber);
+                    String tempFac = in.nextString().replaceAll("\\D", "");
+                    if ("".equals(tempFac)) {
+                        gr.setFaculty(0);
+                    } else {
+                        gr.setFaculty(Integer.parseInt(tempFac));
+                    }
                     break;
                 case "level":
-                    gr.setType(getType(in.nextString()));
+                    String tempLevel = in.nextString();
+                    if ("".equals(tempLevel)) {
+                        gr.setType(GroupType.BACHELOR);
+                    } else {
+                        gr.setType(getType(tempLevel));
+                    }
                     break;
                 case "course":
-                    gr.setCourse(in.nextInt());
+                    String tempCourse = in.nextString();
+                    if ("".equals(tempCourse)) {
+                        gr.setCourse(0);
+                    } else {
+                        gr.setCourse(Integer.parseInt(tempCourse));
+                    }
                     break;
                 default:
                     log.warn("Unknown field {}, skipping", jsonKeyName);

@@ -54,7 +54,7 @@ public class MaiUpdater {
         lessonService.saveAll(diff.getLessonsToEnable());
     }
 
-    //TODO проверить наличие проблемы N+1 в группах и преподавателях
+    // TODO проверить наличие проблемы N+1 в группах и преподавателях
     private MaiTimetable getOldTimetable() {
         Map<Long, Lesson> lessons = lessonService.findAllEager().stream()
                 .collect(Collectors.toMap(Lesson::getHash, l -> l));
@@ -115,7 +115,9 @@ public class MaiUpdater {
             }
         }
 
-        for (Entry<Long, Lesson> entry : oldLessons.entrySet()) {
+        for (Entry<Long, Lesson> entry : oldLessons.entrySet().stream()
+                .filter(e -> e.getValue().getStatus().equals(LessonStatus.SAVED))
+                .collect(Collectors.toList())) {
             entry.getValue().setStatus(LessonStatus.CANCELLED);
             lessonsToDisable.put(entry.getKey(), entry.getValue());
         }
