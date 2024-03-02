@@ -3,11 +3,13 @@ package ru.maipomogator.model;
 import java.awt.Color;
 import java.time.LocalDateTime;
 
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -21,7 +23,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "notes", schema = "public")
-public class Note {
+public class Note implements Comparable<Note> {
 
     /**
      * Идентификатор группы
@@ -65,6 +67,22 @@ public class Note {
     /**
      * Занятие, к которому относится заметка
      */
-    @ManyToOne
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "lesson_id")
     private Lesson lesson;
+
+    @Override
+    public int compareTo(Note o) {
+        return getTime().compareTo(o.getTime());
+    }
+
+    private LocalDateTime getTime() {
+        if (lesson != null) {
+            return lesson.getTimeStart().atDate(lesson.getDate());
+        } else if (targetTimestamp != null) {
+            return targetTimestamp;
+        } else {
+            throw new IllegalStateException("Nor lesson nor targetTimestamp are set in Note %d".formatted(id));
+        }
+    }
 }

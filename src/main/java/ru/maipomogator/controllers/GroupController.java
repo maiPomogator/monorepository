@@ -1,4 +1,4 @@
-package ru.maipomogator.rest.controllers;
+package ru.maipomogator.controllers;
 
 import java.time.LocalDate;
 import java.util.Collection;
