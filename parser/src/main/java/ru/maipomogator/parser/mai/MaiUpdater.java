@@ -54,12 +54,13 @@ public class MaiUpdater {
         lessonService.saveAll(diff.getLessonsToEnable());
     }
 
+    //TODO проверить наличие проблемы N+1 в группах и преподавателях
     private MaiTimetable getOldTimetable() {
-        Map<Long, Lesson> lessons = lessonService.bulkFindAllWithAllFields().stream()
+        Map<Long, Lesson> lessons = lessonService.findAllEager().stream()
                 .collect(Collectors.toMap(Lesson::getHash, l -> l));
-        Map<String, Group> groups = groupService.findAllWithAllFields().stream()
+        Map<String, Group> groups = groupService.findAll().stream()
                 .collect(Collectors.toMap(Group::getName, gr -> gr));
-        Map<UUID, Professor> professors = professorService.findAllWithAllFields().stream()
+        Map<UUID, Professor> professors = professorService.findAll().stream()
                 .collect(Collectors.toMap(Professor::getSiteId, pr -> pr));
         return new MaiTimetable(lessons, professors, groups);
     }

@@ -21,6 +21,10 @@ public class LessonService {
     }
 
     public List<Lesson> findAll() {
+        return lessonRepo.findAllLazy();
+    }
+
+    public List<Lesson> findAllEager() {
         return lessonRepo.findAll();
     }
 
