@@ -62,7 +62,7 @@ public class ParsedGroupAdapter extends TypeAdapter<ParsedGroup> {
                                 // несколько пар, приходится их все также сохранять на одно время 😡
                                 while (in.hasNext()) {
                                     Lesson newLesson = new Lesson();
-                                    newLesson.setDay(currentDate);
+                                    newLesson.setDate(currentDate);
                                     newLesson.setName(in.nextName());
                                     in.beginObject(); // фиолетовая скобка (конкретная пара, после названия)
                                     while (in.hasNext()) {

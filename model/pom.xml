@@ -13,7 +13,7 @@
   <groupId>ru.maipomogator</groupId>
   <artifactId>model</artifactId>
   <packaging>jar</packaging>
-  <version>1.5</version>
+  <version>1.6</version>
 
   <properties>
     <java.version>17</java.version>

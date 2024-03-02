@@ -47,7 +47,7 @@ public class Lesson implements Comparable<Lesson> {
         copy.id = original.id;
         copy.name = original.name;
         copy.types = new HashSet<>(original.types);
-        copy.day = original.day;
+        copy.date = original.date;
         copy.timeStart = original.timeStart;
         copy.timeEnd = original.timeEnd;
         copy.groups = new HashSet<>();
@@ -75,7 +75,7 @@ public class Lesson implements Comparable<Lesson> {
     private String name;
 
     /**
-     * Типы занятия(в исходных данных может быть указано несколько)
+     * Типы занятия (в исходных данных может быть указано несколько)
      *
      * @see LessonType
      */
@@ -90,6 +90,7 @@ public class Lesson implements Comparable<Lesson> {
      */
     @Column
     @JsonView(Views.IdInfo.class)
+    private LocalDate date;
 
     /**
      * Время начала занятия
@@ -114,8 +115,9 @@ public class Lesson implements Comparable<Lesson> {
     private Set<String> rooms = new HashSet<>();
 
     /**
-     * Флаг, указывающий на удаление занятия после обновления расписания (возможно, будет заменен на
-     * ENUM состояний в дальнейшем)
+     * Статус занятия
+     * 
+     * @see LessonStatus
      */
     @Column
     @Enumerated(EnumType.STRING)
@@ -214,13 +216,13 @@ public class Lesson implements Comparable<Lesson> {
     }
 
     /**
-     * Сравнение занятий производится по дню и номеру
+     * Сравнение занятий производится по дате и времени начала
      * 
      * @param other занятие для сравнения
      */
     @Override
     public int compareTo(@NonNull Lesson other) {
-        return Comparator.comparing(Lesson::getDay).thenComparing(Lesson::getTimeStart).compare(this, other);
+        return Comparator.comparing(Lesson::getDate).thenComparing(Lesson::getTimeStart).compare(this, other);
     }
 
     @SuppressWarnings("null")
@@ -229,7 +231,7 @@ public class Lesson implements Comparable<Lesson> {
         Hasher hasher = Hashing.murmur3_128().newHasher();
         hasher.putUnencodedChars(name);
         hasher.putUnencodedChars(streamToString(types.stream().sorted().map(LessonType::name)));
-        hasher.putUnencodedChars(day.toString());
+        hasher.putUnencodedChars(date.toString());
         hasher.putUnencodedChars(timeStart.toString());
         hasher.putUnencodedChars(streamToString(rooms.stream().sorted(String::compareTo)));
         return hasher.hash().asLong();
@@ -245,7 +247,7 @@ public class Lesson implements Comparable<Lesson> {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", types=" + types.toString() +
-                ", day=" + day +
+                ", date=" + date +
                 ", timeStart=" + timeStart +
                 ", timeEnd=" + timeEnd +
                 ", groups=[" + streamToString(groups.stream().sorted().map(Group::getName)) + "]" +
