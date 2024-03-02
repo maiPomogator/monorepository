@@ -9,10 +9,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 
@@ -41,7 +40,6 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "lessons", schema = "public")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Lesson implements Comparable<Lesson> {
 
     public static Lesson copyOf(Lesson original) {
@@ -66,12 +64,14 @@ public class Lesson implements Comparable<Lesson> {
     @SequenceGenerator(name = "lessons_seq", sequenceName = "lessons_id_seq", allocationSize = 1000)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lessons_seq")
     @Column
+    @JsonView(Views.Id.class)
     private Long id;
 
     /**
      * Название занятия
      */
     @Column
+    @JsonView(Views.IdInfo.class)
     private String name;
 
     /**
@@ -82,25 +82,45 @@ public class Lesson implements Comparable<Lesson> {
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     @Column(name = "lesson_type")
+    @JsonView(Views.IdInfo.class)
     private Set<LessonType> types = new HashSet<>();
 
     /**
      * День занятия
      */
     @Column
-    private LocalDate day;
+    @JsonView(Views.IdInfo.class)
 
     /**
      * Время начала занятия
      */
     @Column(name = "time_start")
+    @JsonView(Views.IdInfo.class)
     private LocalTime timeStart;
 
     /**
      * Время окончания занятия
      */
     @Column(name = "time_end")
+    @JsonView(Views.IdInfo.class)
     private LocalTime timeEnd;
+
+    /**
+     * Аудитории занятия
+     */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Column(name = "room")
+    @JsonView(Views.IdInfo.class)
+    private Set<String> rooms = new HashSet<>();
+
+    /**
+     * Флаг, указывающий на удаление занятия после обновления расписания (возможно, будет заменен на
+     * ENUM состояний в дальнейшем)
+     */
+    @Column
+    @Enumerated(EnumType.STRING)
+    @JsonView(Views.IdInfo.class)
+    private LessonStatus status = LessonStatus.CREATED;
 
     /**
      * Группы занятия
@@ -109,7 +129,8 @@ public class Lesson implements Comparable<Lesson> {
     @EqualsAndHashCode.Exclude
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "lessons_professors", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "professor_id"))
-    @JsonManagedReference
+    @JsonIgnoreProperties({ "lessons" })
+    @JsonView(Views.FullView.class)
     private Set<Group> groups = new HashSet<>();
 
     /**
@@ -119,23 +140,9 @@ public class Lesson implements Comparable<Lesson> {
     @EqualsAndHashCode.Exclude
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "lessons_groups", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
-    @JsonManagedReference
+    @JsonIgnoreProperties({ "lessons" })
+    @JsonView(Views.FullView.class)
     private Set<Professor> professors = new HashSet<>();
-
-    /**
-     * Аудитории занятия
-     */
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name = "room")
-    private Set<String> rooms = new HashSet<>();
-
-    /**
-     * Флаг, указывающий на удаление занятия после обновления расписания (возможно, будет заменен на
-     * ENUM состояний в дальнейшем)
-     */
-    @Column
-    @Enumerated(EnumType.STRING)
-    private LessonStatus status = LessonStatus.CREATED;
 
     @PrePersist
     private void prePersistLesson() {

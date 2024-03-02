@@ -7,10 +7,8 @@ import java.util.TreeSet;
 
 import org.springframework.util.DigestUtils;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,7 +34,6 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "groups", schema = "public")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Group implements Comparable<Group> {
 
     /**
@@ -46,6 +43,7 @@ public class Group implements Comparable<Group> {
     @SequenceGenerator(name = "groups_seq", sequenceName = "groups_id_seq", allocationSize = 100)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "groups_seq")
     @Column
+    @JsonView(Views.Id.class)
     private Long id;
 
     /**
@@ -53,6 +51,7 @@ public class Group implements Comparable<Group> {
      */
     @NonNull
     @Column(unique = true)
+    @JsonView(Views.IdInfo.class)
     private String name;
 
     /**
@@ -60,6 +59,7 @@ public class Group implements Comparable<Group> {
      */
     @NonNull
     @Column
+    @JsonView(Views.IdInfo.class)
     private Integer course;
 
     /**
@@ -68,6 +68,7 @@ public class Group implements Comparable<Group> {
 
     @NonNull
     @Column
+    @JsonView(Views.IdInfo.class)
     private Integer faculty;
 
     /**
@@ -78,6 +79,7 @@ public class Group implements Comparable<Group> {
     @NonNull
     @Column
     @Enumerated(EnumType.STRING)
+    @JsonView(Views.IdInfo.class)
     private GroupType type;
 
     /**
@@ -86,7 +88,7 @@ public class Group implements Comparable<Group> {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "groups", fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonView(Views.FullView.class)
     private SortedSet<Lesson> lessons = new TreeSet<>();
 
     public void setLessons(SortedSet<Lesson> newLessons) {

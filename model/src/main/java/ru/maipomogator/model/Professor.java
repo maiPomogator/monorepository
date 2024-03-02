@@ -5,10 +5,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,7 +30,6 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "professors", schema = "public")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Professor implements Comparable<Professor> {
 
     public static Professor copyOf(Professor original) {
@@ -53,24 +50,28 @@ public class Professor implements Comparable<Professor> {
     @SequenceGenerator(name = "professors_seq", sequenceName = "professors_id_seq", allocationSize = 100)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "professors_seq")
     @Column
+    @JsonView(Views.Id.class)
     private Long id;
 
     /**
      * Фамилия преподавателя
      */
     @Column(name = "last_name")
+    @JsonView(Views.IdInfo.class)
     private String lastName = "";
 
     /**
      * Имя преподавателя
      */
     @Column(name = "first_name")
+    @JsonView(Views.IdInfo.class)
     private String firstName = "";
 
     /**
      * Отчество преподавателя
      */
     @Column(name = "middle_name")
+    @JsonView(Views.IdInfo.class)
     private String middleName = "";
 
     /**
@@ -78,6 +79,7 @@ public class Professor implements Comparable<Professor> {
      */
     @NonNull
     @Column(name = "site_id", unique = true)
+    @JsonView(Views.IdInfo.class)
     private UUID siteId;
 
     /**
@@ -86,7 +88,7 @@ public class Professor implements Comparable<Professor> {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "professors", fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonView(Views.FullView.class)
     private SortedSet<Lesson> lessons = new TreeSet<>();
 
     /**
