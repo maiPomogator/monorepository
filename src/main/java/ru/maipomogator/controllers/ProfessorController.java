@@ -35,7 +35,7 @@ public class ProfessorController {
 
     @GetMapping("{id}")
     @JsonView(Views.IdInfo.class)
-    public Professor getOne(@PathVariable("id") Professor professor) {
+    public Professor getOneById(@PathVariable("id") Professor professor) {
         return professor;
     }
 

@@ -4,13 +4,18 @@
     "java.format.settings.url": ".vscode/java-formatter.xml",
     "cSpell.words": [
         "basepath",
+        "Cacheable",
         "Hasher",
+        "jdbc",
+        "бэкенд*",
+        "микросервисов",
         "парсинга",
         "парсинге",
-        "Распарсивает",
-        "бэкенд*"
+        "Распарсивает"
     ],
     "[java]": {
         "editor.detectIndentation": false
     },
+    "terminal.integrated.hideOnStartup": "always",
+    "git.enableCommitSigning": true,
 }

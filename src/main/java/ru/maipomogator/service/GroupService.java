@@ -47,4 +47,9 @@ public class GroupService {
     public void delete(Long id) {
         groupRepo.deleteById(id);
     }
+
+    public Group findByName(String name) {
+        return groupRepo.findByName(name);
+    }
+
 }

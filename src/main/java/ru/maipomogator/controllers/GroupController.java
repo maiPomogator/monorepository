@@ -22,7 +22,7 @@ import ru.maipomogator.model.Views;
 import ru.maipomogator.service.GroupService;
 import ru.maipomogator.service.LessonService;
 
-@RestController()
+@RestController
 @RequestMapping("/mai/groups")
 @RequiredArgsConstructor
 public class GroupController {
@@ -53,10 +53,17 @@ public class GroupController {
 
     @GetMapping("{id}")
     @JsonView(Views.IdInfo.class)
-    public Group getOne(@PathVariable("id") Group group) {
+    public Group getOneById(@PathVariable("id") Group group) {
         return group;
     }
 
+    @GetMapping(params = "name")
+    @JsonView(Views.IdInfo.class)
+    public Group getOneByName(@RequestParam String name) {
+        return groupService.findByName(name);
+    }
+
+    // TODO реализовать получение всех групп занятия (сейчас только одна с переданным groupId)
     @GetMapping("{id}/lessons")
     @JsonView(Views.FullView.class)
     public Collection<Lesson> getLessons(
