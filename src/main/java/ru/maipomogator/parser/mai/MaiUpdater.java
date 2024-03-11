@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.scheduling.annotation.Scheduled;
@@ -32,7 +33,7 @@ public class MaiUpdater {
     private final MaiParser parser;
 
     // @Scheduled(fixedRate = 12, timeUnit = TimeUnit.HOURS)
-    @Scheduled(cron = "0 0 4 * * ?")
+    // @Scheduled(cron = "0 0 4 * * ?")
     @Transactional
     public void update() {
         MaiTimetable oldTimetable = getOldTimetable();

@@ -51,7 +51,7 @@ public class MaiParser {
 
     @SneakyThrows
     public MaiParser() {
-        Path basePathStarter = Path.of("C:\\projects\\maipomogator\\json-files");
+        Path basePathStarter = Files.createTempDirectory("mai");
         this.basePath = basePathStarter.resolve(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         this.groupsFilesBasePath = this.basePath.resolve("groups");
         this.gson = getCustomGson();
