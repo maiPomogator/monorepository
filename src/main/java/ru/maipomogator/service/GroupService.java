@@ -3,6 +3,7 @@ package ru.maipomogator.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,16 @@ public class GroupService {
 
     public List<Group> findByCourseAndFacultyAndType(Integer course, Integer faculty, GroupType type) {
         return groupRepo.findByCourseAndFacultyAndType(course, faculty, type);
+    }
+
+    @Cacheable(value = "allFaculties")
+    public List<String> findAllFaculties() {
+        return groupRepo.getAllFaculties();
+    }
+
+    @Cacheable(value = "numberOfCourses")
+    public Integer getNumberOfCourses() {
+        return groupRepo.getNumberOfCourses();
     }
 
     @Transactional
