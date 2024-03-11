@@ -130,7 +130,7 @@ public class Lesson implements Comparable<Lesson> {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(name = "lessons_professors", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "professor_id"))
+    @JoinTable(name = "lessons_groups", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
     @JsonIgnoreProperties({ "lessons" })
     @JsonView(Views.FullView.class)
     private Set<Group> groups = new HashSet<>();
@@ -141,7 +141,7 @@ public class Lesson implements Comparable<Lesson> {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(name = "lessons_groups", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
+    @JoinTable(name = "lessons_professors", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "professor_id"))
     @JsonIgnoreProperties({ "lessons" })
     @JsonView(Views.FullView.class)
     private Set<Professor> professors = new HashSet<>();
