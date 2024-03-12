@@ -3,25 +3,22 @@ package ru.maipomogator.bot.clients;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import lombok.RequiredArgsConstructor;
 import ru.maipomogator.bot.model.Group;
 import ru.maipomogator.bot.model.Lesson;
 
 @Component
+@RequiredArgsConstructor
 public class GroupRestClient {
 
     private static final ParameterizedTypeReference<List<Group>> GROUPS_LIST_TR = new ParameterizedTypeReference<>() {    };
     private static final ParameterizedTypeReference<List<Lesson>> LESSONS_LIST_TR = new ParameterizedTypeReference<>() {    };
 
     private final RestClient restClient;
-
-    public GroupRestClient(@Value("${baseurl:https://rufus20145.ru}") String baseUrl) {
-        this.restClient = RestClient.builder().baseUrl(baseUrl).build();
-    }
 
     public Group findByName(String name) {
         return restClient.get().uri("/mai/groups?name={name}", name.toUpperCase()).retrieve().body(Group.class);
