@@ -16,7 +16,7 @@ public interface CallbackProcessor {
         return process(callback, callback.message().messageId(), callback.message().chat().id());
     }
 
-    List<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer messageId, Long chatId);
+    List<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId, Long chatId);
 
     String getRegex();
 

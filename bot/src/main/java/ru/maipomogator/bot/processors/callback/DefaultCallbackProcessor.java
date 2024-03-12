@@ -12,8 +12,8 @@ import com.pengrad.telegrambot.response.BaseResponse;
 public class DefaultCallbackProcessor implements CallbackProcessor {
 
     @Override
-    public List<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer messageId, Long chatId) {
-        return List.of(answer(callback.id()).text("Данная кнопка пока не поддерживается"));
+    public List<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId, Long chatId) {
+        return List.of(answer(callback.id()).text("Данная кнопка пока не поддерживается."));
     }
 
     @Override

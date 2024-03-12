@@ -25,7 +25,8 @@ public class SelectGroup implements MessageProcessor {
     public List<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
         Group group = groupsRestClient.findByName(msg.text());
         if (group == null) {
-            return List.of(new SendMessage(chatId, "Группа не найдена. Проверьте название. Если вы уверены, что оно правильное, напишите в @maipomogator_chat"));
+            return List.of(new SendMessage(chatId,
+                    "Группа не найдена. Проверьте название. Если вы уверены, что оно правильное, напишите в @maipomogator_chat"));
         }
 
         return List.of(new SendMessage(chatId, "Выберите свою группу").replyMarkup(getInlineKeyboard(group)));

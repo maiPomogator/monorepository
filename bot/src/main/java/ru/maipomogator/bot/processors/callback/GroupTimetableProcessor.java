@@ -37,16 +37,15 @@ public class GroupTimetableProcessor implements CallbackProcessor {
     private final GroupRestClient groupRestClient;
 
     @Override
-    public List<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer messageId, Long chatId) {
+    public List<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId, Long chatId) {
         String[] segments = callback.data().split(";");
         String groupId = segments[0].split("=")[1];
         if (segments.length == 1) {
-            EditMessageText editMessage = getDayMsg(chatId, messageId, segments[0], groupId);
+            EditMessageText editMessage = getDayMsg(chatId, msgId, segments[0], groupId, LocalDate.now());
             return List.of(answer(callback.id()), editMessage);
         } else if (segments.length == 2) {
             LocalDate targetDate = getDateFromCallback(segments[1].split("=")[1]);
-            EditMessageText editMessageText = getDayMsg(chatId, messageId, segments[0], groupId,
-                    targetDate);
+            EditMessageText editMessageText = getDayMsg(chatId, msgId, segments[0], groupId, targetDate);
             return List.of(answer(callback.id()), editMessageText);
         }
 
@@ -74,10 +73,6 @@ public class GroupTimetableProcessor implements CallbackProcessor {
         keyboard.addRow(CancelCallbackProcessor.cancelButton());
 
         return keyboard;
-    }
-
-    private EditMessageText getDayMsg(Long chatId, int messageId, String grp, String groupId) {
-        return getDayMsg(chatId, messageId, grp, groupId, LocalDate.now());
     }
 
     private EditMessageText getDayMsg(Long chatId, int messageId, String grp, String groupId, LocalDate targetDate) {

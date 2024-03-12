@@ -20,8 +20,8 @@ public class CancelCallbackProcessor implements CallbackProcessor {
     }
 
     @Override
-    public List<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer messageId, Long chatId) {
-        return List.of(answer(callback.id()), new DeleteMessage(chatId, messageId));
+    public List<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId, Long chatId) {
+        return List.of(answer(callback.id()), new DeleteMessage(chatId, msgId));
     }
 
     @Override

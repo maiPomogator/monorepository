@@ -15,5 +15,4 @@ public class MaiRestClient {
     public MaiInfo getMaiInfo() {
         return this.restClient.get().uri("/mai").retrieve().body(MaiInfo.class);
     }
-
 }

@@ -15,8 +15,8 @@ import ru.maipomogator.bot.model.Lesson;
 @RequiredArgsConstructor
 public class GroupRestClient {
 
-    private static final ParameterizedTypeReference<List<Group>> GROUPS_LIST_TR = new ParameterizedTypeReference<>() {    };
-    private static final ParameterizedTypeReference<List<Lesson>> LESSONS_LIST_TR = new ParameterizedTypeReference<>() {    };
+    private static final ParameterizedTypeReference<List<Group>> GROUPS_LIST_TR = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<List<Lesson>> LESSONS_LIST_TR = new ParameterizedTypeReference<>() {};
 
     private final RestClient restClient;
 

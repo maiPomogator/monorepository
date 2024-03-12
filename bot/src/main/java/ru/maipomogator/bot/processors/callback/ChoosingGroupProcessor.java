@@ -30,21 +30,21 @@ public class ChoosingGroupProcessor implements CallbackProcessor {
     private final GroupRestClient groupRestClient;
 
     @Override
-    public List<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer messageId, Long chatId) {
+    public List<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId, Long chatId) {
         String queryId = callback.id();
         String data = callback.data();
         String[] segments = data.split(";");
 
         if (segments.length == 1) { // только fac=1
-            return List.of(getCoursesMessage(chatId, messageId, segments[0]));
+            return List.of(getCoursesMessage(chatId, msgId, segments[0]));
         } else if (segments.length == 2) { // fac=1;crs=3 или fac=1;back
             if (segments[1].equals("back")) {
-                return List.of(answer(queryId), getInstitutesMessage(chatId, messageId));
+                return List.of(answer(queryId), getInstitutesMessage(chatId, msgId));
             } else {
-                return List.of(answer(queryId), getGroupsMessage(chatId, messageId, segments));
+                return List.of(answer(queryId), getGroupsMessage(chatId, msgId, segments));
             }
         } else if (segments.length == 3) { // fac=1;crs=3;back
-            return List.of(answer(queryId), getCoursesMessage(chatId, messageId, segments[0]));
+            return List.of(answer(queryId), getCoursesMessage(chatId, msgId, segments[0]));
         }
         return List.of(answer(queryId).text("Что-то пошло не так, попробуйте заново."));
     }
@@ -86,8 +86,7 @@ public class ChoosingGroupProcessor implements CallbackProcessor {
         return new EditMessageText(chatId, messageId, "Выберите институт").replyMarkup(makeInstitutesKeyboard());
     }
 
-    private EditMessageText getCoursesMessage(Long chatId, int messageId,
-            String fac) {
+    private EditMessageText getCoursesMessage(Long chatId, int messageId, String fac) {
         return new EditMessageText(chatId, messageId, "Теперь курс")
                 .replyMarkup(getCoursesKeyboard(fac));
     }

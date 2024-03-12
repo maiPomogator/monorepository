@@ -18,7 +18,7 @@ public class StartCommandProcessor implements CommandProcessor {
         SendMessage message = new SendMessage(chatId,
                 "Приветствуем в нашем боте.\nДля выбора группы введите её номер или /newgroup для интерактивного выбора."
                         + " Для выбора преподавателя введите фамилию или ФИО целиком.")
-                .replyMarkup(new ReplyKeyboardRemove());
+                                .replyMarkup(new ReplyKeyboardRemove());
         return List.of(message);
     }
 
