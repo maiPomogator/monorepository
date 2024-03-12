@@ -33,11 +33,10 @@ public class SelectProfessor implements MessageProcessor {
                 .replyMarkup(getProfessorsKeyboard(allProfessors.subList(0, Math.min(5, allProfessors.size())))));
     }
 
-    // TODO установить правильную callbackData
     private InlineKeyboardMarkup getProfessorsKeyboard(List<Professor> list) {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         for (Professor professor : list) {
-            keyboard.addRow(new InlineKeyboardButton(professor.getFullName()).callbackData(professor.id().toString()));
+            keyboard.addRow(new InlineKeyboardButton(professor.getFullName()).callbackData("prf=" + professor.id()));
         }
         return keyboard;
     }

@@ -1,5 +1,6 @@
 package ru.maipomogator.bot.clients;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,5 +28,11 @@ public class ProfessorRestClient {
 
     public List<Lesson> getLessons(Long id) {
         return restClient.get().uri("/mai/professors/{id}/lessons", id).retrieve().body(LESSONS_LIST_TR);
+    }
+
+    public List<Lesson> getLessonsBetweenDates(String id, LocalDate startDate, LocalDate endDate) {
+        return restClient.get()
+                .uri("/mai/professors/{id}/lessons?startDate={startDate}&endDate={endDate}", id, startDate, endDate)
+                .retrieve().body(LESSONS_LIST_TR);
     }
 }
