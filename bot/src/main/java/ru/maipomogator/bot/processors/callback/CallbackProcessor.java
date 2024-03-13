@@ -13,10 +13,18 @@ public interface CallbackProcessor {
     // private в текущей версии 🤷‍♂️
     @SuppressWarnings("deprecation")
     default List<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback) {
-        return process(callback, callback.message().messageId(), callback.message().chat().id());
+        if (callback.inlineMessageId() == null) {
+            return process(callback, callback.message().messageId(), callback.message().chat().id());
+        } else {
+            // return processInline(callback, callback.inlineMessageId());
+            return List.of();
+        }
     }
 
     List<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId, Long chatId);
+
+    // List<BaseRequest<?, ? extends BaseResponse>> processInline(CallbackQuery callback, String
+    // inlineMessageId);
 
     String getRegex();
 
