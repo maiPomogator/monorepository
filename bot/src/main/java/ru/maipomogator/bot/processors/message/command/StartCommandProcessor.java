@@ -15,10 +15,10 @@ public class StartCommandProcessor implements CommandProcessor {
 
     @Override
     public List<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
-        SendMessage message = new SendMessage(chatId,
-                "Приветствуем в нашем боте.\nДля выбора группы введите её номер или /newgroup для интерактивного выбора."
-                        + " Для выбора преподавателя введите фамилию или ФИО целиком.")
-                                .replyMarkup(new ReplyKeyboardRemove());
+        SendMessage message = new SendMessage(chatId, "Приветствуем в нашем боте.\n"
+                + "Для выбора группы введите её номер или /newgroup для интерактивного выбора."
+                + " Для выбора преподавателя введите фамилию или ФИО целиком.")
+                        .replyMarkup(new ReplyKeyboardRemove());
         return List.of(message);
     }
 

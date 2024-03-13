@@ -24,6 +24,10 @@ public class GroupRestClient {
         return restClient.get().uri("/mai/groups?name={name}", name.toUpperCase()).retrieve().body(Group.class);
     }
 
+    public Group findById(String id) {
+        return restClient.get().uri("/mai/groups/{id}", id).retrieve().body(Group.class);
+    }
+
     public List<Group> findByCourseAndFaculty(int course, int faculty) {
         return restClient.get().uri("mai/groups?course={course}&faculty={faculty}", course, faculty)
                 .retrieve().body(GROUPS_LIST_TR);
@@ -37,9 +41,5 @@ public class GroupRestClient {
         return restClient.get()
                 .uri("/mai/groups/{id}/lessons?startDate={startDate}&endDate={endDate}", id, startDate, endDate)
                 .retrieve().body(LESSONS_LIST_TR);
-    }
-
-    public Group findById(String id) {
-        return restClient.get().uri("/mai/groups/{id}", id).retrieve().body(Group.class);
     }
 }

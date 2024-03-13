@@ -116,7 +116,6 @@ public class ChoosingGroupProcessor implements CallbackProcessor {
         int crs = Integer.parseInt(segments[1].split("=")[1]);
         List<Group> groups = groupRestClient.findByCourseAndFaculty(crs, fac);
         String text = groups.isEmpty() ? "Таких групп нет" : "А теперь группу";
-        groups.sort(Comparator.comparing(Group::name));
         return new EditMessageText(chatId, messageId, text)
                 .replyMarkup(getGroupsKeyboard(groups, segments[0] + ";" + segments[1]));
     }
