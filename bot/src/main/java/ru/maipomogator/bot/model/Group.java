@@ -1,6 +1,6 @@
 package ru.maipomogator.bot.model;
 
-public record Group(Long id, String name, int course, int faculty, String type) implements Comparable<Group> {
+public record Group(Long id, String name, int course, int faculty, GroupType type) implements Comparable<Group> {
 
     @Override
     public int compareTo(Group other) {
