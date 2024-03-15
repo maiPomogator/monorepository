@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.pengrad.telegrambot.model.InlineQuery;
+import com.pengrad.telegrambot.model.request.InlineQueryResultArticle;
+import com.pengrad.telegrambot.request.AnswerInlineQuery;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.response.BaseResponse;
 
@@ -18,10 +20,10 @@ public class DefaultInlineProcessor extends AbstractInlineProcessor {
 
     @Override
     public Collection<? extends BaseRequest<?, ? extends BaseResponse>> process(InlineQuery query) {
-        // InlineQueryResultArticle result = new InlineQueryResultArticle("default", "Заголовок
-        // непонятного",
-        // "Текст непонятного").url("t.me/maipomogator_chat").hideUrl(true);
-        // return List.of(new AnswerInlineQuery(query.id(), result).cacheTime(10));
+        InlineQueryResultArticle example = new InlineQueryResultArticle("default", "Пример inline сообщения",
+                "Так будет выглядеть сообщение с расписанием").description("Нажмите, чтобы попробовать");
+        return List.of(new AnswerInlineQuery(query.id(), example));
+    }
 
     @Override
     public boolean applies(String text) {

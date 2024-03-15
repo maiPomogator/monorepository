@@ -18,7 +18,6 @@ import com.pengrad.telegrambot.response.BaseResponse;
 import lombok.extern.log4j.Log4j2;
 import ru.maipomogator.bot.clients.GroupRestClient;
 import ru.maipomogator.bot.model.Group;
-import ru.maipomogator.bot.processors.callback.CancelCallbackProcessor;
 
 @Log4j2
 @Component
@@ -51,7 +50,6 @@ public class GroupInlineProcessor extends AbstractInlineProcessor {
         InlineKeyboardButton fwd = new InlineKeyboardButton("➡️")
                 .callbackData(grp + ";date=" + curDate.plusDays(1).format(CALLBACK_DATE_FORMATTER));
         keyboard.addRow(back, today, fwd);
-        keyboard.addRow(CancelCallbackProcessor.cancelButton());
 
         return List.of(new AnswerInlineQuery(query.id(),
                 new InlineQueryResultArticle(group.id() + "", group.name(), "\"Выбрана\" группа " + group.name())
