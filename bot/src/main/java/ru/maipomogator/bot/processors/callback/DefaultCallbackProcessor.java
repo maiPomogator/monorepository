@@ -12,6 +12,8 @@ import com.pengrad.telegrambot.response.BaseResponse;
 @Component
 public class DefaultCallbackProcessor extends AbstractCallbackProcessor {
 
+    private static final String BUTTON_NOT_SUPPORTED = "Данная кнопка пока не поддерживается.";
+
     protected DefaultCallbackProcessor() {
         super("");
     }
@@ -19,13 +21,13 @@ public class DefaultCallbackProcessor extends AbstractCallbackProcessor {
     @Override
     protected Collection<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId,
             Long chatId) {
-        return List.of(answer(callback.id()).text("Данная кнопка пока не поддерживается."));
+        return List.of(answer(callback.id()).text(BUTTON_NOT_SUPPORTED));
     }
 
     @Override
     protected Collection<BaseRequest<?, ? extends BaseResponse>> processInline(CallbackQuery callback,
             String inlineMessageId) {
-        return List.of(answer(callback.id()).text("Данная кнопка пока не поддерживается."));
+        return List.of(answer(callback.id()).text(BUTTON_NOT_SUPPORTED));
     }
 
     @Override

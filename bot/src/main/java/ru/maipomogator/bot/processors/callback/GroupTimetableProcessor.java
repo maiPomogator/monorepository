@@ -40,7 +40,8 @@ public class GroupTimetableProcessor extends AbstractCallbackProcessor {
     }
 
     @Override
-    protected Collection<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId, Long chatId) {
+    protected Collection<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId,
+            Long chatId) {
         String[] segments = callback.data().split(";");
         String groupId = segments[0].split("=")[1];
         if (segments.length == 1) {
@@ -58,8 +59,7 @@ public class GroupTimetableProcessor extends AbstractCallbackProcessor {
     @Override
     protected Collection<BaseRequest<?, ? extends BaseResponse>> processInline(CallbackQuery callback,
             String inlineMessageId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'processInline'");
+        return List.of(answer(callback.id()).text("Пока не поддерживается"));
     }
 
     private LocalDate getDateFromCallback(String data) {

@@ -2,6 +2,7 @@ package ru.maipomogator.bot.processors.callback;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -62,8 +63,7 @@ public class ChoosingGroupProcessor extends AbstractCallbackProcessor {
     @Override
     protected Collection<BaseRequest<?, ? extends BaseResponse>> processInline(CallbackQuery callback,
             String inlineMessageId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'processInline'");
+        return List.of(answer(callback.id()).text("Данная кнопка пока не работает в inline режиме."));
     }
 
     private InlineKeyboardMarkup makeInstitutesKeyboard() {
@@ -130,6 +130,7 @@ public class ChoosingGroupProcessor extends AbstractCallbackProcessor {
 
     private InlineKeyboardMarkup getGroupsKeyboard(List<Group> groups, String data) {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
+        Collections.sort(groups);
         Iterator<Group> gIterator = groups.iterator();
 
         while (gIterator.hasNext()) {
