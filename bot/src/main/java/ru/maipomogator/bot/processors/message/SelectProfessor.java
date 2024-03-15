@@ -1,5 +1,6 @@
 package ru.maipomogator.bot.processors.message;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -12,20 +13,23 @@ import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.BaseResponse;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import ru.maipomogator.bot.clients.ProfessorRestClient;
 import ru.maipomogator.bot.model.Professor;
 
 @Log4j2
 @Component
-@RequiredArgsConstructor
-public class SelectProfessor implements MessageProcessor {
+public class SelectProfessor extends AbstractMessageProcessor {
 
     private final ProfessorRestClient professorRestClient;
 
+    public SelectProfessor(ProfessorRestClient professorRestClient) {
+        super("^([а-яА-ЯёЁ]{2,15} ?){1,5}$");
+        this.professorRestClient = professorRestClient;
+    }
+
     @Override
-    public List<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
+    protected Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
         List<Professor> allProfessors = professorRestClient.getAll();
         allProfessors.sort(new FioComparator(msg.text()));
 
@@ -39,11 +43,6 @@ public class SelectProfessor implements MessageProcessor {
             keyboard.addRow(new InlineKeyboardButton(professor.getFullName()).callbackData("prf=" + professor.id()));
         }
         return keyboard;
-    }
-
-    @Override
-    public String getRegex() {
-        return "^([а-яА-ЯёЁ]{2,15} ?){1,5}$";
     }
 
     static class FioComparator implements Comparator<Professor> {

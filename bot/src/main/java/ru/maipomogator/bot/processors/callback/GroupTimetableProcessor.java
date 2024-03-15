@@ -20,7 +20,6 @@ import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.EditMessageText;
 import com.pengrad.telegrambot.response.BaseResponse;
 
-import lombok.RequiredArgsConstructor;
 import ru.maipomogator.bot.clients.GroupRestClient;
 import ru.maipomogator.bot.model.Lesson;
 import ru.maipomogator.bot.model.LessonStatus;
@@ -28,16 +27,20 @@ import ru.maipomogator.bot.model.LessonType;
 import ru.maipomogator.bot.model.Professor;
 
 @Component
-@RequiredArgsConstructor
-public class GroupTimetableProcessor implements CallbackProcessor {
+public class GroupTimetableProcessor extends AbstractCallbackProcessor {
     private static final DateTimeFormatter CALLBACK_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyMMdd");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("EEEE, d MMMM",
             new Locale("ru", "RU"));
 
     private final GroupRestClient groupRestClient;
 
+    public GroupTimetableProcessor(GroupRestClient groupRestClient) {
+        super("^grp=\\d{1,4}(;date=(\\d{6}|today))?$");
+        this.groupRestClient = groupRestClient;
+    }
+
     @Override
-    public List<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId, Long chatId) {
+    protected Collection<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId, Long chatId) {
         String[] segments = callback.data().split(";");
         String groupId = segments[0].split("=")[1];
         if (segments.length == 1) {
@@ -53,8 +56,10 @@ public class GroupTimetableProcessor implements CallbackProcessor {
     }
 
     @Override
-    public String getRegex() {
-        return "^grp=\\d{1,4}(;date=(\\d{6}|today))?$";
+    protected Collection<BaseRequest<?, ? extends BaseResponse>> processInline(CallbackQuery callback,
+            String inlineMessageId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'processInline'");
     }
 
     private LocalDate getDateFromCallback(String data) {

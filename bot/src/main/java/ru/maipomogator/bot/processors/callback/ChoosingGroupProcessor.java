@@ -1,7 +1,7 @@
 package ru.maipomogator.bot.processors.callback;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,22 +15,32 @@ import com.pengrad.telegrambot.request.EditMessageText;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.BaseResponse;
 
-import lombok.RequiredArgsConstructor;
 import ru.maipomogator.bot.clients.GroupRestClient;
 import ru.maipomogator.bot.clients.MaiRestClient;
 import ru.maipomogator.bot.model.Group;
 import ru.maipomogator.bot.model.MaiInfo;
 
 @Component
-@RequiredArgsConstructor
-public class ChoosingGroupProcessor implements CallbackProcessor {
+public class ChoosingGroupProcessor extends AbstractCallbackProcessor {
 
     public static final int NUMBER_OF_BUTTONS_IN_ROW = 3;
+
     private final MaiRestClient maiRestClient;
     private final GroupRestClient groupRestClient;
 
+    protected ChoosingGroupProcessor(MaiRestClient maiRestClient, GroupRestClient groupRestClient) {
+        super("^fac=\\d{1,2}(;crs=[1-9])?(;back)?$");
+        this.maiRestClient = maiRestClient;
+        this.groupRestClient = groupRestClient;
+    }
+
+    public SendMessage getInstitutesMessage(Long chatId) {
+        return new SendMessage(chatId, "Выберите институт").replyMarkup(makeInstitutesKeyboard());
+    }
+
     @Override
-    public List<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId, Long chatId) {
+    protected Collection<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId,
+            Long chatId) {
         String queryId = callback.id();
         String data = callback.data();
         String[] segments = data.split(";");
@@ -50,12 +60,10 @@ public class ChoosingGroupProcessor implements CallbackProcessor {
     }
 
     @Override
-    public String getRegex() {
-        return "^fac=\\d{1,2}(;crs=[1-9])?(;back)?$";
-    }
-
-    public SendMessage getInstitutesMessage(Long chatId) {
-        return new SendMessage(chatId, "Выберите институт").replyMarkup(makeInstitutesKeyboard());
+    protected Collection<BaseRequest<?, ? extends BaseResponse>> processInline(CallbackQuery callback,
+            String inlineMessageId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'processInline'");
     }
 
     private InlineKeyboardMarkup makeInstitutesKeyboard() {

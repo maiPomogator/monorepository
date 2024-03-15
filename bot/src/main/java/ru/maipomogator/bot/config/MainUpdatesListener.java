@@ -18,7 +18,7 @@ import lombok.extern.log4j.Log4j2;
 import ru.maipomogator.bot.processors.callback.CallbackProcessor;
 import ru.maipomogator.bot.processors.callback.DefaultCallbackProcessor;
 import ru.maipomogator.bot.processors.inline.DefaultInlineProcessor;
-import ru.maipomogator.bot.processors.inline.InlineQueryProcessor;
+import ru.maipomogator.bot.processors.inline.InlineProcessor;
 import ru.maipomogator.bot.processors.message.DefaultMessageProcessor;
 import ru.maipomogator.bot.processors.message.MessageProcessor;
 
@@ -33,13 +33,13 @@ public class MainUpdatesListener implements UpdatesListener {
     private final List<CallbackProcessor> callbackProcessors;
     private final DefaultCallbackProcessor dcp;
 
-    private List<InlineQueryProcessor> inlineProcessors;
+    private List<InlineProcessor> inlineProcessors;
     private DefaultInlineProcessor dip;
 
     public MainUpdatesListener(TelegramBot bot,
             List<MessageProcessor> messageProcessors, DefaultMessageProcessor dmp,
             List<CallbackProcessor> callbackProcessors, DefaultCallbackProcessor dcp,
-            List<InlineQueryProcessor> inlineProcessors, DefaultInlineProcessor dip) {
+            List<InlineProcessor> inlineProcessors, DefaultInlineProcessor dip) {
         this.bot = bot;
 
         messageProcessors.remove(dmp);
@@ -68,6 +68,7 @@ public class MainUpdatesListener implements UpdatesListener {
                 processCallbackQuery(callback).forEach(bot::execute);
             } else if (hasInlineQuery(update)) {
                 InlineQuery query = update.inlineQuery();
+                log.info("Processing inline update from {} ({})", query.from().username(), query.from().id());
                 processInlineQuery(query).forEach(bot::execute);
             } else {
                 log.info("Received update is not supported. Skipping.");
@@ -79,7 +80,7 @@ public class MainUpdatesListener implements UpdatesListener {
     private List<BaseRequest<?, ? extends BaseResponse>> processInlineQuery(InlineQuery query) {
         List<BaseRequest<?, ? extends BaseResponse>> requests = new ArrayList<>();
         boolean isProcessed = false;
-        for (InlineQueryProcessor processor : inlineProcessors) {
+        for (InlineProcessor processor : inlineProcessors) {
             if (processor.applies(query.query())) {
                 requests.addAll(processor.process(query));
                 isProcessed = true;

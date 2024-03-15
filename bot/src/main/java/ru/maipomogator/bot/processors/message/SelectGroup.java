@@ -1,5 +1,6 @@
 package ru.maipomogator.bot.processors.message;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -11,18 +12,22 @@ import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.BaseResponse;
 
-import lombok.RequiredArgsConstructor;
 import ru.maipomogator.bot.clients.GroupRestClient;
 import ru.maipomogator.bot.model.Group;
 
 @Component
-@RequiredArgsConstructor
-public class SelectGroup implements MessageProcessor {
+public class SelectGroup extends AbstractMessageProcessor {
 
     private final GroupRestClient groupsRestClient;
 
+    protected SelectGroup(GroupRestClient groupsRestClient) {
+        // регулярка строгая, не позволяет отклонений от правильного написания
+        super("^[МмТт][\\dИиУу]{1,2}[ОоВвЗз]-\\d{3}[БбМмАаСс][КкВв]?[КкИи]?-\\d{2}$");
+        this.groupsRestClient = groupsRestClient;
+    }
+
     @Override
-    public List<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
+    protected Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
         Group group = groupsRestClient.findByName(msg.text());
         if (group == null) {
             return List.of(new SendMessage(chatId,
@@ -36,11 +41,5 @@ public class SelectGroup implements MessageProcessor {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         InlineKeyboardButton groupBtn = new InlineKeyboardButton(group.name()).callbackData("grp=" + group.id());
         return keyboard.addRow(groupBtn);
-    }
-
-    @Override
-    public String getRegex() {
-        // регулярка строгая, не позволяет отклонений от правильного написания
-        return "^[МмТт][\\dИиУу]{1,2}[ОоВвЗз]-\\d{3}[БбМмАаСс][КкВв]?[КкИи]?-\\d{2}$";
     }
 }

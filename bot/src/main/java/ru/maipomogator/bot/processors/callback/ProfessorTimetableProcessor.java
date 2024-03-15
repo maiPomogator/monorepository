@@ -19,7 +19,6 @@ import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.EditMessageText;
 import com.pengrad.telegrambot.response.BaseResponse;
 
-import lombok.RequiredArgsConstructor;
 import ru.maipomogator.bot.clients.ProfessorRestClient;
 import ru.maipomogator.bot.model.Group;
 import ru.maipomogator.bot.model.Lesson;
@@ -27,17 +26,20 @@ import ru.maipomogator.bot.model.LessonStatus;
 import ru.maipomogator.bot.model.LessonType;
 
 @Component
-@RequiredArgsConstructor
-public class ProfessorTimetableProcessor implements CallbackProcessor {
+public class ProfessorTimetableProcessor extends AbstractCallbackProcessor {
     private static final DateTimeFormatter CALLBACK_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyMMdd");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("EEEE, d MMMM",
             new Locale("ru", "RU"));
 
     private final ProfessorRestClient professorRestClient;
 
+    public ProfessorTimetableProcessor(ProfessorRestClient professorRestClient) {
+        super("^prf=\\d{1,4}(;date=(\\d{6}|today))?$");
+        this.professorRestClient = professorRestClient;
+    }
+
     @Override
-    public List<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId, Long chatId) {
-        // TODO Auto-generated method stub
+    protected Collection<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId, Long chatId) {
         String[] segments = callback.data().split(";");
         String groupId = segments[0].split("=")[1];
         if (segments.length == 1) {
@@ -53,8 +55,10 @@ public class ProfessorTimetableProcessor implements CallbackProcessor {
     }
 
     @Override
-    public String getRegex() {
-        return "^prf=\\d{1,4}(;date=(\\d{6}|today))?$";
+    protected Collection<BaseRequest<?, ? extends BaseResponse>> processInline(CallbackQuery callback,
+            String inlineMessageId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'processInline'");
     }
 
     private LocalDate getDateFromCallback(String data) {

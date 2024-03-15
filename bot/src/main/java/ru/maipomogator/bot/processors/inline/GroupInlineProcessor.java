@@ -15,7 +15,6 @@ import com.pengrad.telegrambot.request.AnswerInlineQuery;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.response.BaseResponse;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import ru.maipomogator.bot.clients.GroupRestClient;
 import ru.maipomogator.bot.model.Group;
@@ -23,11 +22,15 @@ import ru.maipomogator.bot.processors.callback.CancelCallbackProcessor;
 
 @Log4j2
 @Component
-@RequiredArgsConstructor
-public class GroupInlineProcessor implements InlineQueryProcessor {
+public class GroupInlineProcessor extends AbstractInlineProcessor {
     private static final DateTimeFormatter CALLBACK_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyMMdd");
 
     private final GroupRestClient groupRestClient;
+
+    public GroupInlineProcessor(GroupRestClient groupRestClient) {
+        super("^[МмТт][\\dИиУу]{1,2}[ОоВвЗз]-\\d{3}[БбМмАаСс][КкВв]?[КкИи]?-\\d{2}$");
+        this.groupRestClient = groupRestClient;
+    }
 
     @Override
     public Collection<? extends BaseRequest<?, ? extends BaseResponse>> process(InlineQuery query) {
@@ -53,10 +56,5 @@ public class GroupInlineProcessor implements InlineQueryProcessor {
         return List.of(new AnswerInlineQuery(query.id(),
                 new InlineQueryResultArticle(group.id() + "", group.name(), "\"Выбрана\" группа " + group.name())
                         .replyMarkup(keyboard)));
-    }
-
-    @Override
-    public String getRegex() {
-        return "^[МмТт][\\dИиУу]{1,2}[ОоВвЗз]-\\d{3}[БбМмАаСс][КкВв]?[КкИи]?-\\d{2}$";
     }
 }

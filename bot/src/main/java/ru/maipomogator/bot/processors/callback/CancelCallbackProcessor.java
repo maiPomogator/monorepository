@@ -1,5 +1,6 @@
 package ru.maipomogator.bot.processors.callback;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -11,21 +12,26 @@ import com.pengrad.telegrambot.request.DeleteMessage;
 import com.pengrad.telegrambot.response.BaseResponse;
 
 @Component
-public class CancelCallbackProcessor implements CallbackProcessor {
+public class CancelCallbackProcessor extends AbstractCallbackProcessor {
 
-    private static final String CANCEL_CALLBACK = "cancel";
+    private static final String CANCEL_CALLBACK_DATA = "cancel";
 
     public static InlineKeyboardButton cancelButton() {
-        return new InlineKeyboardButton("❌").callbackData(CANCEL_CALLBACK);
+        return new InlineKeyboardButton("❌").callbackData(CANCEL_CALLBACK_DATA);
+    }
+
+    protected CancelCallbackProcessor() {
+        super("^" + CANCEL_CALLBACK_DATA + "$");
     }
 
     @Override
-    public List<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId, Long chatId) {
+    protected Collection<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId, Long chatId) {
         return List.of(answer(callback.id()), new DeleteMessage(chatId, msgId));
     }
 
     @Override
-    public String getRegex() {
-        return "^" + CANCEL_CALLBACK + "$";
+    protected Collection<BaseRequest<?, ? extends BaseResponse>> processInline(CallbackQuery callback,
+            String inlineMessageId) {
+        throw new UnsupportedOperationException("Unimplemented method 'processInline'");
     }
 }
