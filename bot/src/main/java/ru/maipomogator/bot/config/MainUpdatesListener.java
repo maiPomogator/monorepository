@@ -58,20 +58,27 @@ public class MainUpdatesListener implements UpdatesListener {
     @Override
     public int process(List<Update> updates) {
         for (Update update : updates) {
+            List<BaseRequest<?, ? extends BaseResponse>> requests = new ArrayList<>(10);
             if (hasTextMessage(update)) {
                 Message message = update.message();
                 log.info("Processing message update from {} ({})", message.from().username(), message.from().id());
-                processMessage(message).forEach(bot::execute);
+                requests.addAll(processMessage(message));
             } else if (hasCallbackQuery(update)) {
                 CallbackQuery callback = update.callbackQuery();
                 log.info("Processing callback update from {} ({})", callback.from().username(), callback.from().id());
-                processCallbackQuery(callback).forEach(bot::execute);
+                requests.addAll(processCallbackQuery(callback));
             } else if (hasInlineQuery(update)) {
                 InlineQuery query = update.inlineQuery();
                 log.info("Processing inline update from {} ({})", query.from().username(), query.from().id());
-                processInlineQuery(query).forEach(bot::execute);
+                requests.addAll(processInlineQuery(query));
             } else {
                 log.info("Received update is not supported. Skipping.");
+            }
+            for (BaseRequest<?, ? extends BaseResponse> request : requests) {
+                BaseResponse response = bot.execute(request);
+                if (!response.isOk()) {
+                    log.error(response.description());
+                }
             }
         }
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
