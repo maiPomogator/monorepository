@@ -60,7 +60,7 @@ public class GroupService {
     }
 
     public Group findByName(String name) {
-        return groupRepo.findByName(name);
+        return groupRepo.findByNameIgnoreCase(name);
     }
 
 }

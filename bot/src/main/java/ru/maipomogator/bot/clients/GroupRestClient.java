@@ -21,7 +21,7 @@ public class GroupRestClient {
     private final RestClient restClient;
 
     public Group findByName(String name) {
-        return restClient.get().uri("/mai/groups?name={name}", name.toUpperCase()).retrieve().body(Group.class);
+        return restClient.get().uri("/mai/groups?name={name}", name).retrieve().body(Group.class);
     }
 
     public Group findById(String id) {
