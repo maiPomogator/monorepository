@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.pengrad.telegrambot.model.InlineQuery;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
+import com.pengrad.telegrambot.model.request.InlineQueryResult;
 import com.pengrad.telegrambot.model.request.InlineQueryResultArticle;
 import com.pengrad.telegrambot.model.request.InputTextMessageContent;
 import com.pengrad.telegrambot.request.AnswerInlineQuery;
@@ -44,7 +45,8 @@ public class GroupInlineProcessor extends AbstractInlineProcessor {
         InlineKeyboardMarkup keyboard = timetableProcessor.getControlKeyboard(prefix, LocalDate.now(), true);
         InputTextMessageContent text = timetableProcessor.getMessageContent(prefix, LocalDate.now());
 
-        return List.of(new AnswerInlineQuery(query.id(),
-                new InlineQueryResultArticle(group.id() + "", group.name(), text).replyMarkup(keyboard)).cacheTime(1));
+        List<InlineQueryResult<?>> results = List.of(
+                new InlineQueryResultArticle(prefix, group.name(), text).replyMarkup(keyboard));
+        return List.of(new AnswerInlineQuery(query.id(), results.toArray(InlineQueryResult[]::new)).cacheTime(1));
     }
 }
