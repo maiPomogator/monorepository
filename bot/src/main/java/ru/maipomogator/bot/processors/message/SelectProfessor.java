@@ -30,7 +30,7 @@ public class SelectProfessor extends AbstractMessageProcessor {
 
     @Override
     protected Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
-        List<Professor> allProfessors = professorRestClient.getAll();
+        List<Professor> allProfessors = professorRestClient.findAll();
         allProfessors.sort(new FioComparator(msg.text()));
 
         return List.of(new SendMessage(chatId, "Результаты поиска:")

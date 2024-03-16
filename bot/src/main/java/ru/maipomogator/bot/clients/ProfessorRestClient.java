@@ -20,10 +20,14 @@ public class ProfessorRestClient {
 
     private final RestClient restClient;
 
-    public List<Professor> getAll() {
+    public List<Professor> findAll() {
         List<Professor> professors = restClient.get().uri("/mai/professors").retrieve().body(PROFS_LIST_TR);
         professors.removeIf(p -> p.siteId().equals(new UUID(0, 0)));
         return professors;
+    }
+
+    public Professor findById(String id) {
+        return restClient.get().uri("/mai/professors/{id}", id).retrieve().body(Professor.class);
     }
 
     public List<Lesson> getLessons(Long id) {
