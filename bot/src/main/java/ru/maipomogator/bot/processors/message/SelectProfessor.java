@@ -10,6 +10,7 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.BaseRequest;
+import com.pengrad.telegrambot.request.DeleteMessage;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.BaseResponse;
 
@@ -30,16 +31,17 @@ public class SelectProfessor extends AbstractMessageProcessor {
 
     @Override
     protected Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
-        List<Professor> allProfessors = professorRestClient.findAll();
-        allProfessors.sort(new FioComparator(msg.text()));
+        List<Professor> professors = professorRestClient.findAll();
+        professors.sort(new FioComparator(msg.text()));
 
-        return List.of(new SendMessage(chatId, "Результаты поиска:")
-                .replyMarkup(getProfessorsKeyboard(allProfessors.subList(0, Math.min(5, allProfessors.size())))));
+        InlineKeyboardMarkup keyboard = getProfessorsKeyboard(professors.subList(0, Math.min(5, professors.size())));
+        return List.of(new DeleteMessage(chatId, msg.messageId()),
+                new SendMessage(chatId, "Результаты поиска:").replyMarkup(keyboard));
     }
 
-    private InlineKeyboardMarkup getProfessorsKeyboard(List<Professor> list) {
+    private InlineKeyboardMarkup getProfessorsKeyboard(List<Professor> professors) {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-        for (Professor professor : list) {
+        for (Professor professor : professors) {
             keyboard.addRow(new InlineKeyboardButton(professor.getFullName()).callbackData("prf=" + professor.id()));
         }
         return keyboard;

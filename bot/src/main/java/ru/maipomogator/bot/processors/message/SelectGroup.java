@@ -9,6 +9,7 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.BaseRequest;
+import com.pengrad.telegrambot.request.DeleteMessage;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.BaseResponse;
 
@@ -34,7 +35,8 @@ public class SelectGroup extends AbstractMessageProcessor {
                     "Группа не найдена. Проверьте название. Если вы уверены, что оно правильное, напишите в @maipomogator_chat"));
         }
 
-        return List.of(new SendMessage(chatId, "Выберите свою группу").replyMarkup(getInlineKeyboard(group)));
+        return List.of(new DeleteMessage(chatId, msg.messageId()),
+                new SendMessage(chatId, "Выберите свою группу").replyMarkup(getInlineKeyboard(group)));
     }
 
     private InlineKeyboardMarkup getInlineKeyboard(Group group) {
