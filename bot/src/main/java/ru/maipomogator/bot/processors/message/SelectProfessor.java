@@ -16,6 +16,7 @@ import com.pengrad.telegrambot.response.BaseResponse;
 import ru.maipomogator.bot.clients.ProfessorRestClient;
 import ru.maipomogator.bot.model.FioComparator;
 import ru.maipomogator.bot.model.Professor;
+import ru.maipomogator.bot.processors.callback.CancelCallbackProcessor;
 
 @Component
 public class SelectProfessor extends AbstractMessageProcessor {
@@ -29,12 +30,14 @@ public class SelectProfessor extends AbstractMessageProcessor {
 
     @Override
     protected Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
-        List<Professor> professors = professorRestClient.findAll();
-        professors.sort(new FioComparator(msg.text()));
+        String request = msg.text();
 
+        List<Professor> professors = professorRestClient.findAll();
+        professors.sort(new FioComparator(request));
+
+        String text = "Результаты поиска по запросу \"%s\":".formatted(request);
         InlineKeyboardMarkup keyboard = getProfessorsKeyboard(professors.subList(0, Math.min(5, professors.size())));
-        return List.of(new DeleteMessage(chatId, msg.messageId()),
-                new SendMessage(chatId, "Результаты поиска:").replyMarkup(keyboard));
+        return List.of(new DeleteMessage(chatId, msg.messageId()), new SendMessage(chatId, text).replyMarkup(keyboard));
     }
 
     private InlineKeyboardMarkup getProfessorsKeyboard(List<Professor> professors) {
@@ -42,6 +45,7 @@ public class SelectProfessor extends AbstractMessageProcessor {
         for (Professor professor : professors) {
             keyboard.addRow(new InlineKeyboardButton(professor.getFullName()).callbackData("prf=" + professor.id()));
         }
+        keyboard.addRow(CancelCallbackProcessor.cancelButton());
         return keyboard;
     }
 }

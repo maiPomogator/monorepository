@@ -15,6 +15,7 @@ import com.pengrad.telegrambot.response.BaseResponse;
 
 import ru.maipomogator.bot.clients.GroupRestClient;
 import ru.maipomogator.bot.model.Group;
+import ru.maipomogator.bot.processors.callback.CancelCallbackProcessor;
 
 @Component
 public class SelectGroup extends AbstractMessageProcessor {
@@ -29,19 +30,23 @@ public class SelectGroup extends AbstractMessageProcessor {
 
     @Override
     protected Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
-        Group group = groupsRestClient.findByName(msg.text());
+        String request = msg.text();
+
+        Group group = groupsRestClient.findByName(request);
         if (group == null) {
             return List.of(new SendMessage(chatId,
                     "Группа не найдена. Проверьте название. Если вы уверены, что оно правильное, напишите в @maipomogator_chat"));
         }
 
-        return List.of(new DeleteMessage(chatId, msg.messageId()),
-                new SendMessage(chatId, "Выберите свою группу").replyMarkup(getInlineKeyboard(group)));
+        String text = "Результаты поиска по запросу \"%s\":".formatted(request);
+        InlineKeyboardMarkup keyboard = getInlineKeyboard(group);
+        return List.of(new DeleteMessage(chatId, msg.messageId()), new SendMessage(chatId, text).replyMarkup(keyboard));
     }
 
     private InlineKeyboardMarkup getInlineKeyboard(Group group) {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-        InlineKeyboardButton groupBtn = new InlineKeyboardButton(group.name()).callbackData("grp=" + group.id());
-        return keyboard.addRow(groupBtn);
+        keyboard.addRow(new InlineKeyboardButton(group.name()).callbackData("grp=" + group.id()));
+        keyboard.addRow(CancelCallbackProcessor.cancelButton());
+        return keyboard;
     }
 }
