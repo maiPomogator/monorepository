@@ -3,6 +3,7 @@ package ru.maipomogator.bot.processors.callback;
 import java.util.Collection;
 
 import com.pengrad.telegrambot.model.CallbackQuery;
+import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.request.AnswerCallbackQuery;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.response.BaseResponse;
@@ -16,14 +17,12 @@ public abstract class AbstractCallbackProcessor extends AbstractUpdateProcessor<
         super(regex);
     }
 
-    // метод, указанный для использования вместо Deprecated message() является
-    // private в текущей версии библиотеки🤷‍♂️
-    @SuppressWarnings("deprecation")
     public Collection<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback) {
         if (isFromInlineMessage(callback)) {
             return processInline(callback, callback.inlineMessageId());
         } else {
-            return process(callback, callback.message().messageId(), callback.message().chat().id());
+            Message message = (Message) callback.maybeInaccessibleMessage();
+            return process(callback, message.messageId(), message.chat().id());
         }
     }
 
@@ -38,6 +37,6 @@ public abstract class AbstractCallbackProcessor extends AbstractUpdateProcessor<
     }
 
     private boolean isFromInlineMessage(CallbackQuery callback) {
-        return callback.inlineMessageId() != null;
+        return callback.maybeInaccessibleMessage().date() == 0;
     }
 }
