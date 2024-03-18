@@ -37,6 +37,6 @@ public abstract class AbstractCallbackProcessor extends AbstractUpdateProcessor<
     }
 
     private boolean isFromInlineMessage(CallbackQuery callback) {
-        return callback.maybeInaccessibleMessage().date() == 0;
+        return callback.inlineMessageId() != null;
     }
 }
