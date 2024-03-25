@@ -28,7 +28,7 @@ public class ProfessorInlineProcessor extends AbstractInlineProcessor {
     private final TimetableProcessor timetableProcessor;
 
     protected ProfessorInlineProcessor(ProfessorRestClient professorRestClient, TimetableProcessor timetableProcessor) {
-        super("^([а-яА-ЯёЁ]{2,15} ?){1,5}$");
+        super("^(?:[а-яА-ЯёЁ]{2,15} ?){1,5}$");
         this.professorRestClient = professorRestClient;
         this.timetableProcessor = timetableProcessor;
     }

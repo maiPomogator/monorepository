@@ -24,7 +24,7 @@ public class SelectProfessor extends AbstractMessageProcessor {
     private final ProfessorRestClient professorRestClient;
 
     public SelectProfessor(ProfessorRestClient professorRestClient) {
-        super("^([а-яА-ЯёЁ]{2,15} ?){1,5}$");
+        super("^(?:[а-яА-ЯёЁ]{2,15} ?){1,5}$");
         this.professorRestClient = professorRestClient;
     }
 

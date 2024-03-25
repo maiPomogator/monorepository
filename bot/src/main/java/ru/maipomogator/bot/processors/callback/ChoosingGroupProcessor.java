@@ -30,7 +30,7 @@ public class ChoosingGroupProcessor extends AbstractCallbackProcessor {
     private final GroupRestClient groupRestClient;
 
     protected ChoosingGroupProcessor(MaiRestClient maiRestClient, GroupRestClient groupRestClient) {
-        super("^fac=\\d{1,2}(;crs=[1-9])?(;back)?$");
+        super("^fac=\\d{1,2}(?:;crs=[1-9])?(?:;back)?$");
         this.maiRestClient = maiRestClient;
         this.groupRestClient = groupRestClient;
     }
