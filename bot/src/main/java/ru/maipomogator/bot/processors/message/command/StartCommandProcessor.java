@@ -1,5 +1,6 @@
 package ru.maipomogator.bot.processors.message.command;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,12 +22,14 @@ public class StartCommandProcessor extends AbstractCommandProcessor {
 
     @Override
     protected Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
+        List<BaseRequest<?, ? extends BaseResponse>> list = new ArrayList<>();
         SendMessage message = new SendMessage(chatId, "Приветствуем в нашем боте.\n"
                 + "Для выбора группы введите её номер или /newgroup для интерактивного выбора. "
                 + "Для выбора преподавателя введите фамилию или имя и отчество, или ФИО целиком.\n\n"
                 + "Также имеется поддержка inline-режима, благодаря которому можно отправить сообщение с расписанием в любом чате.")
                         .replyMarkup(getKeyboard());
-        return List.of(message);
+        list.add(message);
+        return list;
     }
 
     private InlineKeyboardMarkup getKeyboard() {
