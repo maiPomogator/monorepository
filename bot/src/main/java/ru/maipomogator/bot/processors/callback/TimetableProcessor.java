@@ -21,6 +21,7 @@ import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.EditMessageText;
 import com.pengrad.telegrambot.response.BaseResponse;
 
+import lombok.extern.log4j.Log4j2;
 import ru.maipomogator.bot.clients.GroupRestClient;
 import ru.maipomogator.bot.clients.ProfessorRestClient;
 import ru.maipomogator.bot.model.Group;
@@ -30,7 +31,10 @@ import ru.maipomogator.bot.model.LessonType;
 import ru.maipomogator.bot.model.Professor;
 
 @Component
+@Log4j2
 public class TimetableProcessor extends AbstractCallbackProcessor {
+    // TODO сделать более продвинутую систему экранирования (и вернуть * в список)
+    private static final String CHARS_TO_BE_ESCAPED = "_[]()~`>#+-=|{}.!";
     private static final DateTimeFormatter CALLBACK_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyMMdd");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("EEEE, d MMMM",
             new Locale("ru", "RU"));
@@ -60,7 +64,7 @@ public class TimetableProcessor extends AbstractCallbackProcessor {
     }
 
     public InputTextMessageContent getMessageContent(String prefix, LocalDate targetDate) {
-        String text = getMsgText(prefix, targetDate);
+        String text = getPreparedText(prefix, targetDate);
         return new InputTextMessageContent(text).parseMode(ParseMode.MarkdownV2);
     }
 
@@ -70,13 +74,14 @@ public class TimetableProcessor extends AbstractCallbackProcessor {
         String[] segments = callback.data().split(";");
         if (segments.length == 1) {
             InlineKeyboardMarkup keyboard = getControlKeyboard(segments[0], LocalDate.now(), false);
-            EditMessageText editMessage = new EditMessageText(chatId, msgId, getMsgText(segments[0], LocalDate.now()))
-                    .replyMarkup(keyboard).parseMode(ParseMode.MarkdownV2);
+            EditMessageText editMessage = new EditMessageText(chatId, msgId,
+                    getPreparedText(segments[0], LocalDate.now()))
+                            .replyMarkup(keyboard).parseMode(ParseMode.MarkdownV2);
             return List.of(answer(callback.id()), editMessage);
         } else if (segments.length == 2) {
             LocalDate targetDate = getDateFromCallback(segments[1].split("=")[1]);
             InlineKeyboardMarkup keyboard = getControlKeyboard(segments[0], targetDate, false);
-            EditMessageText editMessage = new EditMessageText(chatId, msgId, getMsgText(segments[0], targetDate))
+            EditMessageText editMessage = new EditMessageText(chatId, msgId, getPreparedText(segments[0], targetDate))
                     .replyMarkup(keyboard).parseMode(ParseMode.MarkdownV2);
             return List.of(answer(callback.id()), editMessage);
         }
@@ -90,18 +95,38 @@ public class TimetableProcessor extends AbstractCallbackProcessor {
         String[] segments = callback.data().split(";");
         if (segments.length == 1) {
             InlineKeyboardMarkup keyboard = getControlKeyboard(segments[0], LocalDate.now(), true);
-            EditMessageText editMessage = new EditMessageText(inlineMessageId, getMsgText(segments[0], LocalDate.now()))
-                    .replyMarkup(keyboard).parseMode(ParseMode.MarkdownV2);
+            EditMessageText editMessage = new EditMessageText(inlineMessageId,
+                    getPreparedText(segments[0], LocalDate.now()))
+                            .replyMarkup(keyboard).parseMode(ParseMode.MarkdownV2);
             return List.of(answer(callback.id()), editMessage);
         } else if (segments.length == 2) {
             LocalDate targetDate = getDateFromCallback(segments[1].split("=")[1]);
             InlineKeyboardMarkup keyboard = getControlKeyboard(segments[0], targetDate, true);
-            EditMessageText editMessage = new EditMessageText(inlineMessageId, getMsgText(segments[0], targetDate))
+            EditMessageText editMessage = new EditMessageText(inlineMessageId, getPreparedText(segments[0], targetDate))
                     .replyMarkup(keyboard).parseMode(ParseMode.MarkdownV2);
             return List.of(answer(callback.id()), editMessage);
         }
         return List.of(answer(callback.id()).text(
                 "Что-то пошло не так, повторите попытку через некоторое время, либо напишите в @maipomogator_chat"));
+    }
+
+    // TODO сделать более продвинутую систему экранирования (и вернуть * в список)
+    private String getPreparedText(String prefix, LocalDate targetDate) {
+        String text = getMsgText(prefix, targetDate);
+        StringBuilder sb = new StringBuilder(text.length());
+
+        int escaped = 0;
+        for (char c : text.toCharArray()) {
+            if (CHARS_TO_BE_ESCAPED.indexOf(c) != -1) {
+                sb.append("\\");
+                escaped++;
+            }
+            sb.append(c);
+        }
+
+        log.info("Escaped {} characters (old length {}, new length {})", escaped, text.length(), sb.length());
+
+        return sb.toString();
     }
 
     private String getMsgText(String prefix, LocalDate targetDate) {
@@ -133,7 +158,7 @@ public class TimetableProcessor extends AbstractCallbackProcessor {
             }
         }
 
-        return sb.toString().replace("-", "\\-").replace(".", "\\.");
+        return sb.toString();
     }
 
     private String formatProfessors(Collection<Professor> professors) {
