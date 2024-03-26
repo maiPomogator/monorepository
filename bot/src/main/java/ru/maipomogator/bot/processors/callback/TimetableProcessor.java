@@ -43,7 +43,7 @@ public class TimetableProcessor extends AbstractCallbackProcessor {
     private final ProfessorRestClient professorRestClient;
 
     protected TimetableProcessor(GroupRestClient groupRestClient, ProfessorRestClient professorRestClient) {
-        super("^(grp|prf)=\\d{1,4}(;date=(\\d{6}|today))?$");
+        super("^(?:grp|prf)=\\d{1,4}(?:;date=(?:\\d{6}|today))?$");
         this.groupRestClient = groupRestClient;
         this.professorRestClient = professorRestClient;
     }
