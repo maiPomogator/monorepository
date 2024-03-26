@@ -57,6 +57,7 @@ public class TimetableProcessor extends AbstractCallbackProcessor {
         InlineKeyboardButton fwd = new InlineKeyboardButton("➡️")
                 .callbackData(prefix + ";date=" + curDate.plusDays(1).format(CALLBACK_DATE_FORMATTER));
         keyboard.addRow(back, today, fwd);
+        keyboard.addRow(new InlineKeyboardButton("Расписание экзаменов").callbackData(prefix + ";exams"));
         if (!fromInline) {
             keyboard.addRow(CancelCallbackProcessor.cancelButton());
         }
