@@ -24,8 +24,10 @@ public class StartCommandProcessor extends AbstractCommandProcessor {
     protected Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
         List<BaseRequest<?, ? extends BaseResponse>> list = new ArrayList<>();
         SendMessage message = new SendMessage(chatId, "Приветствуем в нашем боте.\n"
-                + "Для выбора группы введите её номер или /newgroup для интерактивного выбора. "
-                + "Для выбора преподавателя введите фамилию или имя и отчество, или ФИО целиком.\n\n"
+                + "За обновлениями можно следить в канале @maipomogator. "
+                + "Вопросы и пожелания можно (и нужно) писать в комментарии или @maipomogator_chat.\n\n"
+                + "Для выбора группы введите её номер или /newgroup для интерактивного выбора.\n"
+                + "Для выбора преподавателя введите фамилию/имя и отчество/ФИО целиком.\n\n"
                 + "Также имеется поддержка inline-режима, благодаря которому можно отправить сообщение с расписанием в любом чате.")
                         .replyMarkup(getKeyboard());
         list.add(message);

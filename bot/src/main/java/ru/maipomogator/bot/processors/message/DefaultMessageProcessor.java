@@ -20,7 +20,9 @@ public class DefaultMessageProcessor extends AbstractMessageProcessor {
     @Override
     protected Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
         SendMessage message = new SendMessage(chatId,
-                "На всякий случай проверьте ввод. Если уверены, что всё верно, то вероятно данный тип сообщения пока не поддерживается. Следите за обновлениями в @maipomogator_news");
+                "На всякий случай проверьте ввод. "
+                        + "Если уверены, что всё верно, то вероятно такой формат ввода пока не поддерживается. "
+                        + "Следите за обновлениями в @maipomogator или напишите нам в @maipomogator_chat");
         return List.of(message);
     }
 

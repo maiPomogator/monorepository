@@ -20,7 +20,7 @@ public class HelpCommand extends AbstractCommandProcessor {
     @Override
     protected Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
         SendMessage helpMessage = new SendMessage(chatId,
-                "В будущем тут будут FAQ и другая полезная информация. А пока подписывайтесь на @maipomogator_news");
+                "В ближайшем будущем тут появятся FAQ и другая полезная информация. А пока подписывайтесь на @maipomogator");
         return List.of(helpMessage);
     }
 }
