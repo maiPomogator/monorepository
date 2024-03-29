@@ -42,7 +42,7 @@ public class ProfessorInlineProcessor extends AbstractInlineProcessor {
         for (int i = 0; i < 5; i++) {
             Professor prf = professors.get(i);
             String prefix = "prf=" + prf.id();
-            InlineKeyboardMarkup keyboard = timetableProcessor.getControlKeyboard(prefix, LocalDate.now(), true);
+            InlineKeyboardMarkup keyboard = timetableProcessor.getControlKeyboard(prefix, LocalDate.now());
             InputTextMessageContent text = timetableProcessor.getMessageContent(prefix, LocalDate.now());
             results.add(
                     new InlineQueryResultArticle(prefix, prf.getFullName(), text).replyMarkup(keyboard));

@@ -49,7 +49,7 @@ public class ExamsCallbackProcessor extends AbstractCallbackProcessor {
     protected Collection<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId,
             Long chatId) {
         String[] segments = callback.data().split(";");
-        InlineKeyboardMarkup keyboard = getKeyboard(segments[0], false);
+        InlineKeyboardMarkup keyboard = getKeyboard(segments[0]);
         EditMessageText editMessage = new EditMessageText(chatId, msgId, getPreparedText(segments[0]))
                 .parseMode(ParseMode.MarkdownV2).replyMarkup(keyboard);
 
@@ -60,7 +60,7 @@ public class ExamsCallbackProcessor extends AbstractCallbackProcessor {
     protected Collection<BaseRequest<?, ? extends BaseResponse>> processInline(CallbackQuery callback,
             String inlineMessageId) {
         String[] segments = callback.data().split(";");
-        InlineKeyboardMarkup keyboard = getKeyboard(segments[0], true);
+        InlineKeyboardMarkup keyboard = getKeyboard(segments[0]);
 
         EditMessageText editMessage = new EditMessageText(inlineMessageId, getPreparedText(segments[0]))
                 .parseMode(ParseMode.MarkdownV2).replyMarkup(keyboard);
@@ -68,13 +68,10 @@ public class ExamsCallbackProcessor extends AbstractCallbackProcessor {
         return List.of(editMessage);
     }
 
-    private InlineKeyboardMarkup getKeyboard(String prefix, boolean fromInline) {
+    private InlineKeyboardMarkup getKeyboard(String prefix) {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         InlineKeyboardButton back = new InlineKeyboardButton("Назад к расписанию занятий").callbackData(prefix + ";date=today");
         keyboard.addRow(back);
-        if (!fromInline) {
-            keyboard.addRow(CancelCallbackProcessor.cancelButton());
-        }
         return keyboard;
     }
 

@@ -48,7 +48,7 @@ public class TimetableProcessor extends AbstractCallbackProcessor {
         this.professorRestClient = professorRestClient;
     }
 
-    public InlineKeyboardMarkup getControlKeyboard(String prefix, LocalDate curDate, boolean fromInline) {
+    public InlineKeyboardMarkup getControlKeyboard(String prefix, LocalDate curDate) {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         InlineKeyboardButton back = new InlineKeyboardButton("⬅️")
                 .callbackData(prefix + ";date=" + curDate.minusDays(1).format(CALLBACK_DATE_FORMATTER));
@@ -58,9 +58,6 @@ public class TimetableProcessor extends AbstractCallbackProcessor {
                 .callbackData(prefix + ";date=" + curDate.plusDays(1).format(CALLBACK_DATE_FORMATTER));
         keyboard.addRow(back, today, fwd);
         keyboard.addRow(new InlineKeyboardButton("Расписание экзаменов").callbackData(prefix + ";exams"));
-        if (!fromInline) {
-            keyboard.addRow(CancelCallbackProcessor.cancelButton());
-        }
         return keyboard;
     }
 
@@ -74,14 +71,14 @@ public class TimetableProcessor extends AbstractCallbackProcessor {
             Long chatId) {
         String[] segments = callback.data().split(";");
         if (segments.length == 1) {
-            InlineKeyboardMarkup keyboard = getControlKeyboard(segments[0], LocalDate.now(), false);
+            InlineKeyboardMarkup keyboard = getControlKeyboard(segments[0], LocalDate.now());
             EditMessageText editMessage = new EditMessageText(chatId, msgId,
                     getPreparedText(segments[0], LocalDate.now()))
                             .replyMarkup(keyboard).parseMode(ParseMode.MarkdownV2);
             return List.of(answer(callback.id()), editMessage);
         } else if (segments.length == 2) {
             LocalDate targetDate = getDateFromCallback(segments[1].split("=")[1]);
-            InlineKeyboardMarkup keyboard = getControlKeyboard(segments[0], targetDate, false);
+            InlineKeyboardMarkup keyboard = getControlKeyboard(segments[0], targetDate);
             EditMessageText editMessage = new EditMessageText(chatId, msgId, getPreparedText(segments[0], targetDate))
                     .replyMarkup(keyboard).parseMode(ParseMode.MarkdownV2);
             return List.of(answer(callback.id()), editMessage);
@@ -95,14 +92,14 @@ public class TimetableProcessor extends AbstractCallbackProcessor {
             String inlineMessageId) {
         String[] segments = callback.data().split(";");
         if (segments.length == 1) {
-            InlineKeyboardMarkup keyboard = getControlKeyboard(segments[0], LocalDate.now(), true);
+            InlineKeyboardMarkup keyboard = getControlKeyboard(segments[0], LocalDate.now());
             EditMessageText editMessage = new EditMessageText(inlineMessageId,
                     getPreparedText(segments[0], LocalDate.now()))
                             .replyMarkup(keyboard).parseMode(ParseMode.MarkdownV2);
             return List.of(answer(callback.id()), editMessage);
         } else if (segments.length == 2) {
             LocalDate targetDate = getDateFromCallback(segments[1].split("=")[1]);
-            InlineKeyboardMarkup keyboard = getControlKeyboard(segments[0], targetDate, true);
+            InlineKeyboardMarkup keyboard = getControlKeyboard(segments[0], targetDate);
             EditMessageText editMessage = new EditMessageText(inlineMessageId, getPreparedText(segments[0], targetDate))
                     .replyMarkup(keyboard).parseMode(ParseMode.MarkdownV2);
             return List.of(answer(callback.id()), editMessage);

@@ -42,7 +42,7 @@ public class GroupInlineProcessor extends AbstractInlineProcessor {
                             "Группа %s не найдена".formatted(query.query()))).cacheTime(1));
         }
         String prefix = "grp=" + group.id();
-        InlineKeyboardMarkup keyboard = timetableProcessor.getControlKeyboard(prefix, LocalDate.now(), true);
+        InlineKeyboardMarkup keyboard = timetableProcessor.getControlKeyboard(prefix, LocalDate.now());
         InputTextMessageContent text = timetableProcessor.getMessageContent(prefix, LocalDate.now());
 
         List<InlineQueryResult<?>> results = List.of(
