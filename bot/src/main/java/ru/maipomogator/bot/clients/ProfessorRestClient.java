@@ -1,10 +1,12 @@
 package ru.maipomogator.bot.clients;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -15,13 +17,18 @@ import ru.maipomogator.bot.model.Professor;
 @Component
 @RequiredArgsConstructor
 public class ProfessorRestClient {
+    @NonNull
     private static final ParameterizedTypeReference<List<Professor>> PROFS_LIST_TR = new ParameterizedTypeReference<>() {};
+    @NonNull
     private static final ParameterizedTypeReference<List<Lesson>> LESSONS_LIST_TR = new ParameterizedTypeReference<>() {};
 
     private final RestClient restClient;
 
     public List<Professor> findAll() {
         List<Professor> professors = restClient.get().uri("/mai/professors").retrieve().body(PROFS_LIST_TR);
+        if (professors == null) {
+            return Collections.emptyList();
+        }
         professors.removeIf(p -> p.siteId().equals(new UUID(0, 0)));
         return professors;
     }

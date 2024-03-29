@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.lang.NonNull;
 import org.springframework.web.client.RestClient;
 
 @SpringBootApplication
@@ -13,7 +14,7 @@ public class BotApplication {
     }
 
     @Bean
-    public RestClient restClient(@Value("${baseurl:https://rufus20145.ru}") String baseUrl) {
+    RestClient restClient(@NonNull @Value("${baseurl:https://rufus20145.ru}") String baseUrl) {
         return RestClient.builder().baseUrl(baseUrl).build();
     }
 }
