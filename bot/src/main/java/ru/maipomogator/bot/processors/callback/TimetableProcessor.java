@@ -37,7 +37,7 @@ public class TimetableProcessor extends AbstractCallbackProcessor {
     private static final String CHARS_TO_BE_ESCAPED = "_[]()~`>#+-=|{}.!";
     private static final DateTimeFormatter CALLBACK_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyMMdd");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("EEEE, d MMMM",
-            new Locale("ru", "RU"));
+            Locale.of("ru"));
 
     private final GroupRestClient groupRestClient;
     private final ProfessorRestClient professorRestClient;

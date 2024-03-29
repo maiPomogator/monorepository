@@ -34,7 +34,7 @@ import ru.maipomogator.bot.model.Professor;
 public class ExamsCallbackProcessor extends AbstractCallbackProcessor {
     private static final String CHARS_TO_BE_ESCAPED = "_[]()~`>#+-=|{}.!";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("d MMMM",
-            new Locale("ru", "RU"));
+            Locale.of("ru"));
 
     private final GroupRestClient groupRestClient;
     private final ProfessorRestClient professorRestClient;
