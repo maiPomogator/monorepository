@@ -3,6 +3,7 @@ package ru.maipomogator.bot.processors.inline;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.pengrad.telegrambot.model.InlineQuery;
@@ -12,6 +13,7 @@ import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.response.BaseResponse;
 
 @Component
+@Qualifier("default")
 public class DefaultInlineProcessor extends AbstractInlineProcessor {
 
     protected DefaultInlineProcessor() {

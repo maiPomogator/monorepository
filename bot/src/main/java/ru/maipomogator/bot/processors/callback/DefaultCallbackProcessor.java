@@ -3,6 +3,7 @@ package ru.maipomogator.bot.processors.callback;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.pengrad.telegrambot.model.CallbackQuery;
@@ -10,6 +11,7 @@ import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.response.BaseResponse;
 
 @Component
+@Qualifier("default")
 public class DefaultCallbackProcessor extends AbstractCallbackProcessor {
 
     private static final String BUTTON_NOT_SUPPORTED = "Данная кнопка пока не поддерживается.";

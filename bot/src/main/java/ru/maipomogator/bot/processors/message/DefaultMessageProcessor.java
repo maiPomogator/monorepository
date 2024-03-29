@@ -3,6 +3,7 @@ package ru.maipomogator.bot.processors.message;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.pengrad.telegrambot.model.Message;
@@ -11,6 +12,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.BaseResponse;
 
 @Component
+@Qualifier("default")
 public class DefaultMessageProcessor extends AbstractMessageProcessor {
 
     protected DefaultMessageProcessor() {
