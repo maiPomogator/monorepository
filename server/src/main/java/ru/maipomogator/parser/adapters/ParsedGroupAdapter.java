@@ -86,7 +86,8 @@ public class ParsedGroupAdapter extends TypeAdapter<ParsedGroup> {
                                                         in.skipValue();
                                                     } else {
                                                         log.trace("Found new professor with uuid " + uuid);
-                                                        Professor pr = new Professor(uuid);
+                                                        Professor pr = new Professor();
+                                                        pr.setSiteId(uuid);
                                                         // в некоторых ФИО между словами два пробела
                                                         String profFio = in.nextString().replace("  ", " ");
                                                         String[] fioWords = profFio.split(" ");
@@ -133,7 +134,7 @@ public class ParsedGroupAdapter extends TypeAdapter<ParsedGroup> {
                                         }
                                     }
                                     in.endObject(); // фиолетовая скобка (конкретная пара, после названия)
-                                    parsedGroup.add(newLesson);
+                                    parsedGroup.addLesson(newLesson);
                                 } // конец костыля (см. сверху)
                                 in.endObject(); // желтая скобка (конкретная пара, перед названием)
                             } else {
@@ -151,7 +152,7 @@ public class ParsedGroupAdapter extends TypeAdapter<ParsedGroup> {
             }
         }
         in.endObject(); // желтая скобка (root)
-        log.debug("Returning {} lessons", parsedGroup.size());
+        log.debug("Returning {} lessons", parsedGroup.numberOfLessons());
         return parsedGroup;
     }
 

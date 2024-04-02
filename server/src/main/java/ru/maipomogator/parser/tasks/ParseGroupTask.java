@@ -10,14 +10,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
-import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import ru.maipomogator.parser.adapters.ParsedGroup;
 
 /**
  * Класс для парсинга файла с расписанием группы. Реализует интерфейс Callable для возможности
  * асинхронного парсинга файлов.
  */
-@Data
+@RequiredArgsConstructor
 public class ParseGroupTask implements Callable<ParsedGroup> {
 
     private final Path filePath;

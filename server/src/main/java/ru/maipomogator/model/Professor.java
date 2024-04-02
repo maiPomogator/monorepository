@@ -17,16 +17,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.Setter;
 
-@Data
 @NoArgsConstructor
-@RequiredArgsConstructor
+@Getter
+@Setter
 
 @Entity
 @Table(name = "professors", schema = "public")
@@ -77,7 +74,6 @@ public class Professor implements Comparable<Professor> {
     /**
      * Идентификатор преподавателя, используемый на mai.ru
      */
-    @NonNull
     @Column(name = "site_id", unique = true)
     @JsonView(Views.IdInfo.class)
     private UUID siteId;
@@ -85,8 +81,6 @@ public class Professor implements Comparable<Professor> {
     /**
      * Список занятий, которые ведет преподаватель
      */
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "professors", fetch = FetchType.LAZY)
     @JsonView(Views.FullView.class)
     private SortedSet<Lesson> lessons = new TreeSet<>();
@@ -117,6 +111,7 @@ public class Professor implements Comparable<Professor> {
         }
     }
 
+    // TODO реализовать hashCode
     @Override
     public int compareTo(Professor other) {
         return getFullName().compareTo(other.getFullName());

@@ -31,12 +31,13 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NonNull;
-import lombok.ToString;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@NoArgsConstructor
+@Getter
+@Setter
 
 @Entity
 @Table(name = "lessons", schema = "public")
@@ -127,8 +128,6 @@ public class Lesson implements Comparable<Lesson> {
     /**
      * Группы занятия
      */
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "lessons_groups", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
     @JsonIgnoreProperties({ "lessons" })
@@ -138,8 +137,6 @@ public class Lesson implements Comparable<Lesson> {
     /**
      * Преподаватели занятия
      */
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "lessons_professors", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "professor_id"))
     @JsonIgnoreProperties({ "lessons" })
@@ -220,8 +217,9 @@ public class Lesson implements Comparable<Lesson> {
      * 
      * @param other занятие для сравнения
      */
+    // TODO реализовать hashCode
     @Override
-    public int compareTo(@NonNull Lesson other) {
+    public int compareTo(Lesson other) {
         return Comparator.comparing(Lesson::getDate).thenComparing(Lesson::getTimeStart).compare(this, other);
     }
 

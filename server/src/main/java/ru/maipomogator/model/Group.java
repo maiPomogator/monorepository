@@ -21,16 +21,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.Setter;
 
-@Data
 @NoArgsConstructor
-@RequiredArgsConstructor
+@Getter
+@Setter
 
 @Entity
 @Table(name = "groups", schema = "public")
@@ -49,7 +46,6 @@ public class Group implements Comparable<Group> {
     /**
      * Название группы
      */
-    @NonNull
     @Column(unique = true)
     @JsonView(Views.IdInfo.class)
     private String name;
@@ -57,7 +53,6 @@ public class Group implements Comparable<Group> {
     /**
      * Номер курса группы
      */
-    @NonNull
     @Column
     @JsonView(Views.IdInfo.class)
     private Integer course;
@@ -66,7 +61,6 @@ public class Group implements Comparable<Group> {
      * Номер факультета группы
      */
 
-    @NonNull
     @Column
     @JsonView(Views.IdInfo.class)
     private Integer faculty;
@@ -76,7 +70,6 @@ public class Group implements Comparable<Group> {
      * 
      * @see GroupType
      */
-    @NonNull
     @Column
     @Enumerated(EnumType.STRING)
     @JsonView(Views.IdInfo.class)
@@ -85,8 +78,6 @@ public class Group implements Comparable<Group> {
     /**
      * Список занятий группы
      */
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "groups", fetch = FetchType.LAZY)
     @JsonView(Views.FullView.class)
     private SortedSet<Lesson> lessons = new TreeSet<>();
@@ -112,6 +103,7 @@ public class Group implements Comparable<Group> {
         return DigestUtils.md5DigestAsHex(name.getBytes(StandardCharsets.UTF_8));
     }
 
+    // TODO реализовать hashCode
     @Override
     public int compareTo(Group other) {
         return this.name.compareTo(other.name);
