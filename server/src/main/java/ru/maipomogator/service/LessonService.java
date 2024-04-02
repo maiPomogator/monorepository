@@ -35,8 +35,8 @@ public class LessonService {
     }
 
     @Transactional
-    public void saveAll(Iterable<Lesson> lessons) {
-        lessonRepo.saveAll(lessons);
+    public List<Lesson> saveAll(Iterable<Lesson> lessons) {
+        return lessonRepo.saveAll(lessons);
     }
 
     @Transactional

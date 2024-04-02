@@ -50,8 +50,8 @@ public class GroupService {
     }
 
     @Transactional
-    public void saveAll(Iterable<Group> groups) {
-        groupRepo.saveAll(groups);
+    public List<Group> saveAll(Iterable<Group> groups) {
+        return groupRepo.saveAll(groups);
     }
 
     @Transactional

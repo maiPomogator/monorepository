@@ -35,8 +35,8 @@ public class ProfessorService {
     }
 
     @Transactional
-    public void saveAll(Iterable<Professor> professors) {
-        professorRepo.saveAll(professors);
+    public List<Professor> saveAll(Iterable<Professor> professors) {
+        return professorRepo.saveAll(professors);
     }
 
     @Transactional
