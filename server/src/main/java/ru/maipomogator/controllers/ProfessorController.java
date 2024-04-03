@@ -41,13 +41,13 @@ public class ProfessorController {
 
     @GetMapping("{id}/lessons")
     @JsonView(Views.FullView.class)
-    public Collection<Lesson> getLessons(@PathVariable("id") Long professorId,
+    public Collection<Lesson> getLessons(@PathVariable("id") Professor professor,
             @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
         startDate = (startDate == null) ? LocalDate.now() : startDate;
         endDate = (endDate == null) ? startDate.plusDays(7) : endDate;
 
-        return lessonService.findForProfessorBetweenDates(startDate, endDate, professorId);
+        return lessonService.findForProfessorBetweenDates(professor, startDate, endDate);
     }
 }

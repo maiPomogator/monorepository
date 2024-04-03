@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import ru.maipomogator.model.Group;
 import ru.maipomogator.model.Lesson;
+import ru.maipomogator.model.Professor;
 import ru.maipomogator.repo.LessonRepo;
 
 @Service
@@ -44,11 +46,11 @@ public class LessonService {
         lessonRepo.deleteById(id);
     }
 
-    public List<Lesson> findForGroupBetweenDates(LocalDate startDate, LocalDate endDate, Long groupId) {
-        return lessonRepo.findByDateBetweenAndGroupsId(startDate, endDate, groupId);
+    public List<Lesson> findForGroupBetweenDates(Group group, LocalDate startDate, LocalDate endDate) {
+        return lessonRepo.findByGroupsIdAndDateBetween(group.getId(), startDate, endDate);
     }
 
-    public List<Lesson> findForProfessorBetweenDates(LocalDate startDate, LocalDate endDate, Long professorId) {
-        return lessonRepo.findByDateBetweenAndProfessorsId(startDate, endDate, professorId);
+    public List<Lesson> findForProfessorBetweenDates(Professor professor, LocalDate startDate, LocalDate endDate) {
+        return lessonRepo.findByProfessorsIdAndDateBetween(professor.getId(), startDate, endDate);
     }
 }

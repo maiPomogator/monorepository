@@ -67,13 +67,13 @@ public class GroupController {
     @GetMapping("{id}/lessons")
     @JsonView(Views.FullView.class)
     public Collection<Lesson> getLessons(
-            @PathVariable("id") Long groupId,
+            @PathVariable("id") Group group,
             @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
         startDate = (startDate == null) ? LocalDate.now() : startDate;
         endDate = (endDate == null) ? startDate.plusDays(7) : endDate;
 
-        return lessonService.findForGroupBetweenDates(startDate, endDate, groupId);
+        return lessonService.findForGroupBetweenDates(group, startDate, endDate);
     }
 }

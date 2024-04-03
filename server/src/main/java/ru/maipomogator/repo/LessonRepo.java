@@ -23,23 +23,23 @@ public interface LessonRepo extends JpaRepository<Lesson, Long> {
      * Возвращает список всех занятий между указанными датами для группы с указанным ID
      * 
      * @implNote выполняет EAGER загрузку всех полей Lesson
+     * @param groupId   - ID группы
      * @param startDate - начальная дата
      * @param endDate   - конечная дата
-     * @param groupId   - ID группы
      * @return - список занятий
      */
     @EntityGraph(attributePaths = { "types", "rooms", "professors", "groups" })
-    List<Lesson> findByDateBetweenAndGroupsId(LocalDate startDate, LocalDate endDate, long groupId);
+    List<Lesson> findByGroupsIdAndDateBetween(long groupId, LocalDate startDate, LocalDate endDate);
 
     /**
      * Возвращает список всех занятий между указанными датами для преподавателя с указанным ID
      * 
      * @implNote выполняет EAGER загрузку всех полей Lesson
+     * @param professorId - ID преподавателя
      * @param startDate   - начальная дата
      * @param endDate     - конечная дата
-     * @param professorId - ID преподавателя
      * @return - список занятий
      */
     @EntityGraph(attributePaths = { "types", "rooms", "professors", "groups" })
-    List<Lesson> findByDateBetweenAndProfessorsId(LocalDate startDate, LocalDate endDate, Long professorId);
+    List<Lesson> findByProfessorsIdAndDateBetween(Long professorId, LocalDate startDate, LocalDate endDate);
 }
