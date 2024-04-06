@@ -1,8 +1,8 @@
 package ru.maipomogator.model;
 
 import java.util.Collection;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -36,7 +36,7 @@ public class Professor implements Comparable<Professor> {
         copy.firstName = original.firstName;
         copy.middleName = original.middleName;
         copy.siteId = original.siteId;
-        copy.lessons = new TreeSet<>();
+        copy.lessons = new HashSet<>();
         return copy;
     }
 
@@ -83,7 +83,7 @@ public class Professor implements Comparable<Professor> {
      */
     @ManyToMany(mappedBy = "professors", fetch = FetchType.LAZY)
     @JsonView(Views.FullView.class)
-    private SortedSet<Lesson> lessons = new TreeSet<>();
+    private Set<Lesson> lessons = new HashSet<>();
 
     /**
      * Получить ФИО преподавателя

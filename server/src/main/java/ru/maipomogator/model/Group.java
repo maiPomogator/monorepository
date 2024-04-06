@@ -2,8 +2,8 @@ package ru.maipomogator.model;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.util.DigestUtils;
 
@@ -80,7 +80,7 @@ public class Group implements Comparable<Group> {
      */
     @ManyToMany(mappedBy = "groups", fetch = FetchType.LAZY)
     @JsonView(Views.FullView.class)
-    private SortedSet<Lesson> lessons = new TreeSet<>();
+    private Set<Lesson> lessons = new HashSet<>();
 
     public void setLessons(SortedSet<Lesson> newLessons) {
         this.lessons = newLessons;
