@@ -17,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,6 +25,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode(of = "siteId")
 
 @Entity
 @Table(name = "professors", schema = "public")
@@ -111,7 +113,6 @@ public class Professor implements Comparable<Professor> {
         }
     }
 
-    // TODO реализовать hashCode
     @Override
     public int compareTo(Professor other) {
         return getFullName().compareTo(other.getFullName());

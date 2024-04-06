@@ -21,6 +21,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,6 +29,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode(of = "name")
 
 @Entity
 @Table(name = "groups", schema = "public")
@@ -103,7 +105,6 @@ public class Group implements Comparable<Group> {
         return DigestUtils.md5DigestAsHex(name.getBytes(StandardCharsets.UTF_8));
     }
 
-    // TODO реализовать hashCode
     @Override
     public int compareTo(Group other) {
         return this.name.compareTo(other.name);
