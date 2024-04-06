@@ -50,11 +50,11 @@ public class MaiParser {
     private final Path groupsFilesBasePath;
 
     @SneakyThrows
-    public MaiParser() {
+    public MaiParser(Gson gson) {
         Path basePathStarter = Files.createTempDirectory("mai");
         this.basePath = basePathStarter.resolve(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         this.groupsFilesBasePath = this.basePath.resolve("groups");
-        this.gson = getCustomGson();
+        this.gson = gson;
 
         Files.createDirectories(groupsFilesBasePath);
     }
@@ -182,12 +182,5 @@ public class MaiParser {
         }
         log.info("Returning {} files for {} groups", groupFiles.size(), rawGroups.size());
         return groupFiles;
-    }
-
-    private Gson getCustomGson() {
-        GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(new TypeToken<List<Group>>() {}.getType(), new GroupListAdapter())
-                .registerTypeAdapter(new TypeToken<ParsedGroup>() {}.getType(), new ParsedGroupAdapter());
-        return builder.create();
     }
 }
