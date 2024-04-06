@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import ru.maipomogator.model.Lesson;
@@ -19,27 +20,18 @@ public interface LessonRepo extends JpaRepository<Lesson, Long> {
     @EntityGraph(attributePaths = { "types", "rooms", "professors", "groups" })
     List<Lesson> findAll();
 
-    /**
-     * Возвращает список всех занятий между указанными датами для группы с указанным ID
-     * 
-     * @implNote выполняет EAGER загрузку всех полей Lesson
-     * @param groupId   - ID группы
-     * @param startDate - начальная дата
-     * @param endDate   - конечная дата
-     * @return - список занятий
-     */
-    @EntityGraph(attributePaths = { "types", "rooms", "professors", "groups" })
-    List<Lesson> findByGroupsIdAndDateBetween(long groupId, LocalDate startDate, LocalDate endDate);
+    @Query("SELECT DISTINCT l.id FROM Lesson l JOIN l.groups g WHERE g.id = :groupId AND l.date BETWEEN :startDate AND :endDate")
+    List<Long> findLessonIdsByGroupIdAndDateBetween(
+            @Param("groupId") Long groupId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
 
-    /**
-     * Возвращает список всех занятий между указанными датами для преподавателя с указанным ID
-     * 
-     * @implNote выполняет EAGER загрузку всех полей Lesson
-     * @param professorId - ID преподавателя
-     * @param startDate   - начальная дата
-     * @param endDate     - конечная дата
-     * @return - список занятий
-     */
+    @Query("SELECT DISTINCT l.id FROM Lesson l JOIN l.professors p WHERE p.id = :professorId AND l.date BETWEEN :startDate AND :endDate")
+    List<Long> findLessonIdsByProfessorIdAndDateBetween(
+            @Param("professorId") Long professorId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
+
     @EntityGraph(attributePaths = { "types", "rooms", "professors", "groups" })
-    List<Lesson> findByProfessorsIdAndDateBetween(Long professorId, LocalDate startDate, LocalDate endDate);
+    List<Lesson> findAllByIdInOrderByDateAscTimeStartAsc(List<Long> lessonIds);
 }

@@ -47,10 +47,19 @@ public class LessonService {
     }
 
     public List<Lesson> findForGroupBetweenDates(Group group, LocalDate startDate, LocalDate endDate) {
-        return lessonRepo.findByGroupsIdAndDateBetween(group.getId(), startDate, endDate);
+        List<Long> lessonIds = lessonRepo.findLessonIdsByGroupIdAndDateBetween(group.getId(), startDate, endDate);
+        if (lessonIds.isEmpty()) {
+            return List.of();
+        }
+        return lessonRepo.findAllByIdInOrderByDateAscTimeStartAsc(lessonIds);
     }
 
     public List<Lesson> findForProfessorBetweenDates(Professor professor, LocalDate startDate, LocalDate endDate) {
-        return lessonRepo.findByProfessorsIdAndDateBetween(professor.getId(), startDate, endDate);
+        List<Long> lessonIds = lessonRepo.findLessonIdsByProfessorIdAndDateBetween(professor.getId(), startDate,
+                endDate);
+        if (lessonIds.isEmpty()) {
+            return List.of();
+        }
+        return lessonRepo.findAllByIdInOrderByDateAscTimeStartAsc(lessonIds);
     }
 }
