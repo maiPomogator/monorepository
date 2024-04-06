@@ -33,5 +33,5 @@ public interface LessonRepo extends JpaRepository<Lesson, Long> {
             @Param("endDate") LocalDate endDate);
 
     @EntityGraph(attributePaths = { "types", "rooms", "professors", "groups" })
-    List<Lesson> findAllByIdInOrderByDateAscTimeStartAsc(List<Long> lessonIds);
+    List<Lesson> findEagerByIdInOrderByDateAscTimeStartAsc(List<Long> lessonIds);
 }

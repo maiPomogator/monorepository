@@ -46,20 +46,20 @@ public class LessonService {
         lessonRepo.deleteById(id);
     }
 
-    public List<Lesson> findForGroupBetweenDates(Group group, LocalDate startDate, LocalDate endDate) {
+    public List<Lesson> findEagerForGroupBetweenDates(Group group, LocalDate startDate, LocalDate endDate) {
         List<Long> lessonIds = lessonRepo.findLessonIdsByGroupIdAndDateBetween(group.getId(), startDate, endDate);
         if (lessonIds.isEmpty()) {
             return List.of();
         }
-        return lessonRepo.findAllByIdInOrderByDateAscTimeStartAsc(lessonIds);
+        return lessonRepo.findEagerByIdInOrderByDateAscTimeStartAsc(lessonIds);
     }
 
-    public List<Lesson> findForProfessorBetweenDates(Professor professor, LocalDate startDate, LocalDate endDate) {
+    public List<Lesson> findEagerForProfessorBetweenDates(Professor professor, LocalDate startDate, LocalDate endDate) {
         List<Long> lessonIds = lessonRepo.findLessonIdsByProfessorIdAndDateBetween(professor.getId(), startDate,
                 endDate);
         if (lessonIds.isEmpty()) {
             return List.of();
         }
-        return lessonRepo.findAllByIdInOrderByDateAscTimeStartAsc(lessonIds);
+        return lessonRepo.findEagerByIdInOrderByDateAscTimeStartAsc(lessonIds);
     }
 }

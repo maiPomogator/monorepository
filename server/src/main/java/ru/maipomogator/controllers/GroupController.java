@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,17 +64,20 @@ public class GroupController {
         return groupService.findByName(name);
     }
 
-    // TODO реализовать получение всех групп занятия (сейчас только одна с переданным groupId)
     @GetMapping("{id}/lessons")
     @JsonView(Views.FullView.class)
     public Collection<Lesson> getLessons(
             @PathVariable("id") Group group,
             @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate)
+            throws BadRequestException {
 
         startDate = (startDate == null) ? LocalDate.now() : startDate;
         endDate = (endDate == null) ? startDate.plusDays(7) : endDate;
+        if (startDate.isAfter(endDate)) {
+            throw new BadRequestException("startDate must be before or equal to endDate");
+        }
 
-        return lessonService.findForGroupBetweenDates(group, startDate, endDate);
+        return lessonService.findEagerForGroupBetweenDates(group, startDate, endDate);
     }
 }
