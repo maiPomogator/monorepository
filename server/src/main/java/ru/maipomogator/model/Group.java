@@ -84,20 +84,12 @@ public class Group implements Comparable<Group> {
     @JsonView(Views.FullView.class)
     private Set<Lesson> lessons = new HashSet<>();
 
-    public void setLessons(SortedSet<Lesson> newLessons) {
-        this.lessons = newLessons;
-        newLessons.forEach(l -> l.addGroup(this));
-    }
-
     public void addLessons(Collection<Lesson> newLessons) {
         newLessons.forEach(this::addLesson);
     }
 
     public void addLesson(Lesson lsn) {
-        if (!lessons.contains(lsn)) {
-            lessons.add(lsn);
-            lsn.addGroup(this);
-        }
+        lessons.add(lsn);
     }
 
     @JsonIgnore

@@ -145,30 +145,12 @@ public class Lesson implements Comparable<Lesson> {
     @JsonView(Views.FullView.class)
     private Set<Professor> professors = new HashSet<>();
 
-    @PrePersist
-    private void prePersistLesson() {
-        this.status = LessonStatus.SAVED;
-    }
-
-    public void setGroups(Set<Group> newGroups) {
-        this.groups = newGroups;
-        newGroups.forEach(g -> g.addLesson(this));
-    }
-
-    public void setProfessors(Set<Professor> newProfessors) {
-        this.professors = newProfessors;
-        newProfessors.forEach(p -> p.addLesson(this));
-    }
-
     public void addGroups(Collection<Group> newGroups) {
         newGroups.forEach(this::addGroup);
     }
 
     public void addGroup(Group gr) {
-        if (!groups.contains(gr)) {
-            groups.add(gr);
-            gr.addLesson(this);
-        }
+        groups.add(gr);
     }
 
     public void removeGroup(Group gr) {
@@ -180,10 +162,7 @@ public class Lesson implements Comparable<Lesson> {
     }
 
     public void addProfessor(Professor pr) {
-        if (!professors.contains(pr)) {
-            professors.add(pr);
-            pr.addLesson(this);
-        }
+        professors.add(pr);
     }
 
     public void removeProfessor(Professor pr) {
@@ -195,9 +174,7 @@ public class Lesson implements Comparable<Lesson> {
     }
 
     public void addRoom(String room) {
-        if (!rooms.contains(room)) {
-            rooms.add(room);
-        }
+        rooms.add(room);
     }
 
     public void removeRoom(String room) {
@@ -209,9 +186,7 @@ public class Lesson implements Comparable<Lesson> {
     }
 
     public void addType(LessonType type) {
-        if (!types.contains(type)) {
-            types.add(type);
-        }
+        types.add(type);
     }
 
     /**
@@ -236,10 +211,6 @@ public class Lesson implements Comparable<Lesson> {
         return hasher.hash().asLong();
     }
 
-    private String streamToString(Stream<String> stream) {
-        return stream.collect(Collectors.joining(","));
-    }
-
     @Override
     public String toString() {
         return "Lesson{" +
@@ -253,5 +224,14 @@ public class Lesson implements Comparable<Lesson> {
                 ", professors=[" + streamToString(professors.stream().sorted().map(Professor::getFullName)) + "]" +
                 ", rooms=" + rooms.toString() +
                 '}';
+    }
+
+    @PrePersist
+    private void prePersistLesson() {
+        this.status = LessonStatus.SAVED;
+    }
+
+    private String streamToString(Stream<String> stream) {
+        return stream.collect(Collectors.joining(","));
     }
 }
