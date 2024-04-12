@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public record Lesson(Long id, String name, List<LessonType> types, LocalDate date, LocalTime timeStart,
-        LocalTime timeEnd, List<String> rooms, LessonStatus status, List<Group> groups, List<Professor> professors)
+        LocalTime timeEnd, List<String> rooms, Boolean isActive, List<Group> groups, List<Professor> professors)
         implements Comparable<Lesson> {
 
     @Override

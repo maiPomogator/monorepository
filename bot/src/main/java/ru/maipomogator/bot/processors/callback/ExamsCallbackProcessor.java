@@ -25,7 +25,6 @@ import ru.maipomogator.bot.clients.GroupRestClient;
 import ru.maipomogator.bot.clients.ProfessorRestClient;
 import ru.maipomogator.bot.model.Group;
 import ru.maipomogator.bot.model.Lesson;
-import ru.maipomogator.bot.model.LessonStatus;
 import ru.maipomogator.bot.model.LessonType;
 import ru.maipomogator.bot.model.Professor;
 
@@ -106,14 +105,14 @@ public class ExamsCallbackProcessor extends AbstractCallbackProcessor {
             exams = professorRestClient
                     .getLessonsBetweenDates(entId, LocalDate.of(2024, 5, 1), LocalDate.of(2024, 7, 1))
                     .stream().filter(l -> l.types().contains(LessonType.EXAM))
-                    .filter(l -> l.status().equals(LessonStatus.SAVED)).sorted().toList();
+                    .filter(Lesson::isActive).sorted().toList();
         } else {
             Group grp = groupRestClient.findById(entId);
             sb.append("*Экзамены*").append(lineSeparator());
             sb.append("*Группа " + grp.name() + "*").append(lineSeparator()).append(lineSeparator());
             exams = groupRestClient.getLessonsBetweenDates(entId, LocalDate.of(2024, 5, 1), LocalDate.of(2024, 7, 1))
                     .stream().filter(l -> l.types().contains(LessonType.EXAM))
-                    .filter(l -> l.status().equals(LessonStatus.SAVED)).sorted().toList();
+                    .filter(Lesson::isActive).sorted().toList();
         }
 
         if (exams.isEmpty()) {

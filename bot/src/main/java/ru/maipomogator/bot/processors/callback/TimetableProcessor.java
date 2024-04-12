@@ -26,7 +26,6 @@ import ru.maipomogator.bot.clients.GroupRestClient;
 import ru.maipomogator.bot.clients.ProfessorRestClient;
 import ru.maipomogator.bot.model.Group;
 import ru.maipomogator.bot.model.Lesson;
-import ru.maipomogator.bot.model.LessonStatus;
 import ru.maipomogator.bot.model.LessonType;
 import ru.maipomogator.bot.model.Professor;
 
@@ -138,12 +137,12 @@ public class TimetableProcessor extends AbstractCallbackProcessor {
             sb.append("*" + prf.getFullName() + "*").append(lineSeparator());
             dayLessons = professorRestClient.getLessonsBetweenDates(entId, targetDate, targetDate)
                     .stream()
-                    .filter(l -> l.status().equals(LessonStatus.SAVED)).sorted().toList();
+                    .filter(Lesson::isActive).sorted().toList();
         } else {
             Group grp = groupRestClient.findById(entId);
             sb.append("*Группа " + grp.name() + "*").append(lineSeparator());
             dayLessons = groupRestClient.getLessonsBetweenDates(entId, targetDate, targetDate).stream()
-                    .filter(l -> l.status().equals(LessonStatus.SAVED)).sorted().toList();
+                    .filter(Lesson::isActive).sorted().toList();
         }
 
         sb.append(formatDate(targetDate)).append(lineSeparator()).append(lineSeparator());
