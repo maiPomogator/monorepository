@@ -16,4 +16,13 @@ public enum GroupType {
     SPECIALIZED_HIGHER_EDUCATION("Специализированное высшее образование");
 
     private final String name;
+
+    public static GroupType getForName(String typeName) {
+        GroupType[] allGroupTypes = GroupType.values();
+        for (GroupType groupType : allGroupTypes) {
+            if (groupType.getName().equals(typeName))
+                return groupType;
+        }
+        throw new IllegalArgumentException("Unknown GroupType: " + typeName);
+    }
 }
