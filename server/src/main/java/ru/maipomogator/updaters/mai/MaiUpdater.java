@@ -34,7 +34,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import ru.maipomogator.model.Group;
@@ -45,16 +44,15 @@ import ru.maipomogator.service.LessonService;
 import ru.maipomogator.service.ProfessorService;
 import ru.maipomogator.updaters.tasks.DownloadFileTask;
 
-@RequiredArgsConstructor
+// @RequiredArgsConstructor
 @Log4j2
 @Component("newUpdater")
 public class MaiUpdater {
     private static final String BASE_URL = "https://public.mai.ru/schedule/data/";
     private static final String GROUPS_FILE_URL = BASE_URL + "groups.json";
-    private static final Path BASE_FOLDER = Path
-            .of("C:\\projects\\maipomogator\\json-files\\" + LocalDate.now().toString());
-    private static final Path groupsJsonPath = BASE_FOLDER.resolve("groups.json");
-    private static final Path GROUPS_FOLDER = BASE_FOLDER.resolve("groups");
+    private final Path baseFolder;
+    private Path groupsJsonPath;
+    private Path groupsFolder;
 
     private final GroupService groupService;
     private final ProfessorService professorService;
@@ -63,13 +61,26 @@ public class MaiUpdater {
     private final Gson gson;
     private Map<Lesson, Lesson> mapLessons;
 
-    @Scheduled(fixedRate = 12, timeUnit = TimeUnit.HOURS)
-    @SneakyThrows(IOException.class)
+    @SneakyThrows
+    public MaiUpdater(GroupService groupService, ProfessorService professorService, LessonService lessonService,
+            Gson gson) {
+        this.groupService = groupService;
+        this.professorService = professorService;
+        this.lessonService = lessonService;
+        this.gson = gson;
+        baseFolder = Files.createTempDirectory("mai-updater");
+    }
+
+    @Scheduled(cron = "0 0 4 * * *")
+    @SneakyThrows({ IOException.class, InterruptedException.class })
     @Transactional
     public void update() {
         Instant start = Instant.now();
+        Path currentRunFolder = baseFolder.resolve(LocalDate.now().toString());
+        groupsJsonPath = currentRunFolder.resolve("groups.json");
+        groupsFolder = currentRunFolder.resolve("groups");
         mapLessons = new HashMap<>(400_000);
-        Files.createDirectories(BASE_FOLDER);
+        Files.createDirectories(currentRunFolder);
         Collection<Group> existingGroups = groupService.findAll();
         log.info("Got {} groups from db", existingGroups.size());
         Collection<Group> groupFromFile = getGroupsFromFile();
@@ -92,20 +103,18 @@ public class MaiUpdater {
         commonGroups.addAll(savedGroups);
 
         try (ExecutorService es = Executors.newFixedThreadPool(5)) {
-            Files.createDirectories(GROUPS_FOLDER);
+            Files.createDirectories(groupsFolder);
             Collection<Callable<File>> downloads = new ArrayList<>(savedGroups.size());
             for (Group group : commonGroups) {
                 Files.exists(groupsJsonPath);
                 String fileName = DigestUtils.md5DigestAsHex(group.getName().getBytes(StandardCharsets.UTF_8))
                         + ".json";
-                Path groupFilePath = GROUPS_FOLDER.resolve(fileName);
+                Path groupFilePath = groupsFolder.resolve(fileName);
                 downloads.add(new DownloadFileTask(BASE_URL + fileName, groupFilePath));
             }
             Collection<Future<File>> futureFiles = es.invokeAll(downloads, 45, TimeUnit.SECONDS);
             futureFiles.stream().filter(f -> f.state().equals(State.FAILED)).forEach(Future::exceptionNow);
 
-        } catch (InterruptedException _e) {
-            log.error("Interrupted during download. Exiting");
         }
 
         for (Group group : commonGroups) {
@@ -153,24 +162,18 @@ public class MaiUpdater {
     }
 
     private Lesson processLesson(Lesson rawLesson) {
-        if (!mapLessons.containsKey(rawLesson)) {
-            Set<Professor> newProfessors = rawLesson.getProfessors().stream().map(professorService::findOrSave)
+        return mapLessons.computeIfAbsent(rawLesson, lesson -> {
+            Set<Professor> newProfessors = lesson.getProfessors().stream().map(professorService::findOrSave)
                     .collect(Collectors.toSet());
-            rawLesson.setProfessors(newProfessors);
-            mapLessons.put(rawLesson, rawLesson);
-        }
-        return mapLessons.get(rawLesson);
+            lesson.setProfessors(newProfessors);
+            return lesson;
+        });
     }
 
     @SneakyThrows(IOException.class)
     private Collection<Lesson> parseLessons(String groupName) {
-        Files.createDirectories(GROUPS_FOLDER);
         String fileName = DigestUtils.md5DigestAsHex(groupName.getBytes(StandardCharsets.UTF_8)) + ".json";
-        Path groupFilePath = GROUPS_FOLDER.resolve(fileName);
-        File groupFile = groupFilePath.toFile();
-        if (!groupFile.isFile()) {
-            groupFile = new DownloadFileTask(BASE_URL + fileName, groupFilePath).call();
-        }
+        Path groupFilePath = groupsFolder.resolve(fileName);
         try (BufferedReader reader = Files.newBufferedReader(groupFilePath, StandardCharsets.UTF_8)) {
             return gson.fromJson(reader, new TypeToken<>() {});
         } catch (JsonSyntaxException e) {
@@ -181,7 +184,6 @@ public class MaiUpdater {
 
     private Collection<Group> getGroupsFromFile() {
         File groupsFile = getGroupsFile();
-
         try (Reader groupsReader = Files.newBufferedReader(groupsFile.toPath())) {
             return gson.fromJson(groupsReader, new TypeToken<List<Group>>() {});
         } catch (IOException e) {
@@ -191,9 +193,9 @@ public class MaiUpdater {
 
     @SneakyThrows(IOException.class)
     private File getGroupsFile() {
-        File groupsJson = groupsJsonPath.toFile();
-        if (groupsJson.isFile()) {
-            return groupsJson;
+        File maybeFile = groupsJsonPath.toFile();
+        if (maybeFile.isFile()) {
+            return maybeFile;
         }
 
         log.debug("Actual groups.json wasn`t found. Downloading new.");
