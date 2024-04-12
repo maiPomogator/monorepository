@@ -1,6 +1,5 @@
 package ru.maipomogator.model;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -31,18 +30,7 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "professors", schema = "public")
-public class Professor implements Comparable<Professor> {
-
-    public static Professor copyOf(Professor original) {
-        Professor copy = new Professor();
-        copy.id = original.id;
-        copy.lastName = original.lastName;
-        copy.firstName = original.firstName;
-        copy.middleName = original.middleName;
-        copy.siteId = original.siteId;
-        copy.lessons = new HashSet<>();
-        return copy;
-    }
+public class Professor {
 
     /**
      * Идентификатор группы
@@ -102,16 +90,7 @@ public class Professor implements Comparable<Professor> {
         return lastName + " " + firstName + " " + middleName;
     }
 
-    public void addLessons(Collection<Lesson> newLessons) {
-        newLessons.forEach(this::addLesson);
-    }
-
     public void addLesson(Lesson lsn) {
         lessons.add(lsn);
-    }
-
-    @Override
-    public int compareTo(Professor other) {
-        return getFullName().compareTo(other.getFullName());
     }
 }

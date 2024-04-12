@@ -2,7 +2,6 @@ package ru.maipomogator.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
@@ -121,32 +120,12 @@ public class Lesson implements Comparable<Lesson> {
     @JsonView(Views.FullView.class)
     private Set<Professor> professors = new HashSet<>();
 
-    public void addGroups(Collection<Group> newGroups) {
-        newGroups.forEach(this::addGroup);
-    }
-
     public void addGroup(Group gr) {
         groups.add(gr);
     }
 
-    public void removeGroup(Group gr) {
-        groups.remove(gr);
-    }
-
-    public void addProfessors(Collection<Professor> newProfessors) {
-        newProfessors.forEach(this::addProfessor);
-    }
-
     public void addProfessor(Professor pr) {
         professors.add(pr);
-    }
-
-    public void removeProfessor(Professor pr) {
-        professors.remove(pr);
-    }
-
-    public void addRooms(Collection<String> newRooms) {
-        newRooms.forEach(this::addRoom);
     }
 
     public void addRoom(String room) {
@@ -155,10 +134,6 @@ public class Lesson implements Comparable<Lesson> {
 
     public void removeRoom(String room) {
         rooms.remove(room);
-    }
-
-    public void addTypes(Collection<LessonType> newTypes) {
-        newTypes.forEach(this::addType);
     }
 
     public void addType(LessonType type) {

@@ -1,6 +1,5 @@
 package ru.maipomogator.model;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,7 +29,7 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "groups", schema = "public")
-public class Group implements Comparable<Group> {
+public class Group {
 
     /**
      * Идентификатор группы
@@ -81,16 +80,7 @@ public class Group implements Comparable<Group> {
     @JsonView(Views.FullView.class)
     private Set<Lesson> lessons = new HashSet<>();
 
-    public void addLessons(Collection<Lesson> newLessons) {
-        newLessons.forEach(this::addLesson);
-    }
-
     public void addLesson(Lesson lsn) {
         lessons.add(lsn);
-    }
-
-    @Override
-    public int compareTo(Group other) {
-        return this.name.compareTo(other.name);
     }
 }
