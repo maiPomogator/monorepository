@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,17 @@ public class ProfessorService {
 
     public List<Professor> findAll() {
         return professorRepo.findAll();
+    }
+
+    @Transactional
+    @Cacheable(value = "professor-by-site-id")
+    public Professor findOrSave(Professor newProfessor) {
+        Optional<Professor> existingProfessor = findBySiteId(newProfessor.getSiteId());
+        if (existingProfessor.isPresent()) {
+            return existingProfessor.get();
+        } else {
+            return professorRepo.save(newProfessor);
+        }
     }
 
     @Transactional

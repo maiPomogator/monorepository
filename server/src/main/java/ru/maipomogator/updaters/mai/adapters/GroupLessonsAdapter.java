@@ -1,14 +1,20 @@
-package ru.maipomogator.parser.adapters;
+package ru.maipomogator.updaters.mai.adapters;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.stereotype.Component;
+
 import com.google.gson.TypeAdapter;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
@@ -18,7 +24,9 @@ import ru.maipomogator.model.LessonType;
 import ru.maipomogator.model.Professor;
 
 @Log4j2
-public class ParsedGroupAdapter extends TypeAdapter<ParsedGroup> {
+
+@Component
+public class GroupLessonsAdapter extends TypeAdapter<Collection<Lesson>> implements GsonAdapter {
 
     /**
      * регулярное выражение, соответствующее времени в формате HH:mm:ss например 10:45:00
@@ -33,18 +41,18 @@ public class ParsedGroupAdapter extends TypeAdapter<ParsedGroup> {
     private static final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("H:mm:ss");
 
     @Override
-    public ParsedGroup read(JsonReader in) throws IOException {
+    public Collection<Lesson> read(JsonReader in) throws IOException {
         log.debug("Start deserializing lessons");
         // используется для исключения дублирования преподавателей с одинаковыми UUID внутри одной группы
         Map<UUID, Professor> groupProfessors = new HashMap<>();
-        ParsedGroup parsedGroup = new ParsedGroup();
+        Collection<Lesson> lessons = new ArrayList<>();
 
         String jsonKey;
         in.beginObject(); // желтая скобка (root)
         while (in.hasNext()) {
             jsonKey = in.nextName();
             if (jsonKey.equals("group")) {
-                parsedGroup.setGroupName(in.nextString());
+                in.nextString();
             } else if (jsonKey.matches(DATE_REGEX)) {
                 LocalDate currentDate = LocalDate.parse(jsonKey, dateFormat);
                 in.beginObject(); // фиолетовая скобка (после даты)
@@ -134,7 +142,7 @@ public class ParsedGroupAdapter extends TypeAdapter<ParsedGroup> {
                                         }
                                     }
                                     in.endObject(); // фиолетовая скобка (конкретная пара, после названия)
-                                    parsedGroup.addLesson(newLesson);
+                                    lessons.add(newLesson);
                                 } // конец костыля (см. сверху)
                                 in.endObject(); // желтая скобка (конкретная пара, перед названием)
                             } else {
@@ -152,8 +160,18 @@ public class ParsedGroupAdapter extends TypeAdapter<ParsedGroup> {
             }
         }
         in.endObject(); // желтая скобка (root)
-        log.debug("Returning {} lessons", parsedGroup.numberOfLessons());
-        return parsedGroup;
+        log.debug("Returning {} lessons", lessons.size());
+        return lessons;
+    }
+
+    @Override
+    public void write(JsonWriter out, Collection<Lesson> value) throws IOException {
+        throw new UnsupportedOperationException("Unimplemented method 'write' in TypeAdapter<Set<Lesson>>");
+    }
+
+    @Override
+    public Type getType() {
+        return new TypeToken<Collection<Lesson>>() {}.getType();
     }
 
     private LessonType convertStringToLessonType(String lessonTypeStr) {
@@ -165,10 +183,5 @@ public class ParsedGroupAdapter extends TypeAdapter<ParsedGroup> {
             case "ЭКЗАМЕН" -> LessonType.EXAM;
             default -> throw new IllegalArgumentException("Unknown lesson type %s".formatted(lessonTypeStr));
         };
-    }
-
-    @Override
-    public void write(JsonWriter out, ParsedGroup value) throws IOException {
-        throw new UnsupportedOperationException("Unimplemented method 'write'");
     }
 }

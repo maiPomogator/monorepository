@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import ru.maipomogator.parser.mai.MaiInfo;
 import ru.maipomogator.service.GroupService;
+import ru.maipomogator.updaters.mai.MaiInfo;
 
 @RestController
 @RequestMapping

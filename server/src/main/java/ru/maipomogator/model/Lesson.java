@@ -9,26 +9,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.google.common.hash.Hasher;
-import com.google.common.hash.Hashing;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
@@ -44,21 +38,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "lessons", schema = "public")
 public class Lesson implements Comparable<Lesson> {
-
-    public static Lesson copyOf(Lesson original) {
-        Lesson copy = new Lesson();
-        copy.id = original.id;
-        copy.name = original.name;
-        copy.types = new HashSet<>(original.types);
-        copy.date = original.date;
-        copy.timeStart = original.timeStart;
-        copy.timeEnd = original.timeEnd;
-        copy.groups = new HashSet<>();
-        copy.professors = new HashSet<>();
-        copy.rooms = new HashSet<>(original.rooms);
-        copy.status = original.status;
-        return copy;
-    }
 
     /**
      * Идентификатор группы
@@ -82,7 +61,7 @@ public class Lesson implements Comparable<Lesson> {
      *
      * @see LessonType
      */
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     @Enumerated(EnumType.STRING)
     @Column(name = "lesson_type")
     @JsonView(Views.IdInfo.class)
@@ -112,25 +91,22 @@ public class Lesson implements Comparable<Lesson> {
     /**
      * Аудитории занятия
      */
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     @Column(name = "room")
     @JsonView(Views.IdInfo.class)
     private Set<String> rooms = new HashSet<>();
 
     /**
      * Статус занятия
-     * 
-     * @see LessonStatus
      */
     @Column
-    @Enumerated(EnumType.STRING)
     @JsonView(Views.IdInfo.class)
-    private LessonStatus status = LessonStatus.CREATED;
+    private boolean isActive = true;
 
     /**
      * Группы занятия
      */
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany
     @JoinTable(name = "lessons_groups", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
     @JsonIgnoreProperties({ "lessons" })
     @JsonView(Views.FullView.class)
@@ -139,7 +115,7 @@ public class Lesson implements Comparable<Lesson> {
     /**
      * Преподаватели занятия
      */
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany
     @JoinTable(name = "lessons_professors", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "professor_id"))
     @JsonIgnoreProperties({ "lessons" })
     @JsonView(Views.FullView.class)
@@ -189,6 +165,14 @@ public class Lesson implements Comparable<Lesson> {
         types.add(type);
     }
 
+    public void activate() {
+        isActive = true;
+    }
+
+    public void deactivate() {
+        isActive = false;
+    }
+
     /**
      * Сравнение занятий производится по дате и времени начала
      * 
@@ -197,18 +181,6 @@ public class Lesson implements Comparable<Lesson> {
     @Override
     public int compareTo(Lesson other) {
         return Comparator.comparing(Lesson::getDate).thenComparing(Lesson::getTimeStart).compare(this, other);
-    }
-
-    @SuppressWarnings("null")
-    @JsonIgnore
-    public long getHash() {
-        Hasher hasher = Hashing.murmur3_128().newHasher();
-        hasher.putUnencodedChars(name);
-        hasher.putUnencodedChars(streamToString(types.stream().sorted().map(LessonType::name)));
-        hasher.putUnencodedChars(date.toString());
-        hasher.putUnencodedChars(timeStart.toString());
-        hasher.putUnencodedChars(streamToString(rooms.stream().sorted(String::compareTo)));
-        return hasher.hash().asLong();
     }
 
     @Override
@@ -226,12 +198,8 @@ public class Lesson implements Comparable<Lesson> {
                 '}';
     }
 
-    @PrePersist
-    private void prePersistLesson() {
-        this.status = LessonStatus.SAVED;
-    }
-
     private String streamToString(Stream<String> stream) {
         return stream.collect(Collectors.joining(","));
     }
+
 }

@@ -24,10 +24,6 @@ public class LessonService {
     }
 
     public List<Lesson> findAll() {
-        return lessonRepo.findAllLazy();
-    }
-
-    public List<Lesson> findAllEager() {
         return lessonRepo.findAll();
     }
 
@@ -44,6 +40,14 @@ public class LessonService {
     @Transactional
     public void delete(Long id) {
         lessonRepo.deleteById(id);
+    }
+
+    public List<Lesson> findAllLessonsForGroup(Group group) {
+        List<Long> lessonIds = lessonRepo.findLessonIdsByGroupId(group.getId());
+        if (lessonIds.isEmpty()) {
+            return List.of();
+        }
+        return lessonRepo.findLazyByIdInOrderByDateAscTimeStartAsc(lessonIds);
     }
 
     public List<Lesson> findEagerForGroupBetweenDates(Group group, LocalDate startDate, LocalDate endDate) {

@@ -1,4 +1,4 @@
-package ru.maipomogator.parser.tasks;
+package ru.maipomogator.updaters.tasks;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +11,8 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.Callable;
+
+import lombok.SneakyThrows;
 
 /**
  * Callable для асинхронного скачивания файла
@@ -39,7 +41,8 @@ public class DownloadFileTask implements Callable<File> {
      * @throws URISyntaxException
      */
     @Override
-    public File call() throws IOException, URISyntaxException {
+    @SneakyThrows(URISyntaxException.class)
+    public File call() throws IOException {
         URL sourceUrl = new URI(srcUrl).toURL();
         try (ReadableByteChannel inChannel = Channels.newChannel(sourceUrl.openStream());
                 FileChannel outChannel = FileChannel.open(targetPath, StandardOpenOption.CREATE,

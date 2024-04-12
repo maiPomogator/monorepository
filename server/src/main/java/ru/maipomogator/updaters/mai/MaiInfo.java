@@ -1,4 +1,4 @@
-package ru.maipomogator.parser.mai;
+package ru.maipomogator.updaters.mai;
 
 import java.util.List;
 

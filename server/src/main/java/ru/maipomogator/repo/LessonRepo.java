@@ -14,11 +14,8 @@ import ru.maipomogator.model.Lesson;
 @Repository
 public interface LessonRepo extends JpaRepository<Lesson, Long> {
 
-    @Query("select l from Lesson l")
-    List<Lesson> findAllLazy();
-
-    @EntityGraph(attributePaths = { "types", "rooms", "professors", "groups" })
-    List<Lesson> findAll();
+    @Query("SELECT DISTINCT l.id FROM Lesson l JOIN l.groups g WHERE g.id = :groupId")
+    List<Long> findLessonIdsByGroupId(@Param("groupId") Long groupId);
 
     @Query("SELECT DISTINCT l.id FROM Lesson l JOIN l.groups g WHERE g.id = :groupId AND l.date BETWEEN :startDate AND :endDate")
     List<Long> findLessonIdsByGroupIdAndDateBetween(
@@ -31,6 +28,9 @@ public interface LessonRepo extends JpaRepository<Lesson, Long> {
             @Param("professorId") Long professorId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
+
+    @EntityGraph(attributePaths = { "types", "rooms" })
+    List<Lesson> findLazyByIdInOrderByDateAscTimeStartAsc(List<Long> lessonIds);
 
     @EntityGraph(attributePaths = { "types", "rooms", "professors", "groups" })
     List<Lesson> findEagerByIdInOrderByDateAscTimeStartAsc(List<Long> lessonIds);

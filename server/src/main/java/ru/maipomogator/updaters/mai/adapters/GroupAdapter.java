@@ -1,8 +1,12 @@
-package ru.maipomogator.parser.adapters;
+package ru.maipomogator.updaters.mai.adapters;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+
+import org.springframework.stereotype.Component;
 
 import com.google.gson.TypeAdapter;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
@@ -12,7 +16,8 @@ import ru.maipomogator.model.GroupType;
 
 @Log4j2
 
-public class GroupAdapter extends TypeAdapter<Group> {
+@Component
+public class GroupAdapter extends TypeAdapter<Group> implements GsonAdapter {
 
     @Override
     public Group read(JsonReader in) throws IOException {
@@ -37,9 +42,9 @@ public class GroupAdapter extends TypeAdapter<Group> {
                 case "level":
                     String tempLevel = in.nextString();
                     if ("".equals(tempLevel)) {
-                        gr.setType(GroupType.BACHELOR);
+                        gr.setType(null);
                     } else {
-                        gr.setType(getType(tempLevel));
+                        gr.setType(GroupType.getForName(tempLevel));
                     }
                     break;
                 case "course":
@@ -61,20 +66,13 @@ public class GroupAdapter extends TypeAdapter<Group> {
         return gr;
     }
 
-    private GroupType getType(String groupTypeStr) {
-        return switch (groupTypeStr) {
-            case "Бакалавриат" -> GroupType.BACHELOR;
-            case "Магистратура" -> GroupType.MAGISTRACY;
-            case "Аспирантура" -> GroupType.POSTGRADUATE;
-            case "Специалитет" -> GroupType.SPECIALIST;
-            case "Базовое высшее образование" -> GroupType.BASIC_HIGHER_EDUCATION;
-            case "Специализированное высшее образование" -> GroupType.SPECIALIZED_HIGHER_EDUCATION;
-            default -> throw new IllegalArgumentException("Unknown group type %s".formatted(groupTypeStr));
-        };
+    @Override
+    public void write(JsonWriter out, Group value) throws IOException {
+        throw new UnsupportedOperationException("Unimplemented method 'write' in TypeAdapter<Group>");
     }
 
     @Override
-    public void write(JsonWriter out, Group value) throws IOException {
-        throw new UnsupportedOperationException("Unimplemented method 'write'");
+    public Type getType() {
+        return new TypeToken<Group>() {}.getType();
     }
 }

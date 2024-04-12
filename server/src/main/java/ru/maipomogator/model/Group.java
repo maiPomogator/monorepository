@@ -1,20 +1,15 @@
 package ru.maipomogator.model;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.util.DigestUtils;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -80,7 +75,7 @@ public class Group implements Comparable<Group> {
     /**
      * Список занятий группы
      */
-    @ManyToMany(mappedBy = "groups", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "groups")
     @JsonView(Views.FullView.class)
     private Set<Lesson> lessons = new HashSet<>();
 
@@ -90,11 +85,6 @@ public class Group implements Comparable<Group> {
 
     public void addLesson(Lesson lsn) {
         lessons.add(lsn);
-    }
-
-    @JsonIgnore
-    public String getMd5OfName() {
-        return DigestUtils.md5DigestAsHex(name.getBytes(StandardCharsets.UTF_8));
     }
 
     @Override

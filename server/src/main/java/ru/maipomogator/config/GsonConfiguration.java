@@ -7,20 +7,20 @@ import org.springframework.context.annotation.Configuration;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
-import ru.maipomogator.model.Group;
-import ru.maipomogator.model.Lesson;
-import ru.maipomogator.parser.adapters.GroupListAdapter;
-import ru.maipomogator.parser.adapters.ParsedGroupAdapter;
+import jakarta.persistence.SequenceGenerator;
+import lombok.extern.log4j.Log4j2;
+import ru.maipomogator.updaters.mai.adapters.GsonAdapter;
 
+@Log4j2
 @Configuration
+@SequenceGenerator(name = "123")
 public class GsonConfiguration {
     @Bean
-    Gson gson() {
+    Gson gson(List<GsonAdapter> adapters) {
+        log.debug("Creating gson with {} adapters.", adapters.size());
         GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(new TypeToken<List<Group>>() {}.getType(), new GroupListAdapter())
-                .registerTypeAdapter(new TypeToken<List<Lesson>>() {}.getType(), new ParsedGroupAdapter());
+        adapters.forEach(a -> builder.registerTypeAdapter(a.getType(), a));
         return builder.create();
     }
 }
