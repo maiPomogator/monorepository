@@ -187,7 +187,7 @@ public class Lesson implements Comparable<Lesson> {
     public String toString() {
         return "Lesson{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", name=" + name +
                 ", types=" + types.toString() +
                 ", date=" + date +
                 ", timeStart=" + timeStart +

@@ -21,11 +21,13 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @NoArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode(of = "siteId")
+@ToString(onlyExplicitlyIncluded = true)
 
 @Entity
 @Table(name = "professors", schema = "public")
@@ -45,6 +47,7 @@ public class Professor implements Comparable<Professor> {
     /**
      * Идентификатор группы
      */
+    @ToString.Include
     @Id
     @SequenceGenerator(name = "professors_seq", sequenceName = "professors_id_seq", allocationSize = 100)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "professors_seq")
@@ -76,6 +79,7 @@ public class Professor implements Comparable<Professor> {
     /**
      * Идентификатор преподавателя, используемый на mai.ru
      */
+    @ToString.Include
     @Column(name = "site_id", unique = true)
     @JsonView(Views.IdInfo.class)
     private UUID siteId;
@@ -92,6 +96,7 @@ public class Professor implements Comparable<Professor> {
      *
      * @return ФИО
      */
+    @ToString.Include(name = "name", rank = 1)
     @JsonIgnore
     public String getFullName() {
         return lastName + " " + firstName + " " + middleName;
