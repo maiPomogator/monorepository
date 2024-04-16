@@ -74,13 +74,35 @@ public class Group {
     private GroupType type;
 
     /**
+     * Наличие группы в файлах с сайта МАИ
+     */
+    @Column(name = "is_active")
+    @JsonView(Views.IdInfo.class)
+    private boolean isActive = true;
+
+    /**
      * Список занятий группы
      */
     @ManyToMany(mappedBy = "groups")
     @JsonView(Views.FullView.class)
     private Set<Lesson> lessons = new HashSet<>();
 
+    /**
+     * Последний записанный хеш файла с расписанием
+     */
+    @Column(name = "latest_hash", length = 32)
+    @JsonView(Views.FullView.class)
+    private String latestHash;
+
     public void addLesson(Lesson lsn) {
         lessons.add(lsn);
+    }
+
+    public void activate() {
+        isActive = true;
+    }
+
+    public void deactivate() {
+        isActive = false;
     }
 }

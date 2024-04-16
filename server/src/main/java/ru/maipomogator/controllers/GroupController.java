@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import ru.maipomogator.model.Group;
 import ru.maipomogator.model.GroupType;
 import ru.maipomogator.model.Lesson;
@@ -23,6 +24,7 @@ import ru.maipomogator.model.Views;
 import ru.maipomogator.service.GroupService;
 import ru.maipomogator.service.LessonService;
 
+@Log4j2
 @RestController
 @RequestMapping("/mai/groups")
 @RequiredArgsConstructor
@@ -76,6 +78,10 @@ public class GroupController {
         endDate = (endDate == null) ? startDate.plusDays(7) : endDate;
         if (startDate.isAfter(endDate)) {
             throw new BadRequestException("startDate must be before or equal to endDate");
+        }
+
+        if (!group.isActive()) {
+            log.warn("Sending lessons for group {} that disappeared from site", group.getName());
         }
 
         return lessonService.findEagerForGroupBetweenDates(group, startDate, endDate);

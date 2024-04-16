@@ -96,9 +96,9 @@ public class Lesson implements Comparable<Lesson> {
     private Set<String> rooms = new HashSet<>();
 
     /**
-     * Статус занятия
+     * Наличие занятия в файлах с сайта МАИ
      */
-    @Column
+    @Column(name = "is_active")
     @JsonView(Views.IdInfo.class)
     private boolean isActive = true;
 
