@@ -86,25 +86,28 @@ public class MaiUpdater {
         Collection<Group> groupFromFile = getGroupsFromFile();
         log.info("Got {} groups from file.", groupFromFile.size());
 
-        // TODO придумать, что делать с такими группами
+        Collection<Group> commonGroups = new ArrayList<>(existingGroups);
+        commonGroups.retainAll(groupFromFile);
+
         Collection<Group> missingGroups = new ArrayList<>(existingGroups);
         missingGroups.removeAll(groupFromFile);
+        if (!missingGroups.isEmpty()) {
+            missingGroups.forEach(null);
+        }
 
         Collection<Group> newGroups = new ArrayList<>(groupFromFile);
         newGroups.removeAll(existingGroups);
-
-        Collection<Group> commonGroups = new ArrayList<>(existingGroups);
-        commonGroups.retainAll(groupFromFile);
+        if (!newGroups.isEmpty()) {
+            Collection<Group> savedGroups = groupService.saveAll(newGroups);
+            commonGroups.addAll(savedGroups);
+        }
 
         log.info("commonGroups: {}, missingGroups: {}, newGroups: {}",
                 commonGroups.size(), missingGroups.size(), newGroups.size());
 
-        Collection<Group> savedGroups = groupService.saveAll(newGroups);
-        commonGroups.addAll(savedGroups);
-
         try (ExecutorService es = Executors.newFixedThreadPool(5)) {
             Files.createDirectories(groupsFolder);
-            Collection<Callable<File>> downloads = new ArrayList<>(savedGroups.size());
+            Collection<Callable<File>> downloads = new ArrayList<>(commonGroups.size());
             for (Group group : commonGroups) {
                 Files.exists(groupsJsonPath);
                 String fileName = DigestUtils.md5DigestAsHex(group.getName().getBytes(StandardCharsets.UTF_8))
@@ -152,10 +155,9 @@ public class MaiUpdater {
                     commonLessons.size(), missingLessons.size(), newLessons.size());
             log.info("Ended processing {} group", group.getName());
         }
-
         Instant end = Instant.now();
 
-        log.error("Total number of combined lessons: {}", mapLessons.size());
+        log.info("Total number of combined lessons: {}", mapLessons.size());
         log.info("Time spent: {} ms.", Duration.between(start, end).toMillis());
 
         System.out.println("THE END");
