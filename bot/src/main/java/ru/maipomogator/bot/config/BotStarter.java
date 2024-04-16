@@ -1,6 +1,6 @@
 package ru.maipomogator.bot.config;
 
-import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,7 @@ public class BotStarter {
         this.bot = bot;
     }
 
-    @EventListener({ ContextRefreshedEvent.class })
+    @EventListener(classes = ApplicationStartedEvent.class)
     private void start() {
         this.bot.setUpdatesListener(listener);
     }
