@@ -1,102 +1,79 @@
 package ru.maipomogator.updaters.mai;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.Future.State;
-import java.util.concurrent.TimeUnit;
+import java.util.UUID;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.DigestUtils;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
-
-import lombok.SneakyThrows;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import ru.maipomogator.clients.MaiRestClient;
 import ru.maipomogator.model.Group;
 import ru.maipomogator.model.Lesson;
 import ru.maipomogator.model.Professor;
 import ru.maipomogator.service.GroupService;
 import ru.maipomogator.service.LessonService;
 import ru.maipomogator.service.ProfessorService;
-import ru.maipomogator.updaters.tasks.DownloadFileTask;
 
-// @RequiredArgsConstructor
+@RequiredArgsConstructor
 @Log4j2
 @Component("newUpdater")
 public class MaiUpdater {
-    private static final String BASE_URL = "https://public.mai.ru/schedule/data/";
-    private static final String GROUPS_FILE_URL = BASE_URL + "groups.json";
-    private final Path baseFolder;
-    private Path groupsJsonPath;
-    private Path groupsFolder;
 
     private final GroupService groupService;
     private final ProfessorService professorService;
     private final LessonService lessonService;
 
-    private final Gson gson;
-    private Map<Lesson, Lesson> mapLessons;
+    private final MaiRestClient maiRestClient;
+    private final MaiUpdaterConfig config;
 
-    @SneakyThrows
-    public MaiUpdater(GroupService groupService, ProfessorService professorService, LessonService lessonService,
-            Gson gson) {
-        this.groupService = groupService;
-        this.professorService = professorService;
-        this.lessonService = lessonService;
-        this.gson = gson;
-        baseFolder = Files.createTempDirectory("mai-updater");
+    @Transactional
+    @Scheduled(cron = "0 0 9 * * *")
+    public void updateScheduled() {
+        update();
     }
 
-    @Scheduled(cron = "0 0 4 * * *")
-    @SneakyThrows({ IOException.class, InterruptedException.class })
-    @Transactional
     public void update() {
-        Instant start = Instant.now();
-        Path currentRunFolder = baseFolder.resolve(LocalDate.now().toString());
-        groupsJsonPath = currentRunFolder.resolve("groups.json");
-        groupsFolder = currentRunFolder.resolve("groups");
-        mapLessons = new HashMap<>(400_000);
-        Files.createDirectories(currentRunFolder);
-        Collection<Group> existingGroups = groupService.findAll();
-        log.info("Got {} groups from db", existingGroups.size());
-        Collection<Group> groupFromFile = getGroupsFromFile();
-        log.info("Got {} groups from file.", groupFromFile.size());
-
-        Collection<Group> commonGroups = new ArrayList<>(existingGroups);
-        commonGroups.retainAll(groupFromFile);
-
-        Collection<Group> missingGroups = new ArrayList<>(existingGroups);
-        missingGroups.removeAll(groupFromFile);
-        if (!missingGroups.isEmpty()) {
-            missingGroups.forEach(null);
+        Collection<Group> groupsFromMAI = maiRestClient.getAllGroups();
+        log.info("Got {} groups from MAI.", groupsFromMAI.size());
+        if (groupsFromMAI.isEmpty()) {
+            log.info("The MAI sent an empty schedule");
+            return;
         }
 
-        Collection<Group> newGroups = new ArrayList<>(groupFromFile);
-        newGroups.removeAll(existingGroups);
+        update2(groupsFromMAI);
+    }
+
+    private void update2(Collection<Group> groupsFromMAI) {
+        Collection<Group> groupsFromDB = groupService.findAll();
+        log.info("Got {} groups from db", groupsFromDB.size());
+
+        Set<Group> commonGroups = new HashSet<>(groupsFromDB);
+        commonGroups.retainAll(groupsFromMAI);
+
+        Set<Group> missingGroups = new HashSet<>(groupsFromDB);
+        missingGroups.removeAll(groupsFromMAI);
+        if (!missingGroups.isEmpty()) {
+            missingGroups.forEach(Group::deactivate);
+            groupService.saveAll(missingGroups);
+        }
+        if (config.includeMissingGroups()) {
+            commonGroups.addAll(missingGroups);
+        }
+
+        Set<Group> newGroups = new HashSet<>(groupsFromMAI);
+        newGroups.removeAll(groupsFromDB);
         if (!newGroups.isEmpty()) {
             Collection<Group> savedGroups = groupService.saveAll(newGroups);
             commonGroups.addAll(savedGroups);
@@ -105,30 +82,39 @@ public class MaiUpdater {
         log.info("commonGroups: {}, missingGroups: {}, newGroups: {}",
                 commonGroups.size(), missingGroups.size(), newGroups.size());
 
-        try (ExecutorService es = Executors.newFixedThreadPool(5)) {
-            Files.createDirectories(groupsFolder);
-            Collection<Callable<File>> downloads = new ArrayList<>(commonGroups.size());
-            for (Group group : commonGroups) {
-                Files.exists(groupsJsonPath);
-                String fileName = DigestUtils.md5DigestAsHex(group.getName().getBytes(StandardCharsets.UTF_8))
-                        + ".json";
-                Path groupFilePath = groupsFolder.resolve(fileName);
-                downloads.add(new DownloadFileTask(BASE_URL + fileName, groupFilePath));
+        Map<Group, Collection<Lesson>> changedGroups = new HashMap<>();
+        for (Group group : commonGroups) {
+            Collection<Lesson> lessonsFromMAI = maiRestClient.getLessonsForGroup(group);
+            if (lessonsFromMAI.isEmpty()) {
+                log.debug("Skipping group {}", group.getName());
+            } else {
+                changedGroups.put(group, lessonsFromMAI);
+                log.info("Got {} lessons from MAI for group {}", lessonsFromMAI.size(), group.getName());
             }
-            Collection<Future<File>> futureFiles = es.invokeAll(downloads, 45, TimeUnit.SECONDS);
-            futureFiles.stream().filter(f -> f.state().equals(State.FAILED)).forEach(Future::exceptionNow);
-
         }
 
-        for (Group group : commonGroups) {
-            Collection<Lesson> existingLessons = lessonService.findAllLessonsForGroup(group);
-            log.info("Got {} lessons from db for group {}", existingLessons.size(), group.getName());
+        if (changedGroups.isEmpty()) {
+            log.info("No changes for all groups. Returning.");
+            return;
+        }
 
-            Collection<Lesson> lessonsFromFile = parseLessons(group.getName());
-            log.info("Got {} lessons from file for group {}", lessonsFromFile.size(), group.getName());
+        update3(changedGroups);
+    }
 
-            Collection<Lesson> commonLessons = new ArrayList<>(existingLessons);
-            commonLessons.retainAll(lessonsFromFile);
+    private void update3(Map<Group, Collection<Lesson>> changedGroups) {
+        Map<UUID, Professor> professorsFromDB = professorService.findAll().stream()
+                .collect(Collectors.toMap(Professor::getSiteId, Function.identity()));
+        Map<Lesson, Lesson> mapLessons = new HashMap<>(300_000);
+        Collection<Lesson> allLessonsFromDB = lessonService.eagerFindAllForGroups(changedGroups.keySet());
+        for (Entry<Group, Collection<Lesson>> entry : changedGroups.entrySet()) {
+            Group group = entry.getKey();
+
+            Collection<Lesson> lessonsFromDB = allLessonsFromDB.stream().filter(l -> l.getGroups().contains(group))
+                    .toList();
+            Collection<Lesson> lessonsFromMAI = entry.getValue();
+
+            Collection<Lesson> commonLessons = new ArrayList<>(lessonsFromDB);
+            commonLessons.retainAll(lessonsFromMAI);
             Collection<Lesson> lessonsToActivate = commonLessons.stream()
                     .filter(((Predicate<Lesson>) Lesson::isActive).negate()).toList();
             if (!lessonsToActivate.isEmpty()) {
@@ -136,72 +122,32 @@ public class MaiUpdater {
                 lessonService.saveAll(lessonsToActivate);
             }
 
-            Collection<Lesson> missingLessons = new ArrayList<>(existingLessons);
-            missingLessons.removeAll(lessonsFromFile);
+            Collection<Lesson> missingLessons = new ArrayList<>(lessonsFromDB);
+            missingLessons.removeAll(lessonsFromMAI);
             missingLessons.forEach(Lesson::deactivate);
             if (!missingLessons.isEmpty()) {
                 lessonService.saveAll(missingLessons);
             }
 
-            Collection<Lesson> newLessons = new ArrayList<>(lessonsFromFile);
-            newLessons.removeAll(existingLessons);
-            newLessons = newLessons.stream().map(this::processLesson).toList();
-            newLessons.forEach(l -> l.addGroup(group));
+            Collection<Lesson> newLessons = new ArrayList<>(lessonsFromMAI);
+            newLessons.removeAll(lessonsFromDB);
+            newLessons = newLessons.stream().map(rawLesson -> mapLessons.computeIfAbsent(rawLesson, lesson -> {
+                Set<Professor> newProfessors = lesson.getProfessors().stream().map(newProfessor -> {
+                    if (!professorsFromDB.containsKey(newProfessor.getSiteId())) {
+                        Professor saved = professorService.save(newProfessor);
+                        professorsFromDB.put(saved.getSiteId(), saved);
+                    }
+                    return professorsFromDB.get(newProfessor.getSiteId());
+                })
+                        .collect(Collectors.toSet());
+                lesson.setProfessors(newProfessors);
+                return lesson;
+            })).toList();
             if (!newLessons.isEmpty()) {
                 lessonService.saveAll(newLessons);
             }
 
-            log.info("commonLessons: {}, missingLessons: {}, newLessons: {}",
-                    commonLessons.size(), missingLessons.size(), newLessons.size());
-            log.info("Ended processing {} group", group.getName());
+            groupService.save(group);
         }
-        Instant end = Instant.now();
-
-        log.info("Total number of combined lessons: {}", mapLessons.size());
-        log.info("Time spent: {} ms.", Duration.between(start, end).toMillis());
-
-        System.out.println("THE END");
-    }
-
-    private Lesson processLesson(Lesson rawLesson) {
-        return mapLessons.computeIfAbsent(rawLesson, lesson -> {
-            Set<Professor> newProfessors = lesson.getProfessors().stream().map(professorService::findOrSave)
-                    .collect(Collectors.toSet());
-            lesson.setProfessors(newProfessors);
-            return lesson;
-        });
-    }
-
-    @SneakyThrows(IOException.class)
-    private Collection<Lesson> parseLessons(String groupName) {
-        String fileName = DigestUtils.md5DigestAsHex(groupName.getBytes(StandardCharsets.UTF_8)) + ".json";
-        Path groupFilePath = groupsFolder.resolve(fileName);
-        try (BufferedReader reader = Files.newBufferedReader(groupFilePath, StandardCharsets.UTF_8)) {
-            return gson.fromJson(reader, new TypeToken<>() {});
-        } catch (JsonSyntaxException e) {
-            throw new IllegalStateException(
-                    "Error while parsing file %s".formatted(groupFilePath.getFileName().toString()), e);
-        }
-    }
-
-    private Collection<Group> getGroupsFromFile() {
-        File groupsFile = getGroupsFile();
-        try (Reader groupsReader = Files.newBufferedReader(groupsFile.toPath())) {
-            return gson.fromJson(groupsReader, new TypeToken<List<Group>>() {});
-        } catch (IOException e) {
-            throw new IllegalStateException("IO error while reading groups.json");
-        }
-    }
-
-    @SneakyThrows(IOException.class)
-    private File getGroupsFile() {
-        File maybeFile = groupsJsonPath.toFile();
-        if (maybeFile.isFile()) {
-            return maybeFile;
-        }
-
-        log.debug("Actual groups.json wasn`t found. Downloading new.");
-        DownloadFileTask task = new DownloadFileTask(GROUPS_FILE_URL, groupsJsonPath);
-        return task.call();
     }
 }
