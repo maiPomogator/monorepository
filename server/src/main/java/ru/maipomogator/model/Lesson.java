@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
@@ -98,6 +99,7 @@ public class Lesson implements Comparable<Lesson> {
      * Наличие занятия в файлах с сайта МАИ
      */
     @Column(name = "is_active")
+    @JsonProperty(value = "isActive")
     @JsonView(Views.IdInfo.class)
     private boolean isActive = true;
 
