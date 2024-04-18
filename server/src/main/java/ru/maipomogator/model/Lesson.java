@@ -32,8 +32,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(of = { "name", "types", "date", "timeStart", "rooms" })
-
+@EqualsAndHashCode(of = { "name", "types", "date", "timeStart", "rooms", "professors" })
 @Entity
 @Table(name = "lessons", schema = "public")
 public class Lesson implements Comparable<Lesson> {

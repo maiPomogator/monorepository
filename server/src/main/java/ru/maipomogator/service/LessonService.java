@@ -1,6 +1,8 @@
 package ru.maipomogator.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,12 +44,20 @@ public class LessonService {
         lessonRepo.deleteById(id);
     }
 
-    public List<Lesson> findAllLessonsForGroup(Group group) {
-        List<Long> lessonIds = lessonRepo.findLessonIdsByGroupId(group.getId());
+    public List<Lesson> eagerFindAllForGroups(Collection<Group> groups) {
+        List<Long> lessonIds = lessonRepo.findLessonIdsByGroupIds(groups.stream().map(Group::getId).toList());
         if (lessonIds.isEmpty()) {
             return List.of();
         }
-        return lessonRepo.findLazyByIdInOrderByDateAscTimeStartAsc(lessonIds);
+        List<Lesson> allLessons = new ArrayList<>();
+        int batchSize = 65_535;
+        for (int i = 0; i < lessonIds.size(); i += batchSize) {
+            int endIndex = Math.min(i + batchSize, lessonIds.size());
+            List<Long> batchIds = lessonIds.subList(i, endIndex);
+            allLessons.addAll(lessonRepo.findEagerByIdInOrderByDateAscTimeStartAsc(batchIds));
+        }
+
+        return allLessons;
     }
 
     public List<Lesson> findEagerForGroupBetweenDates(Group group, LocalDate startDate, LocalDate endDate) {
