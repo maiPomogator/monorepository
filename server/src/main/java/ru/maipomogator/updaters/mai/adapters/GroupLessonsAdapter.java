@@ -94,19 +94,9 @@ public class GroupLessonsAdapter extends TypeAdapter<Collection<Lesson>> impleme
                                                         in.skipValue();
                                                     } else {
                                                         log.trace("Found new professor with uuid " + uuid);
-                                                        Professor pr = new Professor();
-                                                        pr.setSiteId(uuid);
                                                         // в некоторых ФИО между словами два пробела
-                                                        String profFio = in.nextString().replace("  ", " ");
-                                                        String[] fioWords = profFio.split(" ");
-                                                        if (fioWords.length == 3) {
-                                                            pr.setLastName(fioWords[0]);
-                                                            pr.setFirstName(fioWords[1]);
-                                                            pr.setMiddleName(fioWords[2]);
-                                                        } else {
-                                                            // TODO сделать более продвинутое разбиение
-                                                            pr.setLastName(profFio);
-                                                        }
+                                                        Professor pr = new Professor(uuid,
+                                                                in.nextString().replace("  ", " "));
                                                         newLesson.addProfessor(pr);
                                                         groupProfessors.put(uuid, pr);
                                                     }
