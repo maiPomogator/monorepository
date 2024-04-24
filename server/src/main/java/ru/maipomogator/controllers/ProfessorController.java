@@ -34,6 +34,12 @@ public class ProfessorController {
         return professorService.findAll();
     }
 
+    @GetMapping(params = "fio")
+    @JsonView(Views.IdInfo.class)
+    public List<Professor> getByFio(String fio) {
+        return professorService.findByFio(fio);
+    }
+
     @GetMapping("{id}")
     @JsonView(Views.IdInfo.class)
     public Professor getOneById(@PathVariable("id") Professor professor) {
