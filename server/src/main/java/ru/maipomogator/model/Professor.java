@@ -33,7 +33,7 @@ import lombok.ToString;
 public class Professor {
 
     /**
-     * Идентификатор группы
+     * Идентификатор преподавателя
      */
     @ToString.Include
     @Id
@@ -48,21 +48,28 @@ public class Professor {
      */
     @Column(name = "last_name")
     @JsonView(Views.IdInfo.class)
-    private String lastName = "";
+    private String lastName;
 
     /**
      * Имя преподавателя
      */
     @Column(name = "first_name")
     @JsonView(Views.IdInfo.class)
-    private String firstName = "";
+    private String firstName;
 
     /**
      * Отчество преподавателя
      */
     @Column(name = "middle_name")
     @JsonView(Views.IdInfo.class)
-    private String middleName = "";
+    private String middleName;
+
+    /**
+     * Оставшаяся часть ФИО
+     */
+    @Column(name = "other")
+    @JsonView(Views.IdInfo.class)
+    private String other;
 
     /**
      * Идентификатор преподавателя, используемый на mai.ru
@@ -79,6 +86,35 @@ public class Professor {
     @JsonView(Views.FullView.class)
     private Set<Lesson> lessons = new HashSet<>();
 
+    public Professor(UUID siteId, String fio) {
+        this(fio);
+        this.siteId = siteId;
+    }
+
+    public Professor(String fio) {
+        String[] parts = fio.split(" ");
+        if (parts.length >= 1) {
+            lastName = parts[0];
+        }
+        if (parts.length >= 2) {
+            firstName = parts[1];
+        }
+        if (parts.length >= 3) {
+            middleName = parts[2];
+        }
+        if (parts.length > 3) {
+            // Если в строке ФИО больше трёх частей, объединяем остальные части в строку
+            StringBuilder otherBuilder = new StringBuilder();
+            for (int i = 3; i < parts.length; i++) {
+                otherBuilder.append(parts[i]);
+                if (i < parts.length - 1) {
+                    otherBuilder.append(" ");
+                }
+            }
+            other = otherBuilder.toString();
+        }
+    }
+
     /**
      * Получить ФИО преподавателя
      *
@@ -87,7 +123,22 @@ public class Professor {
     @ToString.Include(name = "name", rank = 1)
     @JsonIgnore
     public String getFullName() {
-        return lastName + " " + firstName + " " + middleName;
+        StringBuilder fullNameBuilder = new StringBuilder();
+
+        if (lastName != null && !lastName.isEmpty()) {
+            fullNameBuilder.append(lastName).append(" ");
+        }
+        if (firstName != null && !firstName.isEmpty()) {
+            fullNameBuilder.append(firstName).append(" ");
+        }
+        if (middleName != null && !middleName.isEmpty()) {
+            fullNameBuilder.append(middleName).append(" ");
+        }
+        if (other != null && !other.isEmpty()) {
+            fullNameBuilder.append(other).append(" ");
+        }
+
+        return fullNameBuilder.toString().trim();
     }
 
     public void addLesson(Lesson lsn) {
