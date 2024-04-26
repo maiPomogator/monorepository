@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.coyote.BadRequestException;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,38 +31,45 @@ public class GroupController {
     private final GroupService groupService;
     private final LessonService lessonService;
 
-    @GetMapping()
+    @GetMapping
     @JsonView(Views.IdInfo.class)
-    public ResponseEntity<List<Group>> getAll(@RequestParam(name = "course", required = false) Integer course,
+    public List<Group> getAll() {
+        return groupService.findAll();
+    }
+
+    @GetMapping(params = { "course", "faculty" })
+    @JsonView(Views.IdInfo.class)
+    public List<Group> getByCourseAndFaculty(
+            @RequestParam(name = "course") Integer course,
+            @RequestParam(name = "faculty") Integer faculty) {
+        return groupService.findByCourseAndFaculty(course, faculty);
+    }
+
+    @GetMapping(params = { "course", "faculty", "type" })
+    @JsonView(Views.IdInfo.class)
+    public List<Group> getByCourseAndFacultyAndType(
+            @RequestParam(name = "course", required = false) Integer course,
             @RequestParam(name = "faculty", required = false) Integer faculty,
-            @RequestParam(name = "type", required = false) String type) {
-        if (course != null && faculty != null) {
-            if (type != null) {
-                try {
-                    GroupType groupType = GroupType.valueOf(type);
-                    return ResponseEntity
-                            .ok(groupService.findByCourseAndFacultyAndType(course, faculty, groupType));
-                } catch (IllegalArgumentException iae) {
-                    return ResponseEntity.badRequest().build();
-                }
-            } else {
-                return ResponseEntity.ok(groupService.findByCourseAndFaculty(course, faculty));
-            }
-        } else {
-            return ResponseEntity.ok(groupService.findAll());
+            @RequestParam(name = "type", required = false) String type)
+            throws BadRequestException {
+        try {
+            GroupType groupType = GroupType.valueOf(type);
+            return groupService.findByCourseAndFacultyAndType(course, faculty, groupType);
+        } catch (IllegalArgumentException iae) {
+            throw new BadRequestException(iae);
         }
+    }
+
+    @GetMapping(params = "name")
+    @JsonView(Views.IdInfo.class)
+    public List<Group> getByName(Group example) {
+        return groupService.findByExample(example);
     }
 
     @GetMapping("{id}")
     @JsonView(Views.IdInfo.class)
     public Group getOneById(@PathVariable("id") Group group) {
         return group;
-    }
-
-    @GetMapping(params = "name")
-    @JsonView(Views.IdInfo.class)
-    public Group getOneByName(@RequestParam String name) {
-        return groupService.findByName(name);
     }
 
     @GetMapping("{id}/lessons")
@@ -80,7 +86,7 @@ public class GroupController {
             throw new BadRequestException("startDate must be before or equal to endDate");
         }
 
-        if (!group.isActive()) {
+        if (Boolean.FALSE.equals(group.getIsActive())) {
             log.warn("Sending lessons for group {} that disappeared from site", group.getName());
         }
 

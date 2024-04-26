@@ -44,6 +44,14 @@ public class Group {
     private Long id;
 
     /**
+     * Наличие группы в файлах с сайта МАИ
+     */
+    @Column(name = "is_active")
+    @JsonProperty(value = "isActive")
+    @JsonView(Views.IdInfo.class)
+    private Boolean isActive = true;
+
+    /**
      * Название группы
      */
     @Column(unique = true)
@@ -60,7 +68,6 @@ public class Group {
     /**
      * Номер факультета группы
      */
-
     @Column
     @JsonView(Views.IdInfo.class)
     private Integer faculty;
@@ -74,14 +81,6 @@ public class Group {
     @Enumerated(EnumType.STRING)
     @JsonView(Views.IdInfo.class)
     private GroupType type;
-
-    /**
-     * Наличие группы в файлах с сайта МАИ
-     */
-    @Column(name = "is_active")
-    @JsonProperty(value = "isActive")
-    @JsonView(Views.IdInfo.class)
-    private boolean isActive = true;
 
     /**
      * Список занятий группы

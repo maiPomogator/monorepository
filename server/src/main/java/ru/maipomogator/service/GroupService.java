@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,8 +62,13 @@ public class GroupService {
         groupRepo.deleteById(id);
     }
 
-    public Group findByName(String name) {
-        return groupRepo.findByNameIgnoreCase(name);
-    }
+    public List<Group> findByExample(Group example) {
+        example.setIsActive(null);
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withIgnoreCase()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+        Example<Group> groupExample = Example.of(example, matcher);
 
+        return groupRepo.findAll(groupExample, Sort.by("name"));
+    }
 }
