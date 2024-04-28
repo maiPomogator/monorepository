@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -46,12 +45,12 @@ public class MaiUpdater {
 
     public void update() {
         Collection<Group> groupsFromMAI = maiRestClient.getAllGroups();
-        log.info("Got {} groups from MAI.", groupsFromMAI.size());
-        if (groupsFromMAI.isEmpty()) {
+        if (groupsFromMAI == null || groupsFromMAI.isEmpty()) {
             log.info("The MAI sent an empty schedule");
             return;
         }
 
+        log.info("Got {} groups from MAI.", groupsFromMAI.size());
         update2(groupsFromMAI);
     }
 
@@ -106,12 +105,9 @@ public class MaiUpdater {
                 .collect(Collectors.toMap(Professor::getSiteId, Function.identity()));
         Map<Lesson, Lesson> mapLessons = new HashMap<>(300_000);
         Collection<Lesson> allLessonsFromDB = lessonService.eagerFindAllForGroups(changedGroups.keySet());
-        for (Entry<Group, Collection<Lesson>> entry : changedGroups.entrySet()) {
-            Group group = entry.getKey();
-
+        changedGroups.forEach((group, lessonsFromMAI) -> {
             Collection<Lesson> lessonsFromDB = allLessonsFromDB.stream().filter(l -> l.getGroups().contains(group))
                     .toList();
-            Collection<Lesson> lessonsFromMAI = entry.getValue();
 
             Collection<Lesson> commonLessons = new ArrayList<>(lessonsFromDB);
             commonLessons.retainAll(lessonsFromMAI);
@@ -148,7 +144,7 @@ public class MaiUpdater {
             }
 
             groupService.save(group);
-        }
+        });
 
         log.info("{} groups updated", changedGroups.size());
     }

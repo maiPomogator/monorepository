@@ -177,5 +177,4 @@ public class Lesson implements Comparable<Lesson> {
     private String streamToString(Stream<String> stream) {
         return stream.collect(Collectors.joining(","));
     }
-
 }
