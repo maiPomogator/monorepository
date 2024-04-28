@@ -1,6 +1,7 @@
 package ru.maipomogator.bot.processors.inline;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class GroupInlineProcessor extends AbstractInlineProcessor {
     private final TimetableProcessor timetableProcessor;
 
     public GroupInlineProcessor(GroupRestClient groupRestClient, TimetableProcessor timetableProcessor) {
-        super("^[МмТт][\\dИиУу]{1,2}[ОоВвЗз]-\\d{3}[БбМмАаСс][КкВв]?[КкИи]?-\\d{2}$");
+        super("^(?:[МмТт][\\dИиСсУу]{1,2}[ОоВвЗз]-)?\\d{3}(?:[БбМмАаСс][КкВв]?[КкИи]?)?(?:-\\d{2}$)?$");
         this.groupRestClient = groupRestClient;
         this.timetableProcessor = timetableProcessor;
     }
@@ -35,18 +36,21 @@ public class GroupInlineProcessor extends AbstractInlineProcessor {
     @Override
     public Collection<? extends BaseRequest<?, ? extends BaseResponse>> process(InlineQuery query) {
         log.info("inlining group");
-        Group group = groupRestClient.findByName(query.query());
-        if (group == null) {
+        List<Group> groups = groupRestClient.findByName(query.query());
+        if (groups == null || groups.isEmpty()) {
             return List.of(new AnswerInlineQuery(query.id(),
-                    new InlineQueryResultArticle("nogroup", "Группа не найдена",
-                            "Группа %s не найдена".formatted(query.query()))).cacheTime(1));
+                    new InlineQueryResultArticle("noGroups", "Группа не найдена",
+                            "По запросу %s группа не найдена".formatted(query.query()))).cacheTime(1));
         }
-        String prefix = "grp=" + group.id();
-        InlineKeyboardMarkup keyboard = timetableProcessor.getControlKeyboard(prefix, LocalDate.now());
-        InputTextMessageContent text = timetableProcessor.getMessageContent(prefix, LocalDate.now());
 
-        List<InlineQueryResult<?>> results = List.of(
-                new InlineQueryResultArticle(prefix, group.name(), text).replyMarkup(keyboard));
+        List<InlineQueryResult<?>> results = new ArrayList<>(groups.size());
+        for (Group group : groups) {
+            String prefix = "grp=" + group.id();
+            InlineKeyboardMarkup keyboard = timetableProcessor.getControlKeyboard(prefix, LocalDate.now());
+            InputTextMessageContent text = timetableProcessor.getMessageContent(prefix, LocalDate.now());
+            results.add(new InlineQueryResultArticle(prefix, group.name(), text).replyMarkup(keyboard));
+        }
+
         return List.of(new AnswerInlineQuery(query.id(), results.toArray(InlineQueryResult[]::new)).cacheTime(1));
     }
 }

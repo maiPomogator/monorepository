@@ -23,8 +23,8 @@ public class GroupRestClient {
 
     private final RestClient restClient;
 
-    public Group findByName(String name) {
-        return restClient.get().uri("/mai/groups?name={name}", name).retrieve().body(Group.class);
+    public List<Group> findByName(String name) {
+        return restClient.get().uri("/mai/groups?name={name}", name).retrieve().body(GROUPS_LIST_TR);
     }
 
     public Group findById(String id) {

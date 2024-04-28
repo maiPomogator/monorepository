@@ -14,7 +14,6 @@ import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.BaseResponse;
 
 import ru.maipomogator.bot.clients.ProfessorRestClient;
-import ru.maipomogator.bot.model.FioComparator;
 import ru.maipomogator.bot.model.Professor;
 import ru.maipomogator.bot.processors.callback.CancelCallbackProcessor;
 
@@ -32,18 +31,24 @@ public class SelectProfessor extends AbstractMessageProcessor {
     protected Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
         String request = msg.text();
 
-        List<Professor> professors = professorRestClient.findAll();
-        professors.sort(new FioComparator(request));
-
-        String text = "Результаты поиска по запросу \"%s\":".formatted(request);
-        InlineKeyboardMarkup keyboard = getProfessorsKeyboard(professors.subList(0, Math.min(5, professors.size())));
-        return List.of(new DeleteMessage(chatId, msg.messageId()), new SendMessage(chatId, text).replyMarkup(keyboard));
+        List<Professor> professors = professorRestClient.findByFio(request);
+        SendMessage response;
+        if (professors == null || professors.isEmpty()) {
+            response = new SendMessage(chatId,
+                    "По запросу \"%s\" преподаватель не найден. На всякий случай проверьте ввод. Если вы уверены, что всё правильно, напишите в @maipomogator_chat"
+                            .formatted(request));
+        } else {
+            InlineKeyboardMarkup keyboard = getProfessorsKeyboard(professors);
+            response = new SendMessage(chatId, "Результаты поиска по запросу \"%s\":".formatted(request))
+                    .replyMarkup(keyboard);
+        }
+        return List.of(new DeleteMessage(chatId, msg.messageId()), response);
     }
 
     private InlineKeyboardMarkup getProfessorsKeyboard(List<Professor> professors) {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         for (Professor professor : professors) {
-            keyboard.addRow(new InlineKeyboardButton(professor.getFullName()).callbackData("prf=" + professor.id()));
+            keyboard.addRow(new InlineKeyboardButton(professor.fio()).callbackData("prf=" + professor.id()));
         }
         keyboard.addRow(CancelCallbackProcessor.cancelButton());
         return keyboard;

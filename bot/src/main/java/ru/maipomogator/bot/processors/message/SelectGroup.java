@@ -20,32 +20,35 @@ import ru.maipomogator.bot.processors.callback.CancelCallbackProcessor;
 @Component
 public class SelectGroup extends AbstractMessageProcessor {
 
-    private final GroupRestClient groupsRestClient;
+    private final GroupRestClient groupRestClient;
 
-    protected SelectGroup(GroupRestClient groupsRestClient) {
-        // регулярка строгая, не позволяет отклонений от правильного написания
-        super("^[МмТт][\\dИиУу]{1,2}[ОоВвЗз]-\\d{3}[БбМмАаСс][КкВв]?[КкИи]?-\\d{2}$");
-        this.groupsRestClient = groupsRestClient;
+    protected SelectGroup(GroupRestClient groupRestClient) {
+        super("^(?:[МмТт][\\dИиСсУу]{1,2}[ОоВвЗз]-)?\\d{3}(?:[БбМмАаСс][КкВв]?[КкИи]?)?(?:-\\d{2}$)?$");
+        this.groupRestClient = groupRestClient;
     }
 
     @Override
     protected Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
         String request = msg.text();
-
-        Group group = groupsRestClient.findByName(request);
-        if (group == null) {
-            return List.of(new SendMessage(chatId,
-                    "Группа не найдена. Проверьте название. Если вы уверены, что оно правильное, напишите в @maipomogator_chat"));
+        List<Group> groups = groupRestClient.findByName(request);
+        SendMessage response;
+        if (groups == null || groups.isEmpty()) {
+            response = new SendMessage(chatId,
+                    "По запросу \"%s\" группа не найдена. На всякий случай проверьте ввод. Если вы уверены, что всё правильно, напишите в @maipomogator_chat"
+                            .formatted(request));
+        } else {
+            InlineKeyboardMarkup keyboard = getInlineKeyboard(groups);
+            response = new SendMessage(chatId, "Результаты поиска по запросу \"%s\":".formatted(request))
+                    .replyMarkup(keyboard);
         }
-
-        String text = "Результаты поиска по запросу \"%s\":".formatted(request);
-        InlineKeyboardMarkup keyboard = getInlineKeyboard(group);
-        return List.of(new DeleteMessage(chatId, msg.messageId()), new SendMessage(chatId, text).replyMarkup(keyboard));
+        return List.of(new DeleteMessage(chatId, msg.messageId()), response);
     }
 
-    private InlineKeyboardMarkup getInlineKeyboard(Group group) {
+    private InlineKeyboardMarkup getInlineKeyboard(List<Group> groups) {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-        keyboard.addRow(new InlineKeyboardButton(group.name()).callbackData("grp=" + group.id()));
+        for (Group group : groups) {
+            keyboard.addRow(new InlineKeyboardButton(group.name()).callbackData("grp=" + group.id()));
+        }
         keyboard.addRow(CancelCallbackProcessor.cancelButton());
         return keyboard;
     }

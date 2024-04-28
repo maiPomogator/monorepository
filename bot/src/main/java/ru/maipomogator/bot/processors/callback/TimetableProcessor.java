@@ -134,7 +134,7 @@ public class TimetableProcessor extends AbstractCallbackProcessor {
         StringBuilder sb = new StringBuilder();
         if (isProfessor) {
             Professor prf = professorRestClient.findById(entId);
-            sb.append("*" + prf.getFullName() + "*").append(lineSeparator());
+            sb.append("*" + prf.fio() + "*").append(lineSeparator());
             dayLessons = professorRestClient.getLessonsBetweenDates(entId, targetDate, targetDate)
                     .stream()
                     .filter(Lesson::isActive).sorted().toList();
@@ -161,7 +161,7 @@ public class TimetableProcessor extends AbstractCallbackProcessor {
     private String formatProfessors(Collection<Professor> professors) {
         UUID zeroUuid = new UUID(0, 0);
         professors.removeIf(p -> p.siteId().equals(zeroUuid));
-        return professors.stream().map(Professor::getFullName).collect(Collectors.joining(", "))
+        return professors.stream().map(Professor::fio).collect(Collectors.joining(", "))
                 + (professors.isEmpty() ? "" : lineSeparator());
     }
 

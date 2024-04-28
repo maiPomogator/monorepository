@@ -69,7 +69,8 @@ public class ExamsCallbackProcessor extends AbstractCallbackProcessor {
 
     private InlineKeyboardMarkup getKeyboard(String prefix) {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-        InlineKeyboardButton back = new InlineKeyboardButton("Назад к расписанию занятий").callbackData(prefix + ";date=today");
+        InlineKeyboardButton back = new InlineKeyboardButton("Назад к расписанию занятий")
+                .callbackData(prefix + ";date=today");
         keyboard.addRow(back);
         return keyboard;
     }
@@ -101,7 +102,7 @@ public class ExamsCallbackProcessor extends AbstractCallbackProcessor {
         if (isProfessor) {
             Professor prf = professorRestClient.findById(entId);
             sb.append("*Экзамены*").append(lineSeparator());
-            sb.append("*" + prf.getFullName() + "*").append(lineSeparator()).append(lineSeparator());
+            sb.append("*" + prf.fio() + "*").append(lineSeparator()).append(lineSeparator());
             exams = professorRestClient
                     .getLessonsBetweenDates(entId, LocalDate.of(2024, 5, 1), LocalDate.of(2024, 7, 1))
                     .stream().filter(l -> l.types().contains(LessonType.EXAM))
@@ -145,7 +146,7 @@ public class ExamsCallbackProcessor extends AbstractCallbackProcessor {
     private String formatProfessors(Collection<Professor> professors) {
         UUID zeroUuid = new UUID(0, 0);
         professors.removeIf(p -> p.siteId().equals(zeroUuid));
-        return professors.stream().map(Professor::getFullName).collect(Collectors.joining(", "))
+        return professors.stream().map(Professor::fio).collect(Collectors.joining(", "))
                 + (professors.isEmpty() ? "" : lineSeparator());
     }
 

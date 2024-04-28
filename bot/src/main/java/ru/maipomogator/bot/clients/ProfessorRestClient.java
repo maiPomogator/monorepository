@@ -33,6 +33,14 @@ public class ProfessorRestClient {
         return professors;
     }
 
+    public List<Professor> findByFio(String fio) {
+        List<Professor> professors = restClient.get().uri("/mai/professors?fio={fio}", fio).retrieve().body(PROFS_LIST_TR);
+        if (professors == null) {
+            return Collections.emptyList();
+        }
+        return professors;
+    }
+
     public Professor findById(String id) {
         return restClient.get().uri("/mai/professors/{id}", id).retrieve().body(Professor.class);
     }

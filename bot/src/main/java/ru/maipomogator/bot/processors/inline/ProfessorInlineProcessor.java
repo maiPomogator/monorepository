@@ -17,7 +17,6 @@ import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.response.BaseResponse;
 
 import ru.maipomogator.bot.clients.ProfessorRestClient;
-import ru.maipomogator.bot.model.FioComparator;
 import ru.maipomogator.bot.model.Professor;
 import ru.maipomogator.bot.processors.callback.TimetableProcessor;
 
@@ -35,17 +34,20 @@ public class ProfessorInlineProcessor extends AbstractInlineProcessor {
 
     @Override
     public Collection<? extends BaseRequest<?, ? extends BaseResponse>> process(InlineQuery query) {
-        List<Professor> professors = professorRestClient.findAll();
-        professors.sort(new FioComparator(query.query()));
+        String request = query.query();
+        List<Professor> professors = professorRestClient.findByFio(request);
+        if (professors == null || professors.isEmpty()) {
+            return List.of(new AnswerInlineQuery(query.id(),
+                    new InlineQueryResultArticle("noProfessors", "Преподаватель не найден",
+                            "По запросу %s преподаватель не найден".formatted(request))).cacheTime(1));
+        }
 
-        List<InlineQueryResult<?>> results = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            Professor prf = professors.get(i);
-            String prefix = "prf=" + prf.id();
+        List<InlineQueryResult<?>> results = new ArrayList<>(professors.size());
+        for (Professor professor : professors) {
+            String prefix = "prf=" + professor.id();
             InlineKeyboardMarkup keyboard = timetableProcessor.getControlKeyboard(prefix, LocalDate.now());
             InputTextMessageContent text = timetableProcessor.getMessageContent(prefix, LocalDate.now());
-            results.add(
-                    new InlineQueryResultArticle(prefix, prf.getFullName(), text).replyMarkup(keyboard));
+            results.add(new InlineQueryResultArticle(prefix, professor.fio(), text).replyMarkup(keyboard));
         }
 
         return List.of(new AnswerInlineQuery(query.id(), results.toArray(InlineQueryResult[]::new)).cacheTime(1));
