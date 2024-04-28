@@ -1,4 +1,4 @@
-package ru.maipomogator.model;
+package ru.maipomogator.domain.lesson;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

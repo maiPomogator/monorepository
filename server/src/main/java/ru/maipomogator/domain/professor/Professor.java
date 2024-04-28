@@ -1,4 +1,4 @@
-package ru.maipomogator.model;
+package ru.maipomogator.domain.professor;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import ru.maipomogator.domain.Views;
+import ru.maipomogator.domain.lesson.Lesson;
 
 @NoArgsConstructor
 @Getter

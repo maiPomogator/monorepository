@@ -1,4 +1,4 @@
-package ru.maipomogator.controllers;
+package ru.maipomogator.domain.professor;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -15,11 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.RequiredArgsConstructor;
-import ru.maipomogator.model.Lesson;
-import ru.maipomogator.model.Professor;
-import ru.maipomogator.model.Views;
-import ru.maipomogator.service.LessonService;
-import ru.maipomogator.service.ProfessorService;
+import ru.maipomogator.domain.Views;
+import ru.maipomogator.domain.lesson.Lesson;
+import ru.maipomogator.domain.lesson.LessonService;
 
 @RestController
 @RequestMapping("/mai/professors")

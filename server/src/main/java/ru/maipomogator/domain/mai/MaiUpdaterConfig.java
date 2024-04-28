@@ -1,4 +1,4 @@
-package ru.maipomogator.updaters.mai;
+package ru.maipomogator.domain.mai;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

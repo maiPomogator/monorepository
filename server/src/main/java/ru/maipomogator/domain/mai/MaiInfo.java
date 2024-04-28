@@ -1,4 +1,4 @@
-package ru.maipomogator.updaters.mai;
+package ru.maipomogator.domain.mai;
 
 import java.util.List;
 

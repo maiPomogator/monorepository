@@ -1,4 +1,4 @@
-package ru.maipomogator.updaters.mai.adapters;
+package ru.maipomogator.config.gson.adapters;
 
 import java.lang.reflect.Type;
 

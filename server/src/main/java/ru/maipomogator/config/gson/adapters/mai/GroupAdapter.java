@@ -1,4 +1,4 @@
-package ru.maipomogator.updaters.mai.adapters;
+package ru.maipomogator.config.gson.adapters.mai;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -10,8 +10,9 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import lombok.extern.log4j.Log4j2;
-import ru.maipomogator.model.Group;
-import ru.maipomogator.model.GroupType;
+import ru.maipomogator.config.gson.adapters.GsonAdapter;
+import ru.maipomogator.domain.group.Group;
+import ru.maipomogator.domain.group.GroupType;
 
 @Log4j2
 

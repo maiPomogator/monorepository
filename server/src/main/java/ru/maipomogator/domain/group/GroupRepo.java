@@ -1,13 +1,10 @@
-package ru.maipomogator.repo;
+package ru.maipomogator.domain.group;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import ru.maipomogator.model.Group;
-import ru.maipomogator.model.GroupType;
 
 @Repository
 public interface GroupRepo extends JpaRepository<Group, Long> {

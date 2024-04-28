@@ -1,4 +1,4 @@
-package ru.maipomogator.service;
+package ru.maipomogator.domain.professor;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import ru.maipomogator.model.Professor;
-import ru.maipomogator.repo.ProfessorRepo;
 
 @Service
 @Transactional(readOnly = true)

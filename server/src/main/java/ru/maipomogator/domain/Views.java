@@ -1,4 +1,4 @@
-package ru.maipomogator.model;
+package ru.maipomogator.domain;
 
 public final class Views {
     public interface Id {}

@@ -1,4 +1,4 @@
-package ru.maipomogator.model;
+package ru.maipomogator.domain.group;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

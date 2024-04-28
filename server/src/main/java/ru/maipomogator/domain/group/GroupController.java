@@ -1,4 +1,4 @@
-package ru.maipomogator.controllers;
+package ru.maipomogator.domain.group;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -16,12 +16,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import ru.maipomogator.model.Group;
-import ru.maipomogator.model.GroupType;
-import ru.maipomogator.model.Lesson;
-import ru.maipomogator.model.Views;
-import ru.maipomogator.service.GroupService;
-import ru.maipomogator.service.LessonService;
+import ru.maipomogator.domain.Views;
+import ru.maipomogator.domain.lesson.Lesson;
+import ru.maipomogator.domain.lesson.LessonService;
 
 @Log4j2
 @RestController

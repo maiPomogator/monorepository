@@ -1,4 +1,4 @@
-package ru.maipomogator.controllers;
+package ru.maipomogator.domain.mai;
 
 import java.util.List;
 
@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import ru.maipomogator.service.GroupService;
-import ru.maipomogator.updaters.mai.MaiInfo;
+import ru.maipomogator.domain.group.GroupService;
 
 @RestController
 @RequestMapping

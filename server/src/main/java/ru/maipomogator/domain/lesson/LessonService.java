@@ -1,4 +1,4 @@
-package ru.maipomogator.service;
+package ru.maipomogator.domain.lesson;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,10 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import ru.maipomogator.model.Group;
-import ru.maipomogator.model.Lesson;
-import ru.maipomogator.model.Professor;
-import ru.maipomogator.repo.LessonRepo;
+import ru.maipomogator.domain.group.Group;
+import ru.maipomogator.domain.professor.Professor;
 
 @Service
 @Transactional(readOnly = true)

@@ -1,4 +1,4 @@
-package ru.maipomogator.clients;
+package ru.maipomogator.domain.mai;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -13,8 +13,8 @@ import com.google.gson.reflect.TypeToken;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import ru.maipomogator.model.Group;
-import ru.maipomogator.model.Lesson;
+import ru.maipomogator.domain.group.Group;
+import ru.maipomogator.domain.lesson.Lesson;
 
 @Log4j2
 @Component

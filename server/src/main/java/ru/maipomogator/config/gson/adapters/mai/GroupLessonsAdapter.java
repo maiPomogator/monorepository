@@ -1,4 +1,4 @@
-package ru.maipomogator.updaters.mai.adapters;
+package ru.maipomogator.config.gson.adapters.mai;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -21,9 +21,10 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import lombok.extern.log4j.Log4j2;
-import ru.maipomogator.model.Lesson;
-import ru.maipomogator.model.LessonType;
-import ru.maipomogator.model.Professor;
+import ru.maipomogator.config.gson.adapters.GsonAdapter;
+import ru.maipomogator.domain.lesson.Lesson;
+import ru.maipomogator.domain.lesson.LessonType;
+import ru.maipomogator.domain.professor.Professor;
 
 @Log4j2
 @Component

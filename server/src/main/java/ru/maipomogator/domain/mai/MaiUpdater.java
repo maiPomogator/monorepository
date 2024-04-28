@@ -1,4 +1,4 @@
-package ru.maipomogator.updaters.mai;
+package ru.maipomogator.domain.mai;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,13 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import ru.maipomogator.clients.MaiRestClient;
-import ru.maipomogator.model.Group;
-import ru.maipomogator.model.Lesson;
-import ru.maipomogator.model.Professor;
-import ru.maipomogator.service.GroupService;
-import ru.maipomogator.service.LessonService;
-import ru.maipomogator.service.ProfessorService;
+import ru.maipomogator.domain.group.Group;
+import ru.maipomogator.domain.group.GroupService;
+import ru.maipomogator.domain.lesson.Lesson;
+import ru.maipomogator.domain.lesson.LessonService;
+import ru.maipomogator.domain.professor.Professor;
+import ru.maipomogator.domain.professor.ProfessorService;
 
 @RequiredArgsConstructor
 @Log4j2

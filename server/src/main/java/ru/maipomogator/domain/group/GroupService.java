@@ -1,4 +1,4 @@
-package ru.maipomogator.service;
+package ru.maipomogator.domain.group;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,9 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import ru.maipomogator.model.Group;
-import ru.maipomogator.model.GroupType;
-import ru.maipomogator.repo.GroupRepo;
 
 @Service
 @Transactional(readOnly = true)

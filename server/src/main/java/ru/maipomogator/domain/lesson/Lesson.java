@@ -1,4 +1,4 @@
-package ru.maipomogator.model;
+package ru.maipomogator.domain.lesson;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -29,6 +29,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.maipomogator.domain.Views;
+import ru.maipomogator.domain.group.Group;
+import ru.maipomogator.domain.professor.Professor;
 
 @NoArgsConstructor
 @Getter
