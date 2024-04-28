@@ -6,7 +6,6 @@ import java.lang.reflect.Type;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.TypeAdapter;
-import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
@@ -73,6 +72,6 @@ public class GroupAdapter extends TypeAdapter<Group> implements GsonAdapter {
 
     @Override
     public Type getType() {
-        return new TypeToken<Group>() {}.getType();
+        return Group.class;
     }
 }

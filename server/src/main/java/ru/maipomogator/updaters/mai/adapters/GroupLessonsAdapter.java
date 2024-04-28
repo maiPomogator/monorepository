@@ -7,9 +7,11 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Component;
 
@@ -24,133 +26,40 @@ import ru.maipomogator.model.LessonType;
 import ru.maipomogator.model.Professor;
 
 @Log4j2
-
 @Component
 public class GroupLessonsAdapter extends TypeAdapter<Collection<Lesson>> implements GsonAdapter {
 
-    /**
-     * регулярное выражение, соответствующее времени в формате HH:mm:ss например 10:45:00
-     */
-    private static final String TIME_REGEX = "\\d?\\d:\\d\\d:\\d\\d";
-    /**
-     * регулярное выражение, соответствующее дате в формате dd.MM.yyyy например 05.09.2022
-     */
-    private static final String DATE_REGEX = "\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d";
+    private static final Pattern DATE_PATTERN = Pattern.compile("\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d");
+    private static final Pattern TIME_PATTERN = Pattern.compile("\\d?\\d:\\d\\d:\\d\\d");
 
-    private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    private static final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("H:mm:ss");
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("H:mm:ss");
+
+    private static final UUID ZERO_UUID = new UUID(0, 0);
 
     @Override
     public Collection<Lesson> read(JsonReader in) throws IOException {
-        log.debug("Start deserializing lessons");
-        // используется для исключения дублирования преподавателей с одинаковыми UUID внутри одной группы
-        Map<UUID, Professor> groupProfessors = new HashMap<>();
+        Matcher dateMatcher = DATE_PATTERN.matcher("");
         Collection<Lesson> lessons = new ArrayList<>();
+        String groupName = "Имя не указано";
 
-        String jsonKey;
         in.beginObject(); // желтая скобка (root)
+        String jsonKey;
         while (in.hasNext()) {
             jsonKey = in.nextName();
             if (jsonKey.equals("group")) {
-                in.nextString();
-            } else if (jsonKey.matches(DATE_REGEX)) {
-                LocalDate currentDate = LocalDate.parse(jsonKey, dateFormat);
-                in.beginObject(); // фиолетовая скобка (после даты)
-                while (in.hasNext()) {
-                    jsonKey = in.nextName();
-                    if (jsonKey.equals("day")) {
-                        in.skipValue(); // пропускаем название дня недели, указанное в JSON`е
-                    } else if (jsonKey.equals("pairs")) {
-                        in.beginObject(); // синяя скобка (внутри 'pairs')
-                        while (in.hasNext()) {
-                            jsonKey = in.nextName();
-                            if (jsonKey.matches(TIME_REGEX)) {
-                                in.beginObject(); // желтая скобка (конкретная пара, перед названием)
-                                // следующий цикл - костыль для случаев, когда в исходных файлах на одно время указано
-                                // несколько пар, приходится их все также сохранять на одно время 😡
-                                while (in.hasNext()) {
-                                    Lesson newLesson = new Lesson();
-                                    newLesson.setDate(currentDate);
-                                    newLesson.setName(in.nextName());
-                                    in.beginObject(); // фиолетовая скобка (конкретная пара, после названия)
-                                    while (in.hasNext()) {
-                                        switch (in.nextName()) {
-                                            case "time_start":
-                                                log.trace("Parsing time_start");
-                                                newLesson.setTimeStart(LocalTime.parse(in.nextString(), timeFormat));
-                                                break;
-                                            case "time_end":
-                                                log.trace("Parsing time_end");
-                                                newLesson.setTimeEnd(LocalTime.parse(in.nextString(), timeFormat));
-                                                break;
-                                            case "lector":
-                                                log.trace("Parsing lectors");
-                                                in.beginObject(); // синяя скобка (внутри 'lector')
-                                                while (in.hasNext()) {
-                                                    UUID uuid = UUID.fromString(in.nextName());
-                                                    if (groupProfessors.containsKey(uuid)) {
-                                                        log.trace("Found already parsed professor with uuid " + uuid);
-                                                        newLesson.addProfessor(groupProfessors.get(uuid));
-                                                        in.skipValue();
-                                                    } else {
-                                                        log.trace("Found new professor with uuid " + uuid);
-                                                        // в некоторых ФИО между словами два пробела
-                                                        Professor pr = new Professor(uuid,
-                                                                in.nextString().replace("  ", " "));
-                                                        newLesson.addProfessor(pr);
-                                                        groupProfessors.put(uuid, pr);
-                                                    }
-                                                }
-                                                in.endObject(); // синяя скобка (внутри 'lector')
-                                                break;
-                                            case "type":
-                                                log.trace("Parsing lesson types");
-                                                in.beginObject(); // синяя скобка (внутри 'type')
-                                                while (in.hasNext()) {
-                                                    newLesson.addType(convertStringToLessonType(in.nextName()));
-                                                    in.skipValue();
-                                                }
-                                                in.endObject(); // синяя скобка (внутри 'type')
-                                                break;
-                                            case "room":
-                                                log.trace("Parsing rooms");
-                                                in.beginObject(); // синяя скобка (внутри 'room')
-                                                while (in.hasNext()) {
-                                                    // пропускаем ключ, т.к. там UUID, который пока не используется
-                                                    in.skipValue();
-                                                    newLesson.addRoom(in.nextString());
-                                                }
-                                                in.endObject(); // синяя скобка (внутри 'room')
-                                                break;
-                                            case "lms", "teams", "other":
-                                                log.trace("Skipping lms/teams/other");
-                                                in.skipValue();
-                                                break;
-                                            default:
-                                                log.warn(
-                                                        "Encountered an unknown field inside the lesson. Skipping it.");
-                                        }
-                                    }
-                                    in.endObject(); // фиолетовая скобка (конкретная пара, после названия)
-                                    lessons.add(newLesson);
-                                } // конец костыля (см. сверху)
-                                in.endObject(); // желтая скобка (конкретная пара, перед названием)
-                            } else {
-                                log.error("Encountered an unknown field inside 'pairs' that is not time. Skipping it.");
-                            }
-                        }
-                        in.endObject(); // синяя скобка (внутри 'pairs')
-                    } else {
-                        log.warn("Encountered an unknown field inside a day. Skipping it.");
-                    }
-                }
-                in.endObject(); // фиолетовая скобка (после даты)
+                groupName = in.nextString();
+            } else if (dateMatcher.reset(jsonKey).find()) {
+                LocalDate currentDate = LocalDate.parse(jsonKey, DATE_FORMAT);
+                lessons.addAll(parseDay(currentDate, in));
             } else {
-                log.warn("Encountered an unknown field (neither 'group', nor date). Skipping it.");
+                log.warn("Encountered an unknown field (neither 'group', nor 'date'). Skipping it.");
             }
+
         }
         in.endObject(); // желтая скобка (root)
-        log.debug("Returning {} lessons", lessons.size());
+
+        log.debug("Returning {} lessons for group \"{}\"", lessons.size(), groupName);
         return lessons;
     }
 
@@ -162,6 +71,132 @@ public class GroupLessonsAdapter extends TypeAdapter<Collection<Lesson>> impleme
     @Override
     public Type getType() {
         return new TypeToken<Collection<Lesson>>() {}.getType();
+    }
+
+    private Collection<Lesson> parseDay(LocalDate currentDate, JsonReader in) throws IOException {
+        Matcher timeMatcher = TIME_PATTERN.matcher("");
+        Collection<Lesson> dayLessons = new HashSet<>();
+
+        in.beginObject(); // фиолетовая скобка (после даты)
+        while (in.hasNext()) {
+            String jsonKey = in.nextName();
+            if (jsonKey.equals("day")) {
+                in.skipValue(); // пропускаем название дня недели, указанное в JSON`е
+            } else if (jsonKey.equals("pairs")) {
+                in.beginObject(); // синяя скобка (внутри 'pairs')
+                while (in.hasNext()) {
+                    jsonKey = in.nextName();
+                    if (timeMatcher.reset(jsonKey).find()) {
+                        dayLessons.addAll(parseTimeLessons(currentDate, in));
+                    } else {
+                        log.error("Encountered an unknown field inside 'pairs' that is not time. Skipping it.");
+                    }
+                }
+                in.endObject(); // синяя скобка (внутри 'pairs')
+            } else {
+                log.warn("Encountered an unknown field inside a day. Skipping it.");
+            }
+        }
+        in.endObject(); // фиолетовая скобка (после даты)
+
+        return dayLessons;
+    }
+
+    private Collection<Lesson> parseTimeLessons(LocalDate currentDate, JsonReader in) throws IOException {
+        Collection<Lesson> timeLessons = new HashSet<>();
+
+        in.beginObject(); // желтая скобка (конкретная пара, перед названием)
+        while (in.hasNext()) {// цикл - костыль для случаев, когда в исходных файлах на одно время указано несколько пар
+            timeLessons.add(parseLesson(currentDate, in));
+        }
+        in.endObject(); // желтая скобка (конкретная пара, перед названием)
+
+        return timeLessons;
+    }
+
+    private Lesson parseLesson(LocalDate currentDate, JsonReader in) throws IOException {
+        Lesson newLesson = new Lesson();
+        newLesson.setDate(currentDate);
+        newLesson.setName(in.nextName());
+
+        in.beginObject(); // фиолетовая скобка (конкретная пара, после названия)
+        while (in.hasNext()) {
+            String jsonKey = in.nextName();
+            log.trace("Parsing {}", jsonKey);
+            switch (jsonKey) {
+                case "time_start":
+                    newLesson.setTimeStart(LocalTime.parse(in.nextString(), TIME_FORMAT));
+                    break;
+                case "time_end":
+                    newLesson.setTimeEnd(LocalTime.parse(in.nextString(), TIME_FORMAT));
+                    break;
+                case "lector":
+                    newLesson.setProfessors(parseProfessors(in));
+                    break;
+                case "type":
+                    newLesson.setTypes(parseTypes(in));
+                    break;
+                case "room":
+                    newLesson.setRooms(parseRooms(in));
+                    break;
+                case "lms", "teams", "other":
+                    in.skipValue();
+                    break;
+                default:
+                    log.warn("Encountered an unknown field inside the lesson. Skipping it.");
+                    break;
+            }
+        }
+        in.endObject(); // фиолетовая скобка (конкретная пара, после названия)
+
+        return newLesson;
+    }
+
+    private Set<Professor> parseProfessors(JsonReader in) throws IOException {
+        Set<Professor> lessonProfessors = new HashSet<>();
+
+        in.beginObject(); // синяя скобка (внутри 'lector')
+        while (in.hasNext()) {
+            UUID siteId = UUID.fromString(in.nextName());
+            if (siteId.equals(ZERO_UUID)) {
+                log.trace("Skipped zero professor." + siteId);
+                in.skipValue();
+            } else {
+                log.trace("Added professor with UUID=" + siteId);
+                String fio = in.nextString().replace("  ", " "); // в некоторых ФИО между словами два пробела
+                lessonProfessors.add(new Professor(siteId, fio));
+            }
+        }
+        in.endObject(); // синяя скобка (внутри 'lector')
+
+        return lessonProfessors;
+    }
+
+    private Set<LessonType> parseTypes(JsonReader in) throws IOException {
+        Set<LessonType> lessonTypes = new HashSet<>();
+
+        in.beginObject(); // синяя скобка (внутри 'type')
+        while (in.hasNext()) {
+            lessonTypes.add(convertStringToLessonType(in.nextName()));
+            in.skipValue();
+        }
+        in.endObject(); // синяя скобка (внутри 'type')
+
+        return lessonTypes;
+    }
+
+    private Set<String> parseRooms(JsonReader in) throws IOException {
+        Set<String> lessonRooms = new HashSet<>();
+
+        in.beginObject(); // синяя скобка (внутри 'room')
+        while (in.hasNext()) {
+            // пропускаем ключ, т.к. там UUID, который пока не используется
+            in.skipValue();
+            lessonRooms.add(in.nextString());
+        }
+        in.endObject(); // синяя скобка (внутри 'room')
+
+        return lessonRooms;
     }
 
     private LessonType convertStringToLessonType(String lessonTypeStr) {
