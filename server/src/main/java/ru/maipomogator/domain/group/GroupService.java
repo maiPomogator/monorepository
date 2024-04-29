@@ -1,7 +1,6 @@
 package ru.maipomogator.domain.group;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Example;
@@ -17,10 +16,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GroupService {
     private final GroupRepo groupRepo;
-
-    public Optional<Group> findById(Long id) {
-        return groupRepo.findById(id);
-    }
 
     public List<Group> findAll() {
         return groupRepo.findAll();

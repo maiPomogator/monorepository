@@ -1,8 +1,6 @@
 package ru.maipomogator.domain.professor;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -17,14 +15,6 @@ import lombok.RequiredArgsConstructor;
 public class ProfessorService {
     private final ProfessorRepo professorRepo;
 
-    public Optional<Professor> findById(Long id) {
-        return professorRepo.findById(id);
-    }
-
-    public Optional<Professor> findBySiteId(UUID siteId) {
-        return professorRepo.findBySiteId(siteId);
-    }
-
     public List<Professor> findAll() {
         return professorRepo.findAll();
     }
@@ -37,11 +27,6 @@ public class ProfessorService {
     @Transactional
     public List<Professor> saveAll(Iterable<Professor> professors) {
         return professorRepo.saveAll(professors);
-    }
-
-    @Transactional
-    public void delete(Long id) {
-        professorRepo.deleteById(id);
     }
 
     public List<Professor> findByFio(String fio) {

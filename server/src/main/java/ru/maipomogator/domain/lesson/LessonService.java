@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,27 +18,9 @@ import ru.maipomogator.domain.professor.Professor;
 public class LessonService {
     private final LessonRepo lessonRepo;
 
-    public Optional<Lesson> findById(Long id) {
-        return lessonRepo.findById(id);
-    }
-
-    public List<Lesson> findAll() {
-        return lessonRepo.findAll();
-    }
-
-    @Transactional
-    public Lesson save(Lesson lesson) {
-        return lessonRepo.save(lesson);
-    }
-
     @Transactional
     public List<Lesson> saveAll(Iterable<Lesson> lessons) {
         return lessonRepo.saveAll(lessons);
-    }
-
-    @Transactional
-    public void delete(Long id) {
-        lessonRepo.deleteById(id);
     }
 
     public List<Lesson> eagerFindAllForGroups(Collection<Group> groups) {
