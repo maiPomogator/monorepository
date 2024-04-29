@@ -172,7 +172,7 @@ public class Lesson implements Comparable<Lesson> {
                 ", timeStart=" + timeStart +
                 ", timeEnd=" + timeEnd +
                 ", groups=[" + streamToString(groups.stream().map(Group::getName).sorted()) + "]" +
-                ", professors=[" + streamToString(professors.stream().map(Professor::getFullName).sorted()) + "]" +
+                ", professors=[" + streamToString(professors.stream().map(Professor::getFio).sorted()) + "]" +
                 ", rooms=" + rooms.toString() +
                 '}';
     }

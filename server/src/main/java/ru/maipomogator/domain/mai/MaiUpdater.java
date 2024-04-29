@@ -26,7 +26,7 @@ import ru.maipomogator.domain.professor.ProfessorService;
 
 @RequiredArgsConstructor
 @Log4j2
-@Component("newUpdater")
+@Component
 public class MaiUpdater {
 
     private final GroupService groupService;

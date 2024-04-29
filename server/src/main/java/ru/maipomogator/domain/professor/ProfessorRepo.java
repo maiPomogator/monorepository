@@ -8,5 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProfessorRepo extends JpaRepository<Professor, Long> {
+
     Optional<Professor> findBySiteId(UUID siteId);
 }

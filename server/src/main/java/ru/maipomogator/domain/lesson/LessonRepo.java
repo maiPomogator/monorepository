@@ -3,6 +3,7 @@ package ru.maipomogator.domain.lesson;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -30,6 +31,10 @@ public interface LessonRepo extends JpaRepository<Lesson, Long> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
 
+    default List<Lesson> findEagerByIdInOrderByDateAscTimeStartAsc(List<Long> lessonIds) {
+        return findEagerByIdIn(lessonIds, Sort.by("date", "timeStart"));
+    }
+
     @EntityGraph(attributePaths = { "types", "rooms", "professors", "groups" })
-    List<Lesson> findEagerByIdInOrderByDateAscTimeStartAsc(List<Long> lessonIds);
+    List<Lesson> findEagerByIdIn(List<Long> lessonIds, Sort sort);
 }

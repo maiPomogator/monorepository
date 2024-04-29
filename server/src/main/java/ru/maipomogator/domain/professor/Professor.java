@@ -124,7 +124,7 @@ public class Professor {
      */
     @ToString.Include(name = "name", rank = 1)
     @JsonIgnore
-    public String getFullName() {
+    public String getFio() {
         StringBuilder fullNameBuilder = new StringBuilder();
 
         if (lastName != null && !lastName.isEmpty()) {

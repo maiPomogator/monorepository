@@ -1,6 +1,7 @@
 package ru.maipomogator.domain.group;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Example;
@@ -16,17 +17,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GroupService {
     private final GroupRepo groupRepo;
+    @Deprecated
+    private final GroupLegacyMapper legacyMapper;
 
     public List<Group> findAll() {
         return groupRepo.findAll();
-    }
-
-    public List<Group> findByCourseAndFaculty(Integer course, Integer faculty) {
-        return groupRepo.findByCourseAndFaculty(course, faculty);
-    }
-
-    public List<Group> findByCourseAndFacultyAndType(Integer course, Integer faculty, GroupType type) {
-        return groupRepo.findByCourseAndFacultyAndType(course, faculty, type);
     }
 
     @Cacheable(value = "allFaculties")
@@ -54,7 +49,34 @@ public class GroupService {
         groupRepo.deleteById(id);
     }
 
-    public List<Group> findByExample(Group example) {
+    @Deprecated
+    public Optional<GroupLegacyDTO> legacyGetOneById(Long id) {
+        return groupRepo.findById(id).map(legacyMapper::toLegacyDTO);
+    }
+
+    @Deprecated
+    public List<GroupLegacyDTO> legacyFindAll() {
+        return legacyMapper.toLegacyDTOs(groupRepo.findAll());
+    }
+
+    @Deprecated
+    public List<GroupLegacyDTO> legacyFindByCourseAndFaculty(Integer course, Integer faculty) {
+        return legacyMapper.toLegacyDTOs(groupRepo.findByCourseAndFaculty(course, faculty));
+    }
+
+    @Deprecated
+    public List<GroupLegacyDTO> legacyFindByCourseAndFacultyAndType(Integer course, Integer faculty, GroupType type) {
+        return legacyMapper.toLegacyDTOs(groupRepo.findByCourseAndFacultyAndType(course, faculty, type));
+    }
+
+    @Deprecated
+    public List<GroupLegacyDTO> legacyFindByExample(String name) {
+        return legacyMapper.toLegacyDTOs(findByExample(name));
+    }
+
+    private List<Group> findByExample(String name) {
+        Group example = new Group();
+        example.setName(name);
         example.setIsActive(null);
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withIgnoreCase()

@@ -12,41 +12,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.annotation.JsonView;
-
 import lombok.RequiredArgsConstructor;
-import ru.maipomogator.domain.Views;
-import ru.maipomogator.domain.lesson.Lesson;
+import ru.maipomogator.domain.lesson.LessonLegacyDTO;
 import ru.maipomogator.domain.lesson.LessonService;
 
+@Deprecated
 @RestController
 @RequestMapping("/mai/professors")
 @RequiredArgsConstructor
-public class ProfessorController {
+public class ProfessorLegacyController {
     private final ProfessorService professorService;
     private final LessonService lessonService;
 
     @GetMapping()
-    @JsonView(Views.IdInfo.class)
-    public List<Professor> getAll() {
-        return professorService.findAll();
+    public List<ProfessorLegacyDTO> getAll() {
+        return professorService.legacyFindAll();
     }
 
     @GetMapping(params = "fio")
-    @JsonView(Views.IdInfo.class)
-    public List<Professor> getByFio(String fio) {
-        return professorService.findByFio(fio);
+    public List<ProfessorLegacyDTO> getByFio(String fio) {
+        return professorService.legacyFindByFio(fio);
     }
 
     @GetMapping("{id}")
-    @JsonView(Views.IdInfo.class)
-    public Professor getOneById(@PathVariable("id") Professor professor) {
-        return professor;
+    public ProfessorLegacyDTO getOneById(@PathVariable("id") Long id) {
+        return professorService.legacyGetOneById(id).orElseThrow();
     }
 
     @GetMapping("{id}/lessons")
-    @JsonView(Views.FullView.class)
-    public Collection<Lesson> getLessons(@PathVariable("id") Professor professor,
+    public Collection<LessonLegacyDTO> getLessons(@PathVariable("id") Professor professor,
             @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate)
             throws BadRequestException {
@@ -57,6 +51,6 @@ public class ProfessorController {
             throw new BadRequestException("startDate must be before or equal to endDate");
         }
 
-        return lessonService.findEagerForProfessorBetweenDates(professor, startDate, endDate);
+        return lessonService.legacyFindEagerForProfessorBetweenDates(professor, startDate, endDate);
     }
 }
