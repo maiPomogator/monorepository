@@ -3,7 +3,6 @@ package ru.maipomogator.bot.clients;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.lang.NonNull;
@@ -29,7 +28,6 @@ public class ProfessorRestClient {
         if (professors == null) {
             return Collections.emptyList();
         }
-        professors.removeIf(p -> p.siteId().equals(new UUID(0, 0)));
         return professors;
     }
 

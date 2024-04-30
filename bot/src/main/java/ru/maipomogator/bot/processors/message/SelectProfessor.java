@@ -36,7 +36,8 @@ public class SelectProfessor extends AbstractMessageProcessor {
         if (professors == null || professors.isEmpty()) {
             response = new SendMessage(chatId,
                     "По запросу \"%s\" преподаватель не найден. На всякий случай проверьте ввод. Если вы уверены, что всё правильно, напишите в @maipomogator_chat"
-                            .formatted(request));
+                            .formatted(request))
+                                    .replyMarkup(new InlineKeyboardMarkup(CancelCallbackProcessor.cancelButton()));
         } else {
             InlineKeyboardMarkup keyboard = getProfessorsKeyboard(professors);
             response = new SendMessage(chatId, "Результаты поиска по запросу \"%s\":".formatted(request))

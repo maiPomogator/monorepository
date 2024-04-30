@@ -35,7 +35,8 @@ public class SelectGroup extends AbstractMessageProcessor {
         if (groups == null || groups.isEmpty()) {
             response = new SendMessage(chatId,
                     "По запросу \"%s\" группа не найдена. На всякий случай проверьте ввод. Если вы уверены, что всё правильно, напишите в @maipomogator_chat"
-                            .formatted(request));
+                            .formatted(request))
+                                    .replyMarkup(new InlineKeyboardMarkup(CancelCallbackProcessor.cancelButton()));
         } else {
             InlineKeyboardMarkup keyboard = getInlineKeyboard(groups);
             response = new SendMessage(chatId, "Результаты поиска по запросу \"%s\":".formatted(request))

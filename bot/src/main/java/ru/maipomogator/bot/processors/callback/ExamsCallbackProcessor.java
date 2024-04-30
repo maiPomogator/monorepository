@@ -7,7 +7,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
@@ -144,8 +143,6 @@ public class ExamsCallbackProcessor extends AbstractCallbackProcessor {
     }
 
     private String formatProfessors(Collection<Professor> professors) {
-        UUID zeroUuid = new UUID(0, 0);
-        professors.removeIf(p -> p.siteId().equals(zeroUuid));
         return professors.stream().map(Professor::fio).collect(Collectors.joining(", "))
                 + (professors.isEmpty() ? "" : lineSeparator());
     }
