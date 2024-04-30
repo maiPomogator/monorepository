@@ -15,11 +15,24 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProfessorService {
     private final ProfessorRepo professorRepo;
+    private final ProfessorMapper mapper;
     @Deprecated
     private final ProfessorLegacyMapper legacyMapper;
 
     public List<Professor> findAll() {
         return professorRepo.findAll();
+    }
+
+    public Optional<ProfessorDTO> getOneByIdDTO(Long id) {
+        return professorRepo.findById(id).map(mapper::toDTO);
+    }
+
+    public List<ProfessorDTO> findAllDTO() {
+        return mapper.toDTOs(professorRepo.findAll());
+    }
+
+    public List<ProfessorDTO> findByFioDTO(String fio) {
+        return mapper.toDTOs(findByFio(fio));
     }
 
     @Transactional

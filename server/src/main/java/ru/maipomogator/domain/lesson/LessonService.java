@@ -17,6 +17,7 @@ import ru.maipomogator.domain.professor.Professor;
 @RequiredArgsConstructor
 public class LessonService {
     private final LessonRepo lessonRepo;
+    private final LessonMapper mapper;
     @Deprecated
     private final LessonLegacyMapper legacyMapper;
 
@@ -39,6 +40,15 @@ public class LessonService {
         }
 
         return allLessons;
+    }
+
+    public List<LessonDTO> findEagerForGroupBetweenDatesDTO(Group group, LocalDate startDate, LocalDate endDate) {
+        return mapper.toDTOs(findEagerForGroupBetweenDates(group, startDate, endDate));
+    }
+
+    public List<LessonDTO> findEagerForProfessorBetweenDatesDTO(Professor professor, LocalDate startDate,
+            LocalDate endDate) {
+        return mapper.toDTOs(findEagerForProfessorBetweenDates(professor, startDate, endDate));
     }
 
     public List<Lesson> findEagerForGroupBetweenDates(Group group, LocalDate startDate, LocalDate endDate) {

@@ -17,11 +17,33 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GroupService {
     private final GroupRepo groupRepo;
+    private final GroupMapper mapper;
+
     @Deprecated
     private final GroupLegacyMapper legacyMapper;
 
     public List<Group> findAll() {
         return groupRepo.findAll();
+    }
+
+    public Optional<GroupDTO> getOneByIdDTO(Long id) {
+        return groupRepo.findById(id).map(mapper::toDTO);
+    }
+
+    public List<GroupDTO> findAllDTO() {
+        return mapper.toDTOs(groupRepo.findAll());
+    }
+
+    public List<GroupDTO> findByCourseAndFacultyDTO(Integer course, Integer faculty) {
+        return mapper.toDTOs(groupRepo.findByCourseAndFaculty(course, faculty));
+    }
+
+    public List<GroupDTO> findByCourseAndFacultyAndTypeDTO(Integer course, Integer faculty, GroupType type) {
+        return mapper.toDTOs(groupRepo.findByCourseAndFacultyAndType(course, faculty, type));
+    }
+
+    public List<GroupDTO> findByNameDTO(String name) {
+        return mapper.toDTOs(findByExample(name));
     }
 
     @Cacheable(value = "allFaculties")
