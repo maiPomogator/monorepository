@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication(scanBasePackages = { "ru.maipomogator" })
 @EntityScan(basePackages = { "ru.maipomogator.domain" })
 @EnableJpaRepositories(basePackages = { "ru.maipomogator.domain" })
-@ConfigurationPropertiesScan(basePackages = { "ru.maipomogator" })
+@ConfigurationPropertiesScan(basePackages = { "ru.maipomogator.domain" })
 @EnableScheduling
 @EnableCaching
 public class ServerApplication {

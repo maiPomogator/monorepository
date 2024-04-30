@@ -7,15 +7,20 @@
         "Cacheable",
         "Hasher",
         "jdbc",
+        "newgroup",
+        "rawtypes",
         "бэкенд*",
         "микросервисов",
         "парсинга",
         "парсинге",
-        "Распарсивает",
-        "newgroup"
+        "Распарсивает"
     ],
     "[java]": {
         "editor.detectIndentation": false
+    },
+    "[yaml]": {
+        "editor.detectIndentation": false,
+        "editor.indentSize": 2
     },
     "terminal.integrated.hideOnStartup": "always",
     "git.enableCommitSigning": true,

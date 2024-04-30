@@ -50,7 +50,7 @@ public class GroupLessonsAdapter extends TypeAdapter<Collection<Lesson>> impleme
             jsonKey = in.nextName();
             if (jsonKey.equals("group")) {
                 groupName = in.nextString();
-            } else if (dateMatcher.reset(jsonKey).find()) {
+            } else if (dateMatcher.reset(jsonKey).matches()) {
                 LocalDate currentDate = LocalDate.parse(jsonKey, DATE_FORMAT);
                 lessons.addAll(parseDay(currentDate, in));
             } else {
@@ -87,7 +87,7 @@ public class GroupLessonsAdapter extends TypeAdapter<Collection<Lesson>> impleme
                 in.beginObject(); // синяя скобка (внутри 'pairs')
                 while (in.hasNext()) {
                     jsonKey = in.nextName();
-                    if (timeMatcher.reset(jsonKey).find()) {
+                    if (timeMatcher.reset(jsonKey).matches()) {
                         dayLessons.addAll(parseTimeLessons(currentDate, in));
                     } else {
                         log.error("Encountered an unknown field inside 'pairs' that is not time. Skipping it.");
