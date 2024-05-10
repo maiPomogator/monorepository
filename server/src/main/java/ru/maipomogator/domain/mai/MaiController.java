@@ -15,7 +15,7 @@ import ru.maipomogator.domain.group.GroupService;
 public class MaiController {
     private final GroupService groupService;
 
-    @GetMapping("/mai")
+    @GetMapping({ "/mai", "/api/v2/mai" })
     public MaiInfo getInfo() {
         List<String> faculties = groupService.findAllFaculties();
         Integer numberOfCourses = groupService.getNumberOfCourses();
