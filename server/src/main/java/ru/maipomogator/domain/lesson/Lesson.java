@@ -10,7 +10,6 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -29,7 +28,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.maipomogator.domain.Views;
 import ru.maipomogator.domain.group.Group;
 import ru.maipomogator.domain.professor.Professor;
 
@@ -48,14 +46,12 @@ public class Lesson implements Comparable<Lesson> {
     @SequenceGenerator(name = "lessons_seq", sequenceName = "lessons_id_seq", allocationSize = 1000)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lessons_seq")
     @Column
-    @JsonView(Views.Id.class)
     private Long id;
 
     /**
      * Название занятия
      */
     @Column
-    @JsonView(Views.IdInfo.class)
     private String name;
 
     /**
@@ -66,28 +62,24 @@ public class Lesson implements Comparable<Lesson> {
     @ElementCollection
     @Enumerated(EnumType.STRING)
     @Column(name = "lesson_type")
-    @JsonView(Views.IdInfo.class)
     private Set<LessonType> types = new HashSet<>();
 
     /**
      * День занятия
      */
     @Column
-    @JsonView(Views.IdInfo.class)
     private LocalDate date;
 
     /**
      * Время начала занятия
      */
     @Column(name = "time_start")
-    @JsonView(Views.IdInfo.class)
     private LocalTime timeStart;
 
     /**
      * Время окончания занятия
      */
     @Column(name = "time_end")
-    @JsonView(Views.IdInfo.class)
     private LocalTime timeEnd;
 
     /**
@@ -95,7 +87,6 @@ public class Lesson implements Comparable<Lesson> {
      */
     @ElementCollection
     @Column(name = "room")
-    @JsonView(Views.IdInfo.class)
     private Set<String> rooms = new HashSet<>();
 
     /**
@@ -103,7 +94,6 @@ public class Lesson implements Comparable<Lesson> {
      */
     @Column(name = "is_active")
     @JsonProperty(value = "isActive")
-    @JsonView(Views.IdInfo.class)
     private boolean isActive = true;
 
     /**
@@ -112,7 +102,6 @@ public class Lesson implements Comparable<Lesson> {
     @ManyToMany
     @JoinTable(name = "lessons_groups", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
     @JsonIgnoreProperties({ "lessons" })
-    @JsonView(Views.FullView.class)
     private Set<Group> groups = new HashSet<>();
 
     /**
@@ -121,7 +110,6 @@ public class Lesson implements Comparable<Lesson> {
     @ManyToMany
     @JoinTable(name = "lessons_professors", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "professor_id"))
     @JsonIgnoreProperties({ "lessons" })
-    @JsonView(Views.FullView.class)
     private Set<Professor> professors = new HashSet<>();
 
     public void addGroup(Group gr) {

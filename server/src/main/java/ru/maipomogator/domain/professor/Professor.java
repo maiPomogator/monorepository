@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,7 +20,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import ru.maipomogator.domain.Views;
 import ru.maipomogator.domain.lesson.Lesson;
 
 @NoArgsConstructor
@@ -42,35 +40,30 @@ public class Professor {
     @SequenceGenerator(name = "professors_seq", sequenceName = "professors_id_seq", allocationSize = 100)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "professors_seq")
     @Column
-    @JsonView(Views.Id.class)
     private Long id;
 
     /**
      * Фамилия преподавателя
      */
     @Column(name = "last_name")
-    @JsonView(Views.IdInfo.class)
     private String lastName;
 
     /**
      * Имя преподавателя
      */
     @Column(name = "first_name")
-    @JsonView(Views.IdInfo.class)
     private String firstName;
 
     /**
      * Отчество преподавателя
      */
     @Column(name = "middle_name")
-    @JsonView(Views.IdInfo.class)
     private String middleName;
 
     /**
      * Оставшаяся часть ФИО
      */
     @Column(name = "other")
-    @JsonView(Views.IdInfo.class)
     private String other;
 
     /**
@@ -78,14 +71,12 @@ public class Professor {
      */
     @ToString.Include
     @Column(name = "site_id", unique = true)
-    @JsonView(Views.IdInfo.class)
     private UUID siteId;
 
     /**
      * Список занятий, которые ведет преподаватель
      */
     @ManyToMany(mappedBy = "professors", fetch = FetchType.LAZY)
-    @JsonView(Views.FullView.class)
     private Set<Lesson> lessons = new HashSet<>();
 
     public Professor(UUID siteId, String fio) {

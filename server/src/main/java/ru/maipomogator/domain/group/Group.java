@@ -5,7 +5,6 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,7 +21,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import ru.maipomogator.domain.Views;
 import ru.maipomogator.domain.lesson.Lesson;
 
 @NoArgsConstructor
@@ -42,7 +40,6 @@ public class Group {
     @SequenceGenerator(name = "groups_seq", sequenceName = "groups_id_seq", allocationSize = 100)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "groups_seq")
     @Column
-    @JsonView(Views.Id.class)
     private Long id;
 
     /**
@@ -50,28 +47,24 @@ public class Group {
      */
     @Column(name = "is_active")
     @JsonProperty(value = "isActive")
-    @JsonView(Views.IdInfo.class)
     private Boolean isActive = true;
 
     /**
      * Название группы
      */
     @Column(unique = true)
-    @JsonView(Views.IdInfo.class)
     private String name;
 
     /**
      * Номер курса группы
      */
     @Column
-    @JsonView(Views.IdInfo.class)
     private Integer course;
 
     /**
      * Номер факультета группы
      */
     @Column
-    @JsonView(Views.IdInfo.class)
     private Integer faculty;
 
     /**
@@ -81,14 +74,12 @@ public class Group {
      */
     @Column
     @Enumerated(EnumType.STRING)
-    @JsonView(Views.IdInfo.class)
     private GroupType type;
 
     /**
      * Список занятий группы
      */
     @ManyToMany(mappedBy = "groups")
-    @JsonView(Views.FullView.class)
     private Set<Lesson> lessons = new HashSet<>();
 
     /**
