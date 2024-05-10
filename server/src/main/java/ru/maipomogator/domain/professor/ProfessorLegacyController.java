@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import ru.maipomogator.domain.lesson.LessonLegacyDTO;
 import ru.maipomogator.domain.lesson.LessonService;
+import ru.maipomogator.exceptions.NotFoundException;
 
 @Deprecated
 @RestController
@@ -36,7 +37,7 @@ public class ProfessorLegacyController {
 
     @GetMapping("{id}")
     public ProfessorLegacyDTO getOneById(@PathVariable("id") Long id) {
-        return professorService.legacyGetOneById(id).orElseThrow();
+        return professorService.legacyGetOneById(id).orElseThrow(NotFoundException::new);
     }
 
     @GetMapping("{id}/lessons")

@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import ru.maipomogator.domain.lesson.LessonDTO;
 import ru.maipomogator.domain.lesson.LessonService;
+import ru.maipomogator.exceptions.NotFoundException;
 
 @Log4j2
 @RestController
@@ -39,7 +40,7 @@ public class ProfessorController {
 
     @GetMapping("{id}")
     public ProfessorDTO getOneById(@PathVariable("id") Long id) {
-        return professorService.getOneByIdDTO(id).orElseThrow();
+        return professorService.getOneByIdDTO(id).orElseThrow(NotFoundException::new);
     }
 
     @GetMapping("{id}/lessons")

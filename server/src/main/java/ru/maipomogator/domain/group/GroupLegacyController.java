@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import ru.maipomogator.domain.lesson.LessonLegacyDTO;
 import ru.maipomogator.domain.lesson.LessonService;
+import ru.maipomogator.exceptions.NotFoundException;
 
 @Deprecated
 @Log4j2
@@ -59,7 +60,7 @@ public class GroupLegacyController {
 
     @GetMapping("{id}")
     public GroupLegacyDTO getOneById(@PathVariable("id") Long id) {
-        return groupService.legacyGetOneById(id).orElseThrow();
+        return groupService.legacyGetOneById(id).orElseThrow(NotFoundException::new);
     }
 
     @GetMapping("{id}/lessons")
