@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.coyote.BadRequestException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import ru.maipomogator.domain.lesson.LessonDTO;
 import ru.maipomogator.domain.lesson.LessonService;
+import ru.maipomogator.exceptions.BadRequestException;
 import ru.maipomogator.exceptions.NotFoundException;
 
 @Log4j2
@@ -46,8 +46,7 @@ public class ProfessorController {
     @GetMapping("{id}/lessons")
     public Collection<LessonDTO> getLessons(@PathVariable("id") Professor professor,
             @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate)
-            throws BadRequestException {
+            @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
         startDate = (startDate == null) ? LocalDate.now() : startDate;
         endDate = (endDate == null) ? startDate.plusDays(7) : endDate;

@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.coyote.BadRequestException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import ru.maipomogator.domain.lesson.LessonDTO;
 import ru.maipomogator.domain.lesson.LessonService;
+import ru.maipomogator.exceptions.BadRequestException;
 import ru.maipomogator.exceptions.NotFoundException;
 
 @Log4j2
@@ -42,13 +42,12 @@ public class GroupController {
     public List<GroupDTO> getByCourseAndFacultyAndType(
             @RequestParam(name = "course", required = false) Integer course,
             @RequestParam(name = "faculty", required = false) Integer faculty,
-            @RequestParam(name = "type", required = false) String type)
-            throws BadRequestException {
+            @RequestParam(name = "type", required = false) String type) {
         try {
             GroupType groupType = GroupType.valueOf(type);
             return groupService.findByCourseAndFacultyAndTypeDTO(course, faculty, groupType);
         } catch (IllegalArgumentException iae) {
-            throw new BadRequestException(iae);
+            throw new BadRequestException("Probably bad type='%s' for GroupType".formatted(type), iae);
         }
     }
 
