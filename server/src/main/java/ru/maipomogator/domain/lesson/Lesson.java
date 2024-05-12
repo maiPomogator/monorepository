@@ -94,7 +94,7 @@ public class Lesson implements Comparable<Lesson> {
      */
     @Column(name = "is_active")
     @JsonProperty(value = "isActive")
-    private boolean isActive = true;
+    private Boolean isActive = true;
 
     /**
      * Группы занятия
@@ -138,6 +138,10 @@ public class Lesson implements Comparable<Lesson> {
 
     public void deactivate() {
         isActive = false;
+    }
+
+    public Boolean isActive() {
+        return isActive;
     }
 
     /**
