@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.pengrad.telegrambot.model.CallbackQuery;
-import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.DeleteMessage;
 import com.pengrad.telegrambot.response.BaseResponse;
@@ -14,14 +13,8 @@ import com.pengrad.telegrambot.response.BaseResponse;
 @Component
 public class CancelCallbackProcessor extends AbstractCallbackProcessor {
 
-    private static final String CANCEL_CALLBACK_DATA = "cancel";
-
-    public static InlineKeyboardButton cancelButton() {
-        return new InlineKeyboardButton("❌").callbackData(CANCEL_CALLBACK_DATA);
-    }
-
-    protected CancelCallbackProcessor() {
-        super("^" + CANCEL_CALLBACK_DATA + "$");
+    protected CancelCallbackProcessor(String cancelCallback) {
+        super("^" + cancelCallback + "$");
     }
 
     @Override

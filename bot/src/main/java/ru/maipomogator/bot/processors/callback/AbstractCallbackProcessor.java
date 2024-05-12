@@ -1,5 +1,6 @@
 package ru.maipomogator.bot.processors.callback;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
 import com.pengrad.telegrambot.model.CallbackQuery;
@@ -12,6 +13,8 @@ import ru.maipomogator.bot.processors.AbstractUpdateProcessor;
 
 public abstract class AbstractCallbackProcessor extends AbstractUpdateProcessor<CallbackQuery>
         implements CallbackProcessor {
+
+    protected static final DateTimeFormatter CALLBACK_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyMMdd");
 
     protected AbstractCallbackProcessor(String regex) {
         super(regex);

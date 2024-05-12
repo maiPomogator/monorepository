@@ -19,28 +19,29 @@ import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.EditMessageText;
 import com.pengrad.telegrambot.response.BaseResponse;
 
-import lombok.extern.log4j.Log4j2;
 import ru.maipomogator.bot.clients.GroupRestClient;
 import ru.maipomogator.bot.clients.ProfessorRestClient;
 import ru.maipomogator.bot.model.Group;
 import ru.maipomogator.bot.model.Lesson;
-import ru.maipomogator.bot.model.LessonType;
 import ru.maipomogator.bot.model.Professor;
+import ru.maipomogator.bot.service.TimetableService;
 
 @Component
-@Log4j2
 public class ExamsCallbackProcessor extends AbstractCallbackProcessor {
-    private static final String CHARS_TO_BE_ESCAPED = "_[]()~`>#+-=|{}.!";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("d MMMM",
             Locale.of("ru"));
 
     private final GroupRestClient groupRestClient;
     private final ProfessorRestClient professorRestClient;
 
-    protected ExamsCallbackProcessor(GroupRestClient groupRestClient, ProfessorRestClient professorRestClient) {
+    private final TimetableService timetableService;
+
+    protected ExamsCallbackProcessor(GroupRestClient groupRestClient, ProfessorRestClient professorRestClient,
+            TimetableService timetableService) {
         super("^(?:grp|prf)=\\d{1,4};exams$");
         this.groupRestClient = groupRestClient;
         this.professorRestClient = professorRestClient;
+        this.timetableService = timetableService;
     }
 
     @Override
@@ -68,7 +69,7 @@ public class ExamsCallbackProcessor extends AbstractCallbackProcessor {
 
     private InlineKeyboardMarkup getKeyboard(String prefix) {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-        InlineKeyboardButton back = new InlineKeyboardButton("Назад к расписанию занятий")
+        InlineKeyboardButton back = new InlineKeyboardButton("Расписание занятий")
                 .callbackData(prefix + ";date=today");
         keyboard.addRow(back);
         return keyboard;
@@ -76,43 +77,25 @@ public class ExamsCallbackProcessor extends AbstractCallbackProcessor {
 
     private String getPreparedText(String prefix) {
         String text = getMsgText(prefix);
-        StringBuilder sb = new StringBuilder(text.length());
-
-        int escaped = 0;
-        for (char c : text.toCharArray()) {
-            if (CHARS_TO_BE_ESCAPED.indexOf(c) != -1) {
-                sb.append("\\");
-                escaped++;
-            }
-            sb.append(c);
-        }
-
-        log.info("Escaped {} characters (old length {}, new length {})", escaped, text.length(), sb.length());
-
-        return sb.toString();
+        return escapeForMarkdownV2(text);
     }
 
     private String getMsgText(String prefix) {
         String[] parts = prefix.split("=");
         boolean isProfessor = parts[0].equals("prf");
-        String entId = parts[1];
+        Long entId = Long.parseLong(parts[1]);
         List<Lesson> exams;
         StringBuilder sb = new StringBuilder();
         if (isProfessor) {
-            Professor prf = professorRestClient.findById(entId);
+            Professor professor = professorRestClient.findById(entId);
             sb.append("*Экзамены*").append(lineSeparator());
-            sb.append("*" + prf.fio() + "*").append(lineSeparator()).append(lineSeparator());
-            exams = professorRestClient
-                    .getLessonsBetweenDates(entId, LocalDate.of(2024, 5, 1), LocalDate.of(2024, 7, 1))
-                    .stream().filter(l -> l.types().contains(LessonType.EXAM))
-                    .filter(Lesson::isActive).sorted().toList();
+            sb.append("*" + professor.fio() + "*").append(lineSeparator()).append(lineSeparator());
+            exams = timetableService.getExamsForProfessor(entId);
         } else {
-            Group grp = groupRestClient.findById(entId);
+            Group group = groupRestClient.findById(entId);
             sb.append("*Экзамены*").append(lineSeparator());
-            sb.append("*Группа " + grp.name() + "*").append(lineSeparator()).append(lineSeparator());
-            exams = groupRestClient.getLessonsBetweenDates(entId, LocalDate.of(2024, 5, 1), LocalDate.of(2024, 7, 1))
-                    .stream().filter(l -> l.types().contains(LessonType.EXAM))
-                    .filter(Lesson::isActive).sorted().toList();
+            sb.append("*Группа " + group.name() + "*").append(lineSeparator()).append(lineSeparator());
+            exams = timetableService.getExamsForGroup(entId);
         }
 
         if (exams.isEmpty()) {

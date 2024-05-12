@@ -15,7 +15,6 @@ import com.pengrad.telegrambot.response.BaseResponse;
 
 import ru.maipomogator.bot.clients.ProfessorRestClient;
 import ru.maipomogator.bot.model.Professor;
-import ru.maipomogator.bot.processors.callback.CancelCallbackProcessor;
 
 @Component
 public class SelectProfessor extends AbstractMessageProcessor {
@@ -37,7 +36,7 @@ public class SelectProfessor extends AbstractMessageProcessor {
             response = new SendMessage(chatId,
                     "По запросу \"%s\" преподаватель не найден. На всякий случай проверьте ввод. Если вы уверены, что всё правильно, напишите в @maipomogator_chat"
                             .formatted(request))
-                                    .replyMarkup(new InlineKeyboardMarkup(CancelCallbackProcessor.cancelButton()));
+                                    .replyMarkup(new InlineKeyboardMarkup(buttons.cancelButton()));
         } else {
             InlineKeyboardMarkup keyboard = getProfessorsKeyboard(professors);
             response = new SendMessage(chatId, "Результаты поиска по запросу \"%s\":".formatted(request))
@@ -51,7 +50,7 @@ public class SelectProfessor extends AbstractMessageProcessor {
         for (Professor professor : professors) {
             keyboard.addRow(new InlineKeyboardButton(professor.fio()).callbackData("prf=" + professor.id()));
         }
-        keyboard.addRow(CancelCallbackProcessor.cancelButton());
+        keyboard.addRow(buttons.cancelButton());
         return keyboard;
     }
 }

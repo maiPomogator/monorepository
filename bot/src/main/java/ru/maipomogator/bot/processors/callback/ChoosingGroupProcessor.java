@@ -24,8 +24,6 @@ import ru.maipomogator.bot.model.MaiInfo;
 @Component
 public class ChoosingGroupProcessor extends AbstractCallbackProcessor {
 
-    public static final int NUMBER_OF_BUTTONS_IN_ROW = 3;
-
     private final MaiRestClient maiRestClient;
     private final GroupRestClient groupRestClient;
 
@@ -73,7 +71,7 @@ public class ChoosingGroupProcessor extends AbstractCallbackProcessor {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         while (faculties.hasNext()) {
             List<InlineKeyboardButton> row = new ArrayList<>();
-            for (int indexInRow = 0; indexInRow < ChoosingGroupProcessor.NUMBER_OF_BUTTONS_IN_ROW; indexInRow++) {
+            for (int indexInRow = 0; indexInRow < 3; indexInRow++) {
                 if (faculties.hasNext()) {
                     String facName = faculties.next();
                     row.add(new InlineKeyboardButton(facName).callbackData("fac=" + facName));
@@ -82,12 +80,8 @@ public class ChoosingGroupProcessor extends AbstractCallbackProcessor {
             keyboard.addRow(row.toArray(InlineKeyboardButton[]::new));
         }
 
-        keyboard.addRow(CancelCallbackProcessor.cancelButton());
+        keyboard.addRow(buttons.cancelButton());
         return keyboard;
-    }
-
-    private InlineKeyboardButton backButton(String data) {
-        return new InlineKeyboardButton("↩️").callbackData(data + ";back");
     }
 
     private EditMessageText getInstitutesMessage(Long chatId, int messageId) {
@@ -115,7 +109,7 @@ public class ChoosingGroupProcessor extends AbstractCallbackProcessor {
             keyboard.addRow(row.toArray(InlineKeyboardButton[]::new));
         }
 
-        keyboard.addRow(CancelCallbackProcessor.cancelButton(), backButton(fac));
+        keyboard.addRow(buttons.cancelButton(), buttons.backButton(fac));
         return keyboard;
     }
 
@@ -128,7 +122,7 @@ public class ChoosingGroupProcessor extends AbstractCallbackProcessor {
                 .replyMarkup(getGroupsKeyboard(groups, segments[0] + ";" + segments[1]));
     }
 
-    private InlineKeyboardMarkup getGroupsKeyboard(List<Group> groups, String data) {
+    private InlineKeyboardMarkup getGroupsKeyboard(List<Group> groups, String prefix) {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         Collections.sort(groups);
         Iterator<Group> gIterator = groups.iterator();
@@ -144,7 +138,7 @@ public class ChoosingGroupProcessor extends AbstractCallbackProcessor {
             keyboard.addRow(row.toArray(InlineKeyboardButton[]::new));
         }
 
-        keyboard.addRow(CancelCallbackProcessor.cancelButton(), backButton(data));
+        keyboard.addRow(buttons.cancelButton(), buttons.backButton(prefix));
         return keyboard;
     }
 }

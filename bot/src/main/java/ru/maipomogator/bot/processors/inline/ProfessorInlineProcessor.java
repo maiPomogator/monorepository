@@ -1,6 +1,5 @@
 package ru.maipomogator.bot.processors.inline;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -8,28 +7,27 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.pengrad.telegrambot.model.InlineQuery;
+import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.model.request.InlineQueryResult;
 import com.pengrad.telegrambot.model.request.InlineQueryResultArticle;
 import com.pengrad.telegrambot.model.request.InputTextMessageContent;
+import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.AnswerInlineQuery;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.response.BaseResponse;
 
 import ru.maipomogator.bot.clients.ProfessorRestClient;
 import ru.maipomogator.bot.model.Professor;
-import ru.maipomogator.bot.processors.callback.TimetableProcessor;
 
 @Component
 public class ProfessorInlineProcessor extends AbstractInlineProcessor {
 
     private final ProfessorRestClient professorRestClient;
-    private final TimetableProcessor timetableProcessor;
 
-    protected ProfessorInlineProcessor(ProfessorRestClient professorRestClient, TimetableProcessor timetableProcessor) {
+    protected ProfessorInlineProcessor(ProfessorRestClient professorRestClient) {
         super("^(?:[а-яА-ЯёЁ]{2,15} ?){1,5}$");
         this.professorRestClient = professorRestClient;
-        this.timetableProcessor = timetableProcessor;
     }
 
     @Override
@@ -45,11 +43,17 @@ public class ProfessorInlineProcessor extends AbstractInlineProcessor {
         List<InlineQueryResult<?>> results = new ArrayList<>(professors.size());
         for (Professor professor : professors) {
             String prefix = "prf=" + professor.id();
-            InlineKeyboardMarkup keyboard = timetableProcessor.getControlKeyboard(prefix, LocalDate.now());
-            InputTextMessageContent text = timetableProcessor.getMessageContent(prefix, LocalDate.now());
-            results.add(new InlineQueryResultArticle(prefix, professor.fio(), text).replyMarkup(keyboard));
+            InlineKeyboardMarkup keyboard = getKeyboard(prefix);
+            String text = escapeForMarkdownV2("*__" + professor.fio() + "__*");
+            InputTextMessageContent message = new InputTextMessageContent(text)
+                    .parseMode(ParseMode.MarkdownV2);
+            results.add(new InlineQueryResultArticle(prefix, professor.fio(), message).replyMarkup(keyboard));
         }
 
         return List.of(new AnswerInlineQuery(query.id(), results.toArray(InlineQueryResult[]::new)).cacheTime(1));
+    }
+
+    private InlineKeyboardMarkup getKeyboard(String prefix) {
+        return new InlineKeyboardMarkup(new InlineKeyboardButton("Загрузить расписание").callbackData(prefix));
     }
 }

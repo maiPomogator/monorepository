@@ -15,7 +15,6 @@ import com.pengrad.telegrambot.response.BaseResponse;
 
 import ru.maipomogator.bot.clients.GroupRestClient;
 import ru.maipomogator.bot.model.Group;
-import ru.maipomogator.bot.processors.callback.CancelCallbackProcessor;
 
 @Component
 public class SelectGroup extends AbstractMessageProcessor {
@@ -35,8 +34,7 @@ public class SelectGroup extends AbstractMessageProcessor {
         if (groups == null || groups.isEmpty()) {
             response = new SendMessage(chatId,
                     "По запросу \"%s\" группа не найдена. На всякий случай проверьте ввод. Если вы уверены, что всё правильно, напишите в @maipomogator_chat"
-                            .formatted(request))
-                                    .replyMarkup(new InlineKeyboardMarkup(CancelCallbackProcessor.cancelButton()));
+                            .formatted(request)).replyMarkup(new InlineKeyboardMarkup(buttons.cancelButton()));
         } else {
             InlineKeyboardMarkup keyboard = getInlineKeyboard(groups);
             response = new SendMessage(chatId, "Результаты поиска по запросу \"%s\":".formatted(request))
@@ -50,7 +48,7 @@ public class SelectGroup extends AbstractMessageProcessor {
         for (Group group : groups) {
             keyboard.addRow(new InlineKeyboardButton(group.name()).callbackData("grp=" + group.id()));
         }
-        keyboard.addRow(CancelCallbackProcessor.cancelButton());
+        keyboard.addRow(buttons.cancelButton());
         return keyboard;
     }
 }
