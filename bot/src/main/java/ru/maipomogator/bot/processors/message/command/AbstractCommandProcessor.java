@@ -6,8 +6,8 @@ public abstract class AbstractCommandProcessor extends AbstractMessageProcessor 
     private final String command;
     private final String description;
 
-    protected AbstractCommandProcessor(String command, String description) {
-        super("^/" + command + ".*$");
+    protected AbstractCommandProcessor(String command, boolean allowArguments, String description) {
+        super("^/" + command + (allowArguments ? "(?: .*)?" : "") + "$");
         this.command = command;
         this.description = description;
     }

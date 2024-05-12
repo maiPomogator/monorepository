@@ -19,7 +19,7 @@ public class NewGroupCommand extends AbstractCommandProcessor {
     private final ChoosingGroupProcessor cgp;
 
     public NewGroupCommand(ChoosingGroupProcessor cgp) {
-        super("newgroup", "Интерактивный выбор группы");
+        super("newgroup", false, "Интерактивный выбор группы");
         this.cgp = cgp;
     }
 

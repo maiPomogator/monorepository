@@ -17,7 +17,7 @@ import com.pengrad.telegrambot.response.BaseResponse;
 public class StartCommandProcessor extends AbstractCommandProcessor {
 
     protected StartCommandProcessor() {
-        super("start", "Перезапуск бота");
+        super("start", true, "Перезапуск бота");
     }
 
     @Override

@@ -14,7 +14,7 @@ import com.pengrad.telegrambot.response.BaseResponse;
 public class HelpCommand extends AbstractCommandProcessor {
 
     protected HelpCommand() {
-        super("help", "Помощь по работе с ботом");
+        super("help", false, "Помощь по работе с ботом");
     }
 
     @Override
