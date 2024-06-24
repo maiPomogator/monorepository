@@ -69,7 +69,7 @@ public class ExamsCallbackProcessor extends AbstractCallbackProcessor {
 
     private InlineKeyboardMarkup getKeyboard(String prefix) {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-        InlineKeyboardButton back = new InlineKeyboardButton("Расписание занятий")
+        InlineKeyboardButton back = new InlineKeyboardButton("Занятия")
                 .callbackData(prefix + ";date=today");
         keyboard.addRow(back);
         return keyboard;

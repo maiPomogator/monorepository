@@ -76,8 +76,8 @@ public class DayTimetableProcessor extends AbstractCallbackProcessor {
         InlineKeyboardButton fwd = new InlineKeyboardButton("▶️")
                 .callbackData(prefix + ";date=" + curDate.plusDays(1).format(CALLBACK_DATE_FORMATTER));
         keyboard.addRow(back, today, fwd);
-        keyboard.addRow(new InlineKeyboardButton("Расписание по неделям").callbackData(prefix + ";from=current"));
-        keyboard.addRow(new InlineKeyboardButton("Расписание экзаменов").callbackData(prefix + ";exams"));
+        keyboard.addRow(new InlineKeyboardButton("По неделям").callbackData(prefix + ";from=current"));
+        keyboard.addRow(new InlineKeyboardButton("Экзамены").callbackData(prefix + ";exams"));
         return keyboard;
     }
 

@@ -85,8 +85,8 @@ public class WeekTimetableProcessor extends AbstractCallbackProcessor {
         InlineKeyboardButton fwd = new InlineKeyboardButton("⏩")
                 .callbackData(prefix + ";from=" + date.plusDays(7).format(CALLBACK_DATE_FORMATTER));
         keyboard.addRow(back, today, fwd);
-        keyboard.addRow(new InlineKeyboardButton("Расписание по дням").callbackData(prefix + ";date=today"));
-        keyboard.addRow(new InlineKeyboardButton("Расписание экзаменов").callbackData(prefix + ";exams"));
+        keyboard.addRow(new InlineKeyboardButton("По дням").callbackData(prefix + ";date=today"));
+        keyboard.addRow(new InlineKeyboardButton("Экзамены").callbackData(prefix + ";exams"));
         return keyboard;
     }
 

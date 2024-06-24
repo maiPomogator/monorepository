@@ -30,9 +30,8 @@ public class MainUpdatesListener implements UpdatesListener {
     private final MessageProcessor dmp;
     private final List<CallbackProcessor> callbackProcessors;
     private final CallbackProcessor dcp;
-
-    private List<InlineProcessor> inlineProcessors;
-    private InlineProcessor dip;
+    private final List<InlineProcessor> inlineProcessors;
+    private final InlineProcessor dip;
 
     public MainUpdatesListener(TelegramBot bot,
             List<MessageProcessor> messageProcessors, @Qualifier("default") MessageProcessor dmp,
@@ -59,15 +58,18 @@ public class MainUpdatesListener implements UpdatesListener {
             List<BaseRequest<?, ? extends BaseResponse>> requests = new ArrayList<>(10);
             if (hasTextMessage(update)) {
                 Message message = update.message();
-                log.info("Processing message update from {} ({})", message.from().username(), message.from().id());
+                User user = message.from();
+                log.info("Processing message update from {} ({})", user.username(), user.id());
                 requests.addAll(processMessage(message));
             } else if (hasCallbackQuery(update)) {
                 CallbackQuery callback = update.callbackQuery();
-                log.info("Processing callback update from {} ({})", callback.from().username(), callback.from().id());
+                User user = callback.from();
+                log.info("Processing callback update from {} ({})", user.username(), user.id());
                 requests.addAll(processCallbackQuery(callback));
             } else if (hasInlineQuery(update)) {
                 InlineQuery query = update.inlineQuery();
-                log.info("Processing inline update from {} ({})", query.from().username(), query.from().id());
+                User user = query.from();
+                log.info("Processing inline update from {} ({})", user.username(), user.id());
                 requests.addAll(processInlineQuery(query));
             } else {
                 log.info("Received update is not supported. Skipping.");
