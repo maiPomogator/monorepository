@@ -13,13 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import ru.maipomogator.domain.lesson.LessonDTO;
 import ru.maipomogator.domain.lesson.LessonService;
 import ru.maipomogator.exceptions.BadRequestException;
 import ru.maipomogator.exceptions.NotFoundException;
 
-@Log4j2
 @RestController
 @RequestMapping("/api/v2/mai/professors")
 @RequiredArgsConstructor
