@@ -14,7 +14,7 @@ public class BotApplication {
     }
 
     @Bean
-    RestClient restClient(@NonNull @Value("${baseurl:https://rufus20145.ru}") String baseUrl) {
+    RestClient restClient(@NonNull @Value("${baseurl:https://rufus20145.ru/api/v2}") String baseUrl) {
         return RestClient.builder().baseUrl(baseUrl).build();
     }
 }
