@@ -8,4 +8,9 @@ public abstract class AbstractInlineProcessor extends AbstractUpdateProcessor<In
     protected AbstractInlineProcessor(String regex) {
         super(regex);
     }
+
+    @Override
+    public boolean applies(InlineQuery inlineQuery) {
+        return applies(inlineQuery.query());
+    }
 }

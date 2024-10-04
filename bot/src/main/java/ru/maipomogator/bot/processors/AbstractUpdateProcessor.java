@@ -27,7 +27,7 @@ public abstract class AbstractUpdateProcessor<T> implements UpdateProcessor<T> {
         this.buttons = buttons;
     }
 
-    public boolean applies(String text) {
+    protected boolean applies(String text) {
         matcher.reset(text);
         return matcher.matches();
     }

@@ -18,6 +18,10 @@ public abstract class AbstractMessageProcessor extends AbstractUpdateProcessor<M
         return process(msg, msg.chat().id());
     }
 
-    protected abstract Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId);
+    @Override
+    public boolean applies(Message message) {
+        return applies(message.text());
+    }
 
+    protected abstract Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId);
 }

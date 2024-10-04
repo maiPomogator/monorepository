@@ -89,7 +89,7 @@ public class MainUpdatesListener implements UpdatesListener {
         List<BaseRequest<?, ? extends BaseResponse>> requests = new ArrayList<>();
         boolean isProcessed = false;
         for (InlineProcessor processor : inlineProcessors) {
-            if (processor.applies(query.query())) {
+            if (processor.applies(query)) {
                 requests.addAll(processor.process(query));
                 isProcessed = true;
                 break;
@@ -105,7 +105,7 @@ public class MainUpdatesListener implements UpdatesListener {
         List<BaseRequest<?, ? extends BaseResponse>> requests = new ArrayList<>();
         boolean isProcessed = false;
         for (MessageProcessor processor : messageProcessors) {
-            if (processor.applies(message.text())) {
+            if (processor.applies(message)) {
                 requests.addAll(processor.process(message));
                 isProcessed = true;
                 break;
@@ -121,7 +121,7 @@ public class MainUpdatesListener implements UpdatesListener {
         List<BaseRequest<?, ? extends BaseResponse>> requests = new ArrayList<>();
         boolean isProcessed = false;
         for (CallbackProcessor processor : callbackProcessors) {
-            if (processor.applies(callback.data())) {
+            if (processor.applies(callback)) {
                 requests.addAll(processor.process(callback));
                 isProcessed = true;
                 break;

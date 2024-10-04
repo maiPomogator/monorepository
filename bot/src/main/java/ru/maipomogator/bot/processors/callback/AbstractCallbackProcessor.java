@@ -29,6 +29,11 @@ public abstract class AbstractCallbackProcessor extends AbstractUpdateProcessor<
         }
     }
 
+    @Override
+    public boolean applies(CallbackQuery callbackQuery) {
+        return applies(callbackQuery.data());
+    }
+
     protected abstract Collection<BaseRequest<?, ? extends BaseResponse>> process(
             CallbackQuery callback, Integer msgId, Long chatId);
 
