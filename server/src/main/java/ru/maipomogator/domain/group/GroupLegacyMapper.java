@@ -8,6 +8,6 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface GroupLegacyMapper {
     GroupLegacyDTO toLegacyDTO(Group group);
-
+    
     List<GroupLegacyDTO> toLegacyDTOs(Iterable<Group> group);
 }
