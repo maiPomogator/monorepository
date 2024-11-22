@@ -1,18 +1,16 @@
 package ru.maipomogator.bot.dispatchers;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.model.InlineQuery;
-import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.User;
-import com.pengrad.telegrambot.request.BaseRequest;
-import com.pengrad.telegrambot.response.BaseResponse;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.InlineQuery;
 
 import lombok.extern.log4j.Log4j2;
 import ru.maipomogator.bot.processors.inline.InlineProcessor;
@@ -23,21 +21,21 @@ public class InlineQueryUpdateDispatcher extends AbstractUpdateDispatcher<Inline
 
     private final List<InlineProcessor> inlineProcessors;
 
-    public InlineQueryUpdateDispatcher(TelegramBot bot, List<InlineProcessor> processors,
+    public InlineQueryUpdateDispatcher(/* TelegramBot bot, */ List<InlineProcessor> processors,
             @Qualifier("default") InlineProcessor defaultProcessor) {
-        super(bot, defaultProcessor);
+        super(/* bot, */ defaultProcessor);
         processors.remove(defaultProcessor);
         this.inlineProcessors = processors.stream().filter(p -> !p.equals(defaultProcessor)).toList();
     }
 
-    protected Collection<? extends BaseRequest<?, ? extends BaseResponse>> processUpdate(Update update) {
-        if (update.inlineQuery() == null) {
+    protected Collection<? extends BotApiMethod<? extends Serializable>> processUpdate(Update update) {
+        if (!update.hasInlineQuery()) {
             return List.of();
         }
-        InlineQuery query = update.inlineQuery();
-        User user = query.from();
-        log.info("Processing inline update from {} ({})", user.username(), user.id());
-        List<BaseRequest<?, ? extends BaseResponse>> requests = new ArrayList<>();
+        InlineQuery query = update.getInlineQuery();
+        User user = query.getFrom();
+        log.info("Processing inline update from {} ({})", user.getUserName(), user.getId());
+        List<BotApiMethod<? extends Serializable>> requests = new ArrayList<>();
         boolean isProcessed = false;
         for (InlineProcessor processor : inlineProcessors) {
             if (processor.applies(query)) {

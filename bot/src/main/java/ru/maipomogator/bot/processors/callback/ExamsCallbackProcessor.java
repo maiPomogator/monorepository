@@ -2,6 +2,7 @@ package ru.maipomogator.bot.processors.callback;
 
 import static java.lang.System.lineSeparator;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -10,14 +11,12 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
-
-import com.pengrad.telegrambot.model.CallbackQuery;
-import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
-import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
-import com.pengrad.telegrambot.model.request.ParseMode;
-import com.pengrad.telegrambot.request.BaseRequest;
-import com.pengrad.telegrambot.request.EditMessageText;
-import com.pengrad.telegrambot.response.BaseResponse;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import ru.maipomogator.bot.clients.GroupRestClient;
 import ru.maipomogator.bot.clients.ProfessorRestClient;
@@ -45,7 +44,7 @@ public class ExamsCallbackProcessor extends AbstractCallbackProcessor {
     }
 
     @Override
-    protected Collection<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId,
+    protected Collection<BotApiMethod<? extends Serializable>> process(CallbackQuery callback, Integer msgId,
             Long chatId) {
         String[] segments = callback.data().split(";");
         InlineKeyboardMarkup keyboard = getKeyboard(segments[0]);
@@ -56,7 +55,7 @@ public class ExamsCallbackProcessor extends AbstractCallbackProcessor {
     }
 
     @Override
-    protected Collection<BaseRequest<?, ? extends BaseResponse>> processInline(CallbackQuery callback,
+    protected Collection<BotApiMethod<? extends Serializable>> processInline(CallbackQuery callback,
             String inlineMessageId) {
         String[] segments = callback.data().split(";");
         InlineKeyboardMarkup keyboard = getKeyboard(segments[0]);

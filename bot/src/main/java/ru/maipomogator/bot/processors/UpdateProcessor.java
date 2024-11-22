@@ -1,16 +1,17 @@
 package ru.maipomogator.bot.processors;
 
+import java.io.Serializable;
 import java.util.Collection;
 
-import com.pengrad.telegrambot.request.BaseRequest;
-import com.pengrad.telegrambot.response.BaseResponse;
+import org.telegram.telegrambots.meta.api.interfaces.BotApiObject;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
 
 /**
  * Интерфейс, который определяет методы для обработки обновлений в Telegram-боте.
  *
  * @param <T> тип компонента обновления, который будет обрабатываться данным процессором
  */
-public interface UpdateProcessor<T> {
+public interface UpdateProcessor<T extends BotApiObject> {
 
     /**
      * Определяет, может ли данный процессор обработать конкретный компонент обновления.
@@ -29,5 +30,5 @@ public interface UpdateProcessor<T> {
      * @return коллекция запросов к Telegram Bot API, которые необходимо выполнить после обработки
      *         данного обновления
      */
-    Collection<? extends BaseRequest<?, ? extends BaseResponse>> process(T updateEntity);
+    Collection<BotApiMethod<? extends Serializable>> process(T updateEntity);
 }

@@ -1,18 +1,16 @@
 package ru.maipomogator.bot.dispatchers;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.model.Message;
-import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.User;
-import com.pengrad.telegrambot.request.BaseRequest;
-import com.pengrad.telegrambot.response.BaseResponse;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 import lombok.extern.log4j.Log4j2;
 import ru.maipomogator.bot.processors.message.MessageProcessor;
@@ -23,21 +21,21 @@ public class MessageUpdateDispatcher extends AbstractUpdateDispatcher<Message> {
 
     private final List<MessageProcessor> messageProcessors;
 
-    public MessageUpdateDispatcher(TelegramBot bot, List<MessageProcessor> processors,
+    public MessageUpdateDispatcher(/* TelegramBot bot, */ List<MessageProcessor> processors,
             @Qualifier("default") MessageProcessor defaultProcessor) {
-        super(bot, defaultProcessor);
+        super(/* bot, */ defaultProcessor);
         processors.remove(defaultProcessor);
         this.messageProcessors = processors.stream().filter(p -> !p.equals(defaultProcessor)).toList();
     }
 
-    protected Collection<? extends BaseRequest<?, ? extends BaseResponse>> processUpdate(Update update) {
-        if (update.message() == null) {
+    protected Collection<? extends BotApiMethod<? extends Serializable>> processUpdate(Update update) {
+        if (update.getMessage() == null) {
             return List.of();
         }
-        Message message = update.message();
-        User user = message.from();
-        log.info("Processing message update from {} ({})", user.username(), user.id());
-        List<BaseRequest<?, ? extends BaseResponse>> requests = new ArrayList<>();
+        Message message = update.getMessage();
+        User user = message.getFrom();
+        log.info("Processing message update from {} ({})", user.getUserName(), user.getId());
+        List<BotApiMethod<? extends Serializable>> requests = new ArrayList<>();
         boolean isProcessed = false;
         for (MessageProcessor processor : messageProcessors) {
             if (processor.applies(message)) {

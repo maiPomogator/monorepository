@@ -1,14 +1,13 @@
 package ru.maipomogator.bot.processors.message.command;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
-
-import com.pengrad.telegrambot.model.Message;
-import com.pengrad.telegrambot.request.BaseRequest;
-import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.response.BaseResponse;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 @Component
 public class HelpCommand extends AbstractCommandProcessor {
@@ -18,7 +17,7 @@ public class HelpCommand extends AbstractCommandProcessor {
     }
 
     @Override
-    protected Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
+    protected Collection<BotApiMethod<? extends Serializable>> process(Message msg, String chatId) {
         SendMessage helpMessage = new SendMessage(chatId,
                 "Постепенно здесь будут появляться ответы на часто задаваемые вопросы.\n\nТакже с вопросами можно обращаться в @maipomogator_chat");
         return List.of(helpMessage);

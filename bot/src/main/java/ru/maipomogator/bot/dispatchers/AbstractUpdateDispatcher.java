@@ -1,27 +1,35 @@
 package ru.maipomogator.bot.dispatchers;
 
+import java.io.Serializable;
 import java.util.Collection;
+// import java.util.List;
 
-import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.request.BaseRequest;
-import com.pengrad.telegrambot.response.BaseResponse;
+import org.telegram.telegrambots.meta.api.interfaces.BotApiObject;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
-import lombok.RequiredArgsConstructor;
 import ru.maipomogator.bot.processors.UpdateProcessor;
 
-@RequiredArgsConstructor
-public abstract class AbstractUpdateDispatcher<T> implements UpdateDispatcher {
-    private final TelegramBot bot;
-    protected final UpdateProcessor<? super T> defaultProcessor;
+public abstract class AbstractUpdateDispatcher<T extends BotApiObject> implements UpdateDispatcher {
+    // private final TelegramBot bot;
+    // protected final List<UpdateProcessor<T>> processors;
+    protected final UpdateProcessor<T> defaultProcessor;
+
+    public AbstractUpdateDispatcher(/* TelegramBot bot */ /* , List<UpdateProcessor<T>> processors */ /* , */
+            UpdateProcessor<T> defaultProcessor) {
+        // this.bot = bot;
+        /* this.processors = processors.stream().filter(p -> !p.equals(defaultProcessor)).toList(); */
+        this.defaultProcessor = defaultProcessor;
+    }
 
     @Override
     public void dispatch(Update update) {
-        Collection<? extends BaseRequest<?, ? extends BaseResponse>> requests = processUpdate(update);
-        for (BaseRequest<?, ? extends BaseResponse> baseRequest : requests) {
-            bot.execute(baseRequest);
+        Collection<? extends BotApiMethod<? extends Serializable>> requests = processUpdate(update);
+        for (BotApiMethod<? extends Serializable> baseRequest : requests) {
+            System.out.println(baseRequest.toString());
+            // bot.execute(baseRequest);
         }
     }
 
-    protected abstract Collection<? extends BaseRequest<?, ? extends BaseResponse>> processUpdate(Update update);
+    protected abstract Collection<? extends BotApiMethod<? extends Serializable>> processUpdate(Update update);
 }

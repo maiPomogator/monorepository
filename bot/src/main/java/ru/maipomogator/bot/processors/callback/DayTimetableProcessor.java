@@ -1,18 +1,17 @@
 package ru.maipomogator.bot.processors.callback;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
-
-import com.pengrad.telegrambot.model.CallbackQuery;
-import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
-import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
-import com.pengrad.telegrambot.model.request.ParseMode;
-import com.pengrad.telegrambot.request.BaseRequest;
-import com.pengrad.telegrambot.request.EditMessageText;
-import com.pengrad.telegrambot.response.BaseResponse;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import ru.maipomogator.bot.timetable.TimetableBuilder;
 
@@ -26,7 +25,7 @@ public class DayTimetableProcessor extends AbstractCallbackProcessor {
     }
 
     @Override
-    protected Collection<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId,
+    protected Collection<BotApiMethod<? extends Serializable>> process(CallbackQuery callback, Integer msgId,
             Long chatId) {
         String[] segments = callback.data().split(";");
         if (segments.length == 1) {
@@ -47,7 +46,7 @@ public class DayTimetableProcessor extends AbstractCallbackProcessor {
     }
 
     @Override
-    protected Collection<BaseRequest<?, ? extends BaseResponse>> processInline(CallbackQuery callback,
+    protected Collection<BotApiMethod<? extends Serializable>> processInline(CallbackQuery callback,
             String inlineMessageId) {
         String[] segments = callback.data().split(";");
         if (segments.length == 1) {

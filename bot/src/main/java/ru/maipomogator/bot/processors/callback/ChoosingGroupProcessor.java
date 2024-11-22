@@ -1,5 +1,6 @@
 package ru.maipomogator.bot.processors.callback;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -7,14 +8,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
-
-import com.pengrad.telegrambot.model.CallbackQuery;
-import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
-import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
-import com.pengrad.telegrambot.request.BaseRequest;
-import com.pengrad.telegrambot.request.EditMessageText;
-import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.response.BaseResponse;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import ru.maipomogator.bot.clients.GroupRestClient;
 import ru.maipomogator.bot.clients.MaiRestClient;
@@ -38,7 +37,7 @@ public class ChoosingGroupProcessor extends AbstractCallbackProcessor {
     }
 
     @Override
-    protected Collection<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId,
+    protected Collection<BotApiMethod<? extends Serializable>> process(CallbackQuery callback, Integer msgId,
             Long chatId) {
         String queryId = callback.id();
         String data = callback.data();
@@ -59,7 +58,7 @@ public class ChoosingGroupProcessor extends AbstractCallbackProcessor {
     }
 
     @Override
-    protected Collection<BaseRequest<?, ? extends BaseResponse>> processInline(CallbackQuery callback,
+    protected Collection<BotApiMethod<? extends Serializable>> processInline(CallbackQuery callback,
             String inlineMessageId) {
         return List.of(answer(callback.id()).text("Данная кнопка пока не работает в inline режиме."));
     }

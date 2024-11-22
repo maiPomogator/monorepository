@@ -1,8 +1,7 @@
 package ru.maipomogator.bot.util;
 
 import org.springframework.stereotype.Component;
-
-import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import lombok.RequiredArgsConstructor;
 
@@ -13,10 +12,10 @@ public class ButtonFactory {
     private final String cancelCallback;
 
     public InlineKeyboardButton cancelButton() {
-        return new InlineKeyboardButton("❌"). callbackData(cancelCallback);
+        return InlineKeyboardButton.builder().text("❌").callbackData(cancelCallback).build();
     }
 
     public InlineKeyboardButton backButton(String prefix) {
-        return new InlineKeyboardButton("↩️").callbackData(prefix + ";back");
+        return InlineKeyboardButton.builder().text("↩️").callbackData(prefix + ";back").build();
     }
 }

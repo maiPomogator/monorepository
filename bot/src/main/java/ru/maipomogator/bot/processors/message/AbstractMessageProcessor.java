@@ -1,10 +1,10 @@
 package ru.maipomogator.bot.processors.message;
 
+import java.io.Serializable;
 import java.util.Collection;
 
-import com.pengrad.telegrambot.model.Message;
-import com.pengrad.telegrambot.request.BaseRequest;
-import com.pengrad.telegrambot.response.BaseResponse;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 import ru.maipomogator.bot.processors.AbstractUpdateProcessor;
 
@@ -14,14 +14,14 @@ public abstract class AbstractMessageProcessor extends AbstractUpdateProcessor<M
         super(regex);
     }
 
-    public Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg) {
-        return process(msg, msg.chat().id());
+    public Collection<BotApiMethod<? extends Serializable>> process(Message msg) {
+        return process(msg, msg.getChat().getId().toString());
     }
 
     @Override
     public boolean applies(Message message) {
-        return applies(message.text());
+        return applies(message.getText());
     }
 
-    protected abstract Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId);
+    protected abstract Collection<BotApiMethod<? extends Serializable>> process(Message msg, String chatId);
 }

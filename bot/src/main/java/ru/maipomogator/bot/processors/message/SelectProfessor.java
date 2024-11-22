@@ -1,17 +1,18 @@
 package ru.maipomogator.bot.processors.message;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
-
-import com.pengrad.telegrambot.model.Message;
-import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
-import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
-import com.pengrad.telegrambot.request.BaseRequest;
-import com.pengrad.telegrambot.request.DeleteMessage;
-import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.response.BaseResponse;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 
 import ru.maipomogator.bot.clients.ProfessorRestClient;
 import ru.maipomogator.bot.model.Professor;
@@ -27,30 +28,38 @@ public class SelectProfessor extends AbstractMessageProcessor {
     }
 
     @Override
-    protected Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
-        String request = msg.text();
+    protected Collection<BotApiMethod<? extends Serializable>> process(Message msg, String chatId) {
+        String request = msg.getText();
 
         List<Professor> professors = professorRestClient.findByFio(request);
         SendMessage response;
         if (professors == null || professors.isEmpty()) {
-            response = new SendMessage(chatId,
+            response = SendMessage.builder().chatId(chatId).text(
                     "По запросу \"%s\" преподаватель не найден. На всякий случай проверьте ввод. Если вы уверены, что всё правильно, напишите в @maipomogator_chat"
                             .formatted(request))
-                                    .replyMarkup(new InlineKeyboardMarkup(buttons.cancelButton()));
+                    .replyMarkup(
+                            InlineKeyboardMarkup.builder().keyboardRow(new InlineKeyboardRow(buttons.cancelButton()))
+                                    .build())
+                    .build();
         } else {
             InlineKeyboardMarkup keyboard = getProfessorsKeyboard(professors);
-            response = new SendMessage(chatId, "Результаты поиска по запросу \"%s\":".formatted(request))
-                    .replyMarkup(keyboard);
+            response = SendMessage.builder().chatId(chatId)
+                    .text("Результаты поиска по запросу \"%s\":".formatted(request)).replyMarkup(keyboard).build();
         }
-        return List.of(new DeleteMessage(chatId, msg.messageId()), response);
+        return List.of(new DeleteMessage(chatId, msg.getMessageId()), response);
     }
 
     private InlineKeyboardMarkup getProfessorsKeyboard(List<Professor> professors) {
-        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
+        List<InlineKeyboardRow> keyboard = new ArrayList<>(professors.size() + 1);
         for (Professor professor : professors) {
-            keyboard.addRow(new InlineKeyboardButton(professor.fio()).callbackData("prf=" + professor.id()));
+            InlineKeyboardButton button = InlineKeyboardButton.builder()
+                    .text(professor.fio())
+                    .callbackData("prf=" + professor.id())
+                    .build();
+            keyboard.add(new InlineKeyboardRow(button));
         }
-        keyboard.addRow(buttons.cancelButton());
-        return keyboard;
+        keyboard.add(new InlineKeyboardRow(buttons.cancelButton()));
+
+        return new InlineKeyboardMarkup(keyboard);
     }
 }

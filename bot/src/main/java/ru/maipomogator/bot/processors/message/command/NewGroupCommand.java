@@ -1,15 +1,14 @@
 package ru.maipomogator.bot.processors.message.command;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
-
-import com.pengrad.telegrambot.model.Message;
-import com.pengrad.telegrambot.request.BaseRequest;
-import com.pengrad.telegrambot.request.DeleteMessage;
-import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.response.BaseResponse;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 import ru.maipomogator.bot.processors.callback.ChoosingGroupProcessor;
 
@@ -24,9 +23,8 @@ public class NewGroupCommand extends AbstractCommandProcessor {
     }
 
     @Override
-    protected Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
-        DeleteMessage deleteMessage = new DeleteMessage(chatId, msg.messageId());
+    protected Collection<BotApiMethod<? extends Serializable>> process(Message msg, String chatId) {
         SendMessage message = cgp.getInstitutesMessage(chatId);
-        return List.of(deleteMessage, message);
+        return List.of(new DeleteMessage(chatId, msg.getMessageId()), message);
     }
 }

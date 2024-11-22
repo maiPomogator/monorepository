@@ -1,19 +1,19 @@
 package ru.maipomogator.bot.processors.callback;
 
+import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
-
-import com.pengrad.telegrambot.model.CallbackQuery;
-import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
-import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
-import com.pengrad.telegrambot.model.request.ParseMode;
-import com.pengrad.telegrambot.request.BaseRequest;
-import com.pengrad.telegrambot.request.EditMessageText;
-import com.pengrad.telegrambot.response.BaseResponse;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import ru.maipomogator.bot.timetable.TimetableBuilder;
 
@@ -27,34 +27,44 @@ public class WeekTimetableProcessor extends AbstractCallbackProcessor {
     }
 
     @Override
-    protected Collection<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback, Integer msgId,
+    protected Collection<BotApiMethod<? extends Serializable>> process(CallbackQuery callback, Integer msgId,
             Long chatId) {
-        String[] segments = callback.data().split(";");
+        String[] segments = callback.getData().split(";");
         if (segments.length == 1) {
             LocalDate startDate = getDateFromCallback("current");
             LocalDate endDate = startDate.plusDays(7);
             InlineKeyboardMarkup keyboard = getControlKeyboard(segments[0], LocalDate.now());
-            EditMessageText editMessage = new EditMessageText(chatId, msgId,
-                    getPreparedText(segments[0], startDate, endDate))
-                            .replyMarkup(keyboard).parseMode(ParseMode.MarkdownV2);
-            return List.of(answer(callback.id()), editMessage);
+            EditMessageText editMessage = EditMessageText.builder()
+                    .chatId(chatId)
+                    .messageId(msgId)
+                    .text(getPreparedText(segments[0], startDate, endDate))
+                    .replyMarkup(keyboard)
+                    .parseMode(ParseMode.MARKDOWNV2)
+                    .build();
+            return List.of(answer(callback.getId()), editMessage);
         } else if (segments.length == 2) {
             LocalDate startDate = getDateFromCallback(segments[1].split("=")[1]);
             LocalDate endDate = startDate.plusDays(7);
             InlineKeyboardMarkup keyboard = getControlKeyboard(segments[0], startDate);
-            EditMessageText editMessage = new EditMessageText(chatId, msgId,
-                    getPreparedText(segments[0], startDate, endDate))
-                            .replyMarkup(keyboard).parseMode(ParseMode.MarkdownV2);
-            return List.of(answer(callback.id()), editMessage);
+            EditMessageText editMessage = EditMessageText.builder()
+                    .chatId(chatId)
+                    .messageId(msgId)
+                    .text(getPreparedText(segments[0], startDate, endDate))
+                    .replyMarkup(keyboard)
+                    .parseMode(ParseMode.MARKDOWNV2)
+                    .build();
+            return List.of(answer(callback.getId()), editMessage);
         }
-        return List.of(answer(callback.id()).text(
-                "Что-то пошло не так, повторите попытку через некоторое время, либо напишите в @maipomogator_chat"));
+        AnswerCallbackQuery answer = answer(callback.getId());
+        answer.setText(
+                "Что-то пошло не так, повторите попытку через некоторое время, либо напишите в @maipomogator_chat");
+        return List.of(answer);
     }
 
     @Override
-    protected Collection<BaseRequest<?, ? extends BaseResponse>> processInline(CallbackQuery callback,
+    protected Collection<BotApiMethod<? extends Serializable>> processInline(CallbackQuery callback,
             String inlineMessageId) {
-        String[] segments = callback.data().split(";");
+        String[] segments = callback.getData().split(";");
         if (segments.length == 1) {
             LocalDate startDate = getDateFromCallback("current");
             LocalDate endDate = startDate.plusDays(7);

@@ -1,6 +1,6 @@
 package ru.maipomogator.bot.processors.callback;
 
-import com.pengrad.telegrambot.model.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
 import ru.maipomogator.bot.processors.UpdateProcessor;
 

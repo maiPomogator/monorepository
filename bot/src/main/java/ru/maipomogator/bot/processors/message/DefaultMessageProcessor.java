@@ -1,15 +1,14 @@
 package ru.maipomogator.bot.processors.message;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import com.pengrad.telegrambot.model.Message;
-import com.pengrad.telegrambot.request.BaseRequest;
-import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.response.BaseResponse;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 @Component
 @Qualifier("default")
@@ -20,7 +19,7 @@ public class DefaultMessageProcessor extends AbstractMessageProcessor {
     }
 
     @Override
-    protected Collection<BaseRequest<?, ? extends BaseResponse>> process(Message msg, Long chatId) {
+    protected Collection<BotApiMethod<? extends Serializable>> process(Message msg, String chatId) {
         SendMessage message = new SendMessage(chatId,
                 "На всякий случай проверьте ввод. "
                         + "Если уверены, что всё верно, то вероятно такой формат ввода пока не поддерживается. "

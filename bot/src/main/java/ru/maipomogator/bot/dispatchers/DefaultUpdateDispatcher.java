@@ -2,8 +2,7 @@ package ru.maipomogator.bot.dispatchers;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import com.pengrad.telegrambot.model.Update;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 import lombok.extern.log4j.Log4j2;
 

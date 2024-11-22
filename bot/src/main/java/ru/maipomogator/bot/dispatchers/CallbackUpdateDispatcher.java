@@ -1,18 +1,16 @@
 package ru.maipomogator.bot.dispatchers;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.model.CallbackQuery;
-import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.User;
-import com.pengrad.telegrambot.request.BaseRequest;
-import com.pengrad.telegrambot.response.BaseResponse;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 
 import lombok.extern.log4j.Log4j2;
 import ru.maipomogator.bot.processors.callback.CallbackProcessor;
@@ -22,20 +20,20 @@ import ru.maipomogator.bot.processors.callback.CallbackProcessor;
 public class CallbackUpdateDispatcher extends AbstractUpdateDispatcher<CallbackQuery> {
     private final List<CallbackProcessor> callbackProcessors;
 
-    public CallbackUpdateDispatcher(TelegramBot bot, List<CallbackProcessor> processors,
+    public CallbackUpdateDispatcher(/* TelegramBot bot, */ List<CallbackProcessor> processors,
             @Qualifier("default") CallbackProcessor defaultProcessor) {
-        super(bot, defaultProcessor);
+        super(/* bot, */ defaultProcessor);
         this.callbackProcessors = processors.stream().filter(p -> !p.equals(defaultProcessor)).toList();
     }
 
-    protected Collection<? extends BaseRequest<?, ? extends BaseResponse>> processUpdate(Update update) {
-        if(update.callbackQuery() == null) {
+    protected Collection<? extends BotApiMethod<? extends Serializable>> processUpdate(Update update) {
+        if (!update.hasCallbackQuery()) {
             return List.of();
         }
-        CallbackQuery callback = update.callbackQuery();
-        User user = callback.from();
-        log.info("Processing callback update from {} ({})", user.username(), user.id());
-        List<BaseRequest<?, ? extends BaseResponse>> requests = new ArrayList<>();
+        CallbackQuery callback = update.getCallbackQuery();
+        User user = callback.getFrom();
+        log.info("Processing callback update from {} ({})", user.getUserName(), user.getId());
+        List<BotApiMethod<? extends Serializable>> requests = new ArrayList<>();
         boolean isProcessed = false;
         for (CallbackProcessor processor : callbackProcessors) {
             if (processor.applies(callback)) {

@@ -4,10 +4,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.telegram.telegrambots.meta.api.interfaces.BotApiObject;
 
 import ru.maipomogator.bot.util.ButtonFactory;
 
-public abstract class AbstractUpdateProcessor<T> implements UpdateProcessor<T> {
+public abstract class AbstractUpdateProcessor<T extends BotApiObject> implements UpdateProcessor<T> {
     // TODO сделать более продвинутую систему экранирования
     private static final String CHARS_TO_BE_ESCAPED = "[]()~`>#+-=|{}.!";
 

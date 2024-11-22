@@ -1,6 +1,6 @@
 package ru.maipomogator.bot.processors.inline;
 
-import com.pengrad.telegrambot.model.InlineQuery;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.InlineQuery;
 
 import ru.maipomogator.bot.processors.UpdateProcessor;
 

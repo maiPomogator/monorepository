@@ -1,13 +1,13 @@
 package ru.maipomogator.bot.processors.callback;
 
+import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
-import com.pengrad.telegrambot.model.CallbackQuery;
-import com.pengrad.telegrambot.model.Message;
-import com.pengrad.telegrambot.request.AnswerCallbackQuery;
-import com.pengrad.telegrambot.request.BaseRequest;
-import com.pengrad.telegrambot.response.BaseResponse;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 import ru.maipomogator.bot.processors.AbstractUpdateProcessor;
 
@@ -20,24 +20,24 @@ public abstract class AbstractCallbackProcessor extends AbstractUpdateProcessor<
         super(regex);
     }
 
-    public Collection<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback) {
+    public Collection<BotApiMethod<? extends Serializable>> process(CallbackQuery callback) {
         if (isFromInlineMessage(callback)) {
-            return processInline(callback, callback.inlineMessageId());
+            return processInline(callback, callback.getInlineMessageId());
         } else {
-            Message message = (Message) callback.maybeInaccessibleMessage();
-            return process(callback, message.messageId(), message.chat().id());
+            Message message = (Message) callback.getMessage();
+            return process(callback, message.getMessageId(), message.getChat().getId());
         }
     }
 
     @Override
     public boolean applies(CallbackQuery callbackQuery) {
-        return applies(callbackQuery.data());
+        return applies(callbackQuery.getData());
     }
 
-    protected abstract Collection<BaseRequest<?, ? extends BaseResponse>> process(
+    protected abstract Collection<BotApiMethod<? extends Serializable>> process(
             CallbackQuery callback, Integer msgId, Long chatId);
 
-    protected abstract Collection<BaseRequest<?, ? extends BaseResponse>> processInline(
+    protected abstract Collection<BotApiMethod<? extends Serializable>> processInline(
             CallbackQuery callback, String inlineMessageId);
 
     protected AnswerCallbackQuery answer(String callbackId) {
@@ -45,6 +45,6 @@ public abstract class AbstractCallbackProcessor extends AbstractUpdateProcessor<
     }
 
     private boolean isFromInlineMessage(CallbackQuery callback) {
-        return callback.inlineMessageId() != null;
+        return callback.getInlineMessageId() != null;
     }
 }

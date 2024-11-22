@@ -1,6 +1,6 @@
 package ru.maipomogator.bot.processors.message;
 
-import com.pengrad.telegrambot.model.Message;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 import ru.maipomogator.bot.processors.UpdateProcessor;
 
