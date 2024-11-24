@@ -20,6 +20,7 @@ public abstract class AbstractCallbackProcessor extends AbstractUpdateProcessor<
         super(regex);
     }
 
+    @Override
     public Collection<BaseRequest<?, ? extends BaseResponse>> process(CallbackQuery callback) {
         if (isFromInlineMessage(callback)) {
             return processInline(callback, callback.inlineMessageId());
