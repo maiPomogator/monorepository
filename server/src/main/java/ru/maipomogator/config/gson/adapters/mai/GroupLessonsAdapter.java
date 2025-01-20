@@ -21,14 +21,14 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import lombok.extern.log4j.Log4j2;
-import ru.maipomogator.config.gson.adapters.GsonAdapter;
+import ru.maipomogator.config.gson.adapters.TypeableAdapter;
 import ru.maipomogator.domain.lesson.Lesson;
 import ru.maipomogator.domain.lesson.LessonType;
 import ru.maipomogator.domain.professor.Professor;
 
 @Log4j2
 @Component
-public class GroupLessonsAdapter extends TypeAdapter<Collection<Lesson>> implements GsonAdapter {
+public class GroupLessonsAdapter extends TypeAdapter<Collection<Lesson>> implements TypeableAdapter {
 
     private static final Pattern DATE_PATTERN = Pattern.compile("\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d");
     private static final Pattern TIME_PATTERN = Pattern.compile("\\d?\\d:\\d\\d:\\d\\d");
@@ -70,7 +70,7 @@ public class GroupLessonsAdapter extends TypeAdapter<Collection<Lesson>> impleme
     }
 
     @Override
-    public Type getType() {
+    public Type getTargetType() {
         return new TypeToken<Collection<Lesson>>() {}.getType();
     }
 
