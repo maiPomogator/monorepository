@@ -23,8 +23,8 @@ import ru.maipomogator.domain.lesson.Lesson;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(of = "name")
-@ToString(of = { "id", "name" })
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 
 @Entity
 @Table(name = "groups", schema = "public")
@@ -33,6 +33,7 @@ public class Group {
     /**
      * Идентификатор группы
      */
+    @ToString.Include
     @Id
     @SequenceGenerator(name = "groups_seq", sequenceName = "groups_id_seq", allocationSize = 100)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "groups_seq")
@@ -48,6 +49,8 @@ public class Group {
     /**
      * Название группы
      */
+    @EqualsAndHashCode.Include
+    @ToString.Include
     @Column(unique = true)
     private String name;
 

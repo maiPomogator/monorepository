@@ -31,7 +31,8 @@ import ru.maipomogator.domain.professor.Professor;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(of = { "name", "types", "date", "timeStart", "rooms", "professors" })
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+
 @Entity
 @Table(name = "lessons", schema = "public")
 public class Lesson implements Comparable<Lesson> {
@@ -48,6 +49,7 @@ public class Lesson implements Comparable<Lesson> {
     /**
      * Название занятия
      */
+    @EqualsAndHashCode.Include
     @Column
     private String name;
 
@@ -56,6 +58,7 @@ public class Lesson implements Comparable<Lesson> {
      *
      * @see LessonType
      */
+    @EqualsAndHashCode.Include
     @ElementCollection
     @Enumerated(EnumType.STRING)
     @Column(name = "lesson_type")
@@ -64,12 +67,14 @@ public class Lesson implements Comparable<Lesson> {
     /**
      * День занятия
      */
+    @EqualsAndHashCode.Include
     @Column
     private LocalDate date;
 
     /**
      * Время начала занятия
      */
+    @EqualsAndHashCode.Include
     @Column(name = "time_start")
     private LocalTime timeStart;
 
@@ -82,6 +87,7 @@ public class Lesson implements Comparable<Lesson> {
     /**
      * Аудитории занятия
      */
+    @EqualsAndHashCode.Include
     @ElementCollection
     @Column(name = "room")
     private Set<String> rooms = new HashSet<>();
@@ -102,6 +108,7 @@ public class Lesson implements Comparable<Lesson> {
     /**
      * Преподаватели занятия
      */
+    @EqualsAndHashCode.Include
     @ManyToMany
     @JoinTable(name = "lessons_professors", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "professor_id"))
     private Set<Professor> professors = new HashSet<>();

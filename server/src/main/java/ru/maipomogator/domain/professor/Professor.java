@@ -23,7 +23,7 @@ import ru.maipomogator.domain.lesson.Lesson;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(of = "siteId")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
 
 @Entity
@@ -65,8 +65,9 @@ public class Professor {
     private String other;
 
     /**
-     * Идентификатор преподавателя, используемый на mai.ru
+     * Идентификатор преподавателя, используемый на сайте МАИ
      */
+    @EqualsAndHashCode.Include
     @ToString.Include
     @Column(name = "site_id", unique = true)
     private UUID siteId;
@@ -111,7 +112,7 @@ public class Professor {
      *
      * @return ФИО
      */
-    @ToString.Include(name = "name", rank = 1)
+    @ToString.Include(name = "fio", rank = 1)
     public String getFio() {
         StringBuilder fullNameBuilder = new StringBuilder();
 
