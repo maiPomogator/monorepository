@@ -8,9 +8,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -93,7 +90,6 @@ public class Lesson implements Comparable<Lesson> {
      * Наличие занятия в файлах с сайта МАИ
      */
     @Column(name = "is_active")
-    @JsonProperty(value = "isActive")
     private Boolean isActive = true;
 
     /**
@@ -101,7 +97,6 @@ public class Lesson implements Comparable<Lesson> {
      */
     @ManyToMany
     @JoinTable(name = "lessons_groups", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
-    @JsonIgnoreProperties({ "lessons" })
     private Set<Group> groups = new HashSet<>();
 
     /**
@@ -109,7 +104,6 @@ public class Lesson implements Comparable<Lesson> {
      */
     @ManyToMany
     @JoinTable(name = "lessons_professors", joinColumns = @JoinColumn(name = "lesson_id"), inverseJoinColumns = @JoinColumn(name = "professor_id"))
-    @JsonIgnoreProperties({ "lessons" })
     private Set<Professor> professors = new HashSet<>();
 
     public void addGroup(Group gr) {

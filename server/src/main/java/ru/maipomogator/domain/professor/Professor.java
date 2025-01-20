@@ -4,8 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -114,7 +112,6 @@ public class Professor {
      * @return ФИО
      */
     @ToString.Include(name = "name", rank = 1)
-    @JsonIgnore
     public String getFio() {
         StringBuilder fullNameBuilder = new StringBuilder();
 

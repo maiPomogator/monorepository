@@ -3,9 +3,6 @@ package ru.maipomogator.domain.group;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -46,7 +43,6 @@ public class Group {
      * Наличие группы в файлах с сайта МАИ
      */
     @Column(name = "is_active")
-    @JsonProperty(value = "isActive")
     private Boolean isActive = true;
 
     /**
@@ -86,7 +82,6 @@ public class Group {
      * Последний записанный хеш файла с расписанием
      */
     @Column(name = "latest_hash", length = 32)
-    @JsonIgnore
     private String latestHash;
 
     public void addLesson(Lesson lsn) {
