@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.fatboyindustrial.gsonjavatime.Converters;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -19,6 +20,7 @@ public class GsonConfiguration {
         log.debug("Creating gson with {} adapters.", adapters.size());
         GsonBuilder builder = new GsonBuilder();
         adapters.forEach(a -> builder.registerTypeAdapter(a.getTargetType(), a));
+        Converters.registerAll(builder); // Register JavaTime converters
         return builder.create();
     }
 }
