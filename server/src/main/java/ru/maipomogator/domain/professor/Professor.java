@@ -114,22 +114,11 @@ public class Professor {
      */
     @ToString.Include(name = "fio", rank = 1)
     public String getFio() {
-        StringBuilder fullNameBuilder = new StringBuilder();
-
-        if (lastName != null && !lastName.isEmpty()) {
-            fullNameBuilder.append(lastName).append(" ");
-        }
-        if (firstName != null && !firstName.isEmpty()) {
-            fullNameBuilder.append(firstName).append(" ");
-        }
-        if (middleName != null && !middleName.isEmpty()) {
-            fullNameBuilder.append(middleName).append(" ");
-        }
-        if (other != null && !other.isEmpty()) {
-            fullNameBuilder.append(other).append(" ");
-        }
-
-        return fullNameBuilder.toString().trim();
+        return String.join(" ",
+                lastName != null ? lastName : "",
+                firstName != null ? firstName : "",
+                middleName != null ? middleName : "",
+                other != null ? other : "").trim();
     }
 
     public void addLesson(Lesson lsn) {
