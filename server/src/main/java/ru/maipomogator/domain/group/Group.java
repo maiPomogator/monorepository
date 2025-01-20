@@ -1,5 +1,6 @@
 package ru.maipomogator.domain.group;
 
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,6 +14,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -83,9 +86,18 @@ public class Group {
 
     /**
      * Последний записанный хеш файла с расписанием
+     * @deprecated Заменено на {@link #lastModified}
      */
+    @Deprecated(forRemoval = true)
     @Column(name = "latest_hash", length = 32)
     private String latestHash;
+
+    /**
+     * Дата последнего изменения файла с расписанием на сайте МАИ
+     */
+    @Column(name = "last_modified", columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    @Temporal(TemporalType.TIMESTAMP)
+    private ZonedDateTime lastModified;
 
     public void addLesson(Lesson lsn) {
         lessons.add(lsn);
