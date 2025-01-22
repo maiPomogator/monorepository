@@ -17,7 +17,7 @@ public enum GroupType {
 
     private final String name;
 
-    public static GroupType getForName(String typeName) {
+    public static GroupType getForName(String typeName) throws IllegalArgumentException{
         GroupType[] allGroupTypes = GroupType.values();
         for (GroupType groupType : allGroupTypes) {
             if (groupType.getName().equals(typeName))

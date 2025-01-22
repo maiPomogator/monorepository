@@ -43,9 +43,9 @@ public class MaiUpdater {
     }
 
     public void update() {
-        Collection<Group> groupsFromMAI = maiRestClient.getAllGroups();
+        Collection<Group> groupsFromMAI = maiRestClient.getMaiGroupList();
         if (groupsFromMAI == null || groupsFromMAI.isEmpty()) {
-            log.info("The MAI sent an empty schedule");
+            log.info("No groups from MAI. Returning.");
             return;
         }
 

@@ -15,21 +15,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import ru.maipomogator.domain.group.Group;
 import ru.maipomogator.domain.lesson.Lesson;
+import ru.maipomogator.domain.mai.elements.MaiGroupList;
 
 @Log4j2
 @Component
 @RequiredArgsConstructor
 public class MaiRestClient {
     private final RestClient restClient;
-    private final Gson gson;
 
-    public Collection<Group> getAllGroups() {
-        String groupsString = restClient.get().uri("groups.json").retrieve().body(String.class);
-        if (groupsString == null || groupsString.isBlank()) {
-            log.warn("MAI groups.json is empty.");
-            return List.of();
-        }
-        return gson.fromJson(groupsString, new TypeToken<List<Group>>() {});
+    public MaiGroupList getMaiGroupList() {
+        return restClient
+                .get()
+                .uri("groups.json")
+                .retrieve()
+                .body(MaiGroupList.class);
     }
 
     public Collection<Lesson> getLessonsForGroup(Group group) {
