@@ -15,16 +15,15 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import ru.maipomogator.config.gson.adapters.TypeableAdapter;
-import ru.maipomogator.config.gson.adapters.mai.MaiLocalTimeDeserializer.MaiLocalTime;
+import ru.maipomogator.domain.mai.elements.MaiLocalTime;
 
 /**
- * Костыль для десериализации времени в ответах МАИ API в формате "H:mm:ss". 
+ * Костыль для десериализации времени в ответах API МАИ в формате "H:mm:ss". 
  */
 @Component
 public class MaiLocalTimeDeserializer
         implements JsonSerializer<MaiLocalTime>, JsonDeserializer<MaiLocalTime>, TypeableAdapter {
 
-    record MaiLocalTime(LocalTime time) {}
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("H:mm:ss");
 
