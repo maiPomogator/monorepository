@@ -21,6 +21,7 @@ import ru.maipomogator.domain.group.Group;
 import ru.maipomogator.domain.group.GroupService;
 import ru.maipomogator.domain.lesson.Lesson;
 import ru.maipomogator.domain.lesson.LessonService;
+import ru.maipomogator.domain.mai.elements.MaiGroupLessons;
 import ru.maipomogator.domain.professor.Professor;
 import ru.maipomogator.domain.professor.ProfessorService;
 
@@ -82,12 +83,17 @@ public class MaiUpdater {
 
         Map<Group, Collection<Lesson>> changedGroups = new HashMap<>();
         for (Group group : commonGroups) {
-            Collection<Lesson> lessonsFromMAI = maiRestClient.getLessonsForGroup(group);
-            if (lessonsFromMAI.isEmpty()) {
-                log.debug("Skipping group {}", group.getName());
-            } else {
+            MaiGroupLessons groupLessons = maiRestClient.getMaiGroupLessons(group.getName(), group.getLastModified());
+            if (groupLessons instanceof MaiGroupLessons.Modified modified) {
+                group.setLastModified(modified.getLastModified());
+                Collection<Lesson> lessonsFromMAI = modified.getLessons();
                 changedGroups.put(group, lessonsFromMAI);
-                log.info("Got {} lessons from MAI for group {}", lessonsFromMAI.size(), group.getName());
+                if (lessonsFromMAI.isEmpty()) {
+                    log.debug("Skipping group {}", group.getName());
+                } else {
+                    changedGroups.put(group, lessonsFromMAI);
+                    log.info("Got {} lessons from MAI for group {}", lessonsFromMAI.size(), group.getName());
+                }
             }
         }
 

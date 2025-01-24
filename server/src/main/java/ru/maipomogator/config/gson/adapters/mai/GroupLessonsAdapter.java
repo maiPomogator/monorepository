@@ -27,7 +27,7 @@ import ru.maipomogator.domain.lesson.LessonType;
 import ru.maipomogator.domain.professor.Professor;
 
 @Log4j2
-@Component
+// @Component
 public class GroupLessonsAdapter extends TypeAdapter<Collection<Lesson>> implements TypeableAdapter {
 
     private static final Pattern DATE_PATTERN = Pattern.compile("\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d");

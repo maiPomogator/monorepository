@@ -1,23 +1,21 @@
 package ru.maipomogator.domain.mai;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.List;
+import java.time.ZonedDateTime;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonParseException;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import ru.maipomogator.domain.group.Group;
-import ru.maipomogator.domain.lesson.Lesson;
+import ru.maipomogator.domain.mai.elements.MaiGroupLessons;
 import ru.maipomogator.domain.mai.elements.MaiGroupList;
 
-@Log4j2
 @Component
 @RequiredArgsConstructor
 public class MaiRestClient {
@@ -31,21 +29,25 @@ public class MaiRestClient {
                 .body(MaiGroupList.class);
     }
 
-    public Collection<Lesson> getLessonsForGroup(Group group) {
-        String fileName = DigestUtils.md5DigestAsHex(group.getName().getBytes(StandardCharsets.UTF_8)) + ".json";
-        String groupData = restClient.get().uri(fileName).retrieve().body(String.class);
-        if (groupData == null) {
-            return List.of();
+    public MaiGroupLessons getMaiGroupLessons(String groupName, ZonedDateTime lastModified) {
+        String groupNameMd5 = DigestUtils.md5DigestAsHex(groupName.getBytes(StandardCharsets.UTF_8));
+        // TODO удалить, когда поле lastModified будет заполнено у всех групп в БД
+        lastModified = lastModified == null ? ZonedDateTime.now() : lastModified;
+        try {
+            return restClient
+                    .get()
+                    .uri("{groupNameMd5}.json", groupNameMd5)
+                    .ifModifiedSince(lastModified)
+                    .exchange((request, response) -> {
+                        if (response.getStatusCode().equals(HttpStatus.NOT_MODIFIED)) {
+                            return new MaiGroupLessons.NotModified();
+                        } else {
+                            ZonedDateTime nlm = response.getHeaders().getFirstZonedDateTime(HttpHeaders.LAST_MODIFIED);
+                            return response.bodyTo(MaiGroupLessons.Modified.class).setLastModified(nlm);
+                        }
+                    });
+        } catch (JsonParseException | RestClientException e) {
+            return new MaiGroupLessons.Failed(groupName, e);
         }
-
-        String groupDataHash = DigestUtils.md5DigestAsHex(groupData.getBytes(StandardCharsets.UTF_8));
-        if (groupDataHash.equals(group.getLatestHash())) {
-            return List.of();
-        }
-
-        Collection<Lesson> lessons = gson.fromJson(groupData, new TypeToken<>() {});
-        lessons.forEach(l -> l.addGroup(group));
-        group.setLatestHash(groupDataHash);
-        return lessons;
     }
 }
