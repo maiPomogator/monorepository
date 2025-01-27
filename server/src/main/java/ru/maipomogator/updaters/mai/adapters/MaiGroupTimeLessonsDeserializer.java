@@ -1,4 +1,4 @@
-package ru.maipomogator.config.gson.adapters.mai;
+package ru.maipomogator.updaters.mai.adapters;
 
 import java.lang.reflect.Type;
 import java.time.LocalTime;
@@ -20,12 +20,12 @@ import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
 import lombok.extern.log4j.Log4j2;
-import ru.maipomogator.config.gson.adapters.TypeableAdapter;
+import ru.maipomogator.config.gson.TypeableAdapter;
 import ru.maipomogator.domain.lesson.LessonType;
-import ru.maipomogator.domain.mai.elements.MaiGroupLesson;
-import ru.maipomogator.domain.mai.elements.MaiGroupTimeLessons;
-import ru.maipomogator.domain.mai.elements.MaiLocalTime;
 import ru.maipomogator.domain.professor.Professor;
+import ru.maipomogator.updaters.mai.elements.MaiGroupLesson;
+import ru.maipomogator.updaters.mai.elements.MaiGroupTimeLessons;
+import ru.maipomogator.updaters.mai.elements.MaiLocalTime;
 
 @Log4j2
 @Component

@@ -1,4 +1,4 @@
-package ru.maipomogator.domain.mai;
+package ru.maipomogator.updaters.mai;
 
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
@@ -13,8 +13,8 @@ import org.springframework.web.client.RestClientException;
 import com.google.gson.JsonParseException;
 
 import lombok.RequiredArgsConstructor;
-import ru.maipomogator.domain.mai.elements.MaiGroupLessons;
-import ru.maipomogator.domain.mai.elements.MaiGroupList;
+import ru.maipomogator.updaters.mai.elements.MaiGroupLessons;
+import ru.maipomogator.updaters.mai.elements.MaiGroupList;
 
 @Component
 @RequiredArgsConstructor

@@ -1,4 +1,4 @@
-package ru.maipomogator.domain.mai;
+package ru.maipomogator.updaters.mai;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,13 +7,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -21,26 +20,31 @@ import ru.maipomogator.domain.group.Group;
 import ru.maipomogator.domain.group.GroupService;
 import ru.maipomogator.domain.lesson.Lesson;
 import ru.maipomogator.domain.lesson.LessonService;
-import ru.maipomogator.domain.mai.elements.MaiGroupLessons;
 import ru.maipomogator.domain.professor.Professor;
 import ru.maipomogator.domain.professor.ProfessorService;
+import ru.maipomogator.updaters.TimetableUpdater;
+import ru.maipomogator.updaters.mai.elements.MaiGroupLessons;
 
 @RequiredArgsConstructor
 @Log4j2
 @Component
-public class MaiUpdater {
+public class MaiTimetableUpdater implements TimetableUpdater {
 
     private final GroupService groupService;
     private final ProfessorService professorService;
     private final LessonService lessonService;
 
     private final MaiRestClient maiRestClient;
-    private final MaiUpdaterConfig config;
+    private final MaiConfig config;
 
-    @Transactional
-    @Scheduled(cron = "0 0 9 * * *")
+    private long startNanos;
+    private long endNanos;
+
     public void updateScheduled() {
+        startNanos = System.nanoTime();
         update();
+        endNanos = System.nanoTime();
+        log.info("Update took {} ms", TimeUnit.NANOSECONDS.toMillis(endNanos - startNanos));
     }
 
     public void update() {

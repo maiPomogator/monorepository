@@ -1,4 +1,4 @@
-package ru.maipomogator.config.gson.adapters.mai;
+package ru.maipomogator.updaters.mai.adapters;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -15,11 +15,11 @@ import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
 import lombok.extern.log4j.Log4j2;
-import ru.maipomogator.config.gson.adapters.TypeableAdapter;
+import ru.maipomogator.config.gson.TypeableAdapter;
 import ru.maipomogator.domain.lesson.Lesson;
-import ru.maipomogator.domain.mai.elements.MaiGroupDay;
-import ru.maipomogator.domain.mai.elements.MaiGroupLessons;
-import ru.maipomogator.domain.mai.elements.MaiLocalDate;
+import ru.maipomogator.updaters.mai.elements.MaiGroupDay;
+import ru.maipomogator.updaters.mai.elements.MaiGroupLessons;
+import ru.maipomogator.updaters.mai.elements.MaiLocalDate;
 
 @Log4j2
 @Component

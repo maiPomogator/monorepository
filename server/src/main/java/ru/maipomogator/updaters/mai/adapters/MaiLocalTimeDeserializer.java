@@ -1,4 +1,4 @@
-package ru.maipomogator.config.gson.adapters.mai;
+package ru.maipomogator.updaters.mai.adapters;
 
 import java.lang.reflect.Type;
 import java.time.LocalTime;
@@ -11,8 +11,8 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
-import ru.maipomogator.config.gson.adapters.TypeableAdapter;
-import ru.maipomogator.domain.mai.elements.MaiLocalTime;
+import ru.maipomogator.config.gson.TypeableAdapter;
+import ru.maipomogator.updaters.mai.elements.MaiLocalTime;
 
 /**
  * Костыль для десериализации времени в ответах API МАИ в формате "H:mm:ss".

@@ -1,4 +1,4 @@
-package ru.maipomogator.config;
+package ru.maipomogator.config.gson;
 
 import java.util.List;
 
@@ -10,7 +10,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import lombok.extern.log4j.Log4j2;
-import ru.maipomogator.config.gson.adapters.TypeableAdapter;
 
 @Log4j2
 @Configuration

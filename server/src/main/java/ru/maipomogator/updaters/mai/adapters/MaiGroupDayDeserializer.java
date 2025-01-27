@@ -1,4 +1,4 @@
-package ru.maipomogator.config.gson.adapters.mai;
+package ru.maipomogator.updaters.mai.adapters;
 
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -12,10 +12,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
-import ru.maipomogator.config.gson.adapters.TypeableAdapter;
-import ru.maipomogator.domain.mai.elements.MaiGroupDay;
-import ru.maipomogator.domain.mai.elements.MaiGroupTimeLessons;
-import ru.maipomogator.domain.mai.elements.MaiLocalTime;
+import ru.maipomogator.config.gson.TypeableAdapter;
+import ru.maipomogator.updaters.mai.elements.MaiGroupDay;
+import ru.maipomogator.updaters.mai.elements.MaiGroupTimeLessons;
+import ru.maipomogator.updaters.mai.elements.MaiLocalTime;
 
 @Component
 public class MaiGroupDayDeserializer implements JsonDeserializer<MaiGroupDay>, TypeableAdapter {

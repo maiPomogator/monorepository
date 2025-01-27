@@ -1,4 +1,4 @@
-package ru.maipomogator.domain.mai.elements;
+package ru.maipomogator.updaters.mai.elements;
 
 import java.util.Collection;
 import java.util.Map;

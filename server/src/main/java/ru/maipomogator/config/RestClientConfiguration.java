@@ -9,6 +9,7 @@ import org.springframework.web.client.RestClient;
 public class RestClientConfiguration {
     @Bean
     RestClient restClient(RestClient.Builder builder) {
+        // в случае добавления других университетов, убрать baseUrl
         return builder.baseUrl("https://public.mai.ru/schedule/data/")
                 .requestFactory(new JettyClientHttpRequestFactory())
                 .build();
