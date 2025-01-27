@@ -86,6 +86,7 @@ public class Group {
 
     /**
      * Последний записанный хеш файла с расписанием
+     * 
      * @deprecated Заменено на {@link #lastModified}
      */
     @Deprecated(forRemoval = true)

@@ -108,7 +108,7 @@ public class MaiUpdater {
     private void update3(Map<Group, Collection<Lesson>> changedGroups) {
         Map<UUID, Professor> professorsFromDB = professorService.findAll().stream()
                 .collect(Collectors.toMap(Professor::getSiteId, Function.identity()));
-        Map<Lesson, Lesson> mapLessons = new HashMap<>(300_000);
+        Map<Lesson, Lesson> mapLessons = HashMap.newHashMap(300_000);
         Collection<Lesson> allLessonsFromDB = lessonService.eagerFindAllForGroups(changedGroups.keySet());
         changedGroups.forEach((group, lessonsFromMAI) -> {
             Collection<Lesson> lessonsFromDB = allLessonsFromDB.stream().filter(l -> l.getGroups().contains(group))
