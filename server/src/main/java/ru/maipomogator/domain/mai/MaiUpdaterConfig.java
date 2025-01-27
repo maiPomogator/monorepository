@@ -13,5 +13,8 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 public class MaiUpdaterConfig {
+    /**
+     * Включать ли группы, которые отсутствуют в ответе API МАИ.
+     */
     private boolean includeMissingGroups = true;
 }
