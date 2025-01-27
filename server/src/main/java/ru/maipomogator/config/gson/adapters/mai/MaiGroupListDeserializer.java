@@ -2,6 +2,7 @@ package ru.maipomogator.config.gson.adapters.mai;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -49,7 +50,7 @@ public class MaiGroupListDeserializer implements JsonDeserializer<MaiGroupList>,
 
                 if (jsonObject.has("level") && !jsonObject.get("level").isJsonNull()) {
                     String tempLevel = jsonObject.get("level").getAsString();
-                    gr.setType(GroupType.getForName(tempLevel));
+                    gr.setType(parseGroupType(tempLevel));
                 }
 
                 if (jsonObject.has("course") && !jsonObject.get("course").isJsonNull()) {
@@ -69,5 +70,12 @@ public class MaiGroupListDeserializer implements JsonDeserializer<MaiGroupList>,
     @Override
     public Type getTargetType() {
         return MaiGroupList.class;
+    }
+
+    private GroupType parseGroupType(String typeName) throws IllegalArgumentException {
+        return Arrays.stream(GroupType.values())
+                .filter(groupType -> groupType.getName().equalsIgnoreCase(typeName))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown GroupType: " + typeName));
     }
 }
