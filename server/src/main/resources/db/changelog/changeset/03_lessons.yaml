@@ -1,0 +1,152 @@
+databaseChangeLog:
+  - changeSet:
+      id: 03_create_sequence_lessons
+      author: Muravev Ivan
+      changes:
+        - createSequence:
+            sequenceName: lessons_id_seq
+            incrementBy: 1000
+            startValue: 1
+
+  - changeSet:
+      id: 03_create_table_lessons
+      author: Muravev Ivan
+      changes:
+        - createTable:
+            tableName: lessons
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_lessons
+              - column:
+                  name: date
+                  type: DATE
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+              - column:
+                  name: time_end
+                  type: TIME(6)
+              - column:
+                  name: time_start
+                  type: TIME(6)
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 03_create_table_lesson_rooms
+      author: Muravev Ivan
+      changes:
+        - createTable:
+            tableName: lesson_rooms
+            columns:
+              - column:
+                  name: lesson_id
+                  type: BIGINT
+              - column:
+                  name: room
+                  type: VARCHAR(255)
+        - addForeignKeyConstraint:
+            baseTableName: lesson_rooms
+            baseColumnNames: lesson_id
+            constraintName: fk_lesson_rooms_lesson
+            referencedTableName: lessons
+            referencedColumnNames: id
+
+  - changeSet:
+      id: 03_create_table_lesson_types
+      author: Muravev Ivan
+      changes:
+        - createTable:
+            tableName: lesson_types
+            columns:
+              - column:
+                  name: lesson_id
+                  type: BIGINT
+              - column:
+                  name: lesson_type
+                  type: VARCHAR(255)
+        - addForeignKeyConstraint:
+            baseTableName: lesson_types
+            baseColumnNames: lesson_id
+            constraintName: fk_lesson_types_lesson
+            referencedTableName: lessons
+            referencedColumnNames: id
+
+  - changeSet:
+      id: 03_add_check_lesson_types
+      author: Muravev Ivan
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE lesson_types 
+              ADD CONSTRAINT chk_lesson_types_type 
+              CHECK (lesson_type IN (
+                'LECTURE', 'PRACTICE', 'LABORATORY',
+                'CONSULTATION', 'CREDIT', 'EXAM'
+              ))
+            dbms: postgresql
+
+  - changeSet:
+      id: 03_create_table_lessons_groups
+      author: Muravev Ivan
+      changes:
+        - createTable:
+            tableName: lessons_groups
+            columns:
+              - column:
+                  name: group_id
+                  type: BIGINT
+              - column:
+                  name: lesson_id
+                  type: BIGINT
+        - addPrimaryKey:
+            tableName: lessons_groups
+            columnNames: group_id, lesson_id
+            constraintName: pk_lessons_groups
+        - addForeignKeyConstraint:
+            baseTableName: lessons_groups
+            baseColumnNames: group_id
+            constraintName: fk_lessons_groups_group
+            referencedTableName: groups
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: lessons_groups
+            baseColumnNames: lesson_id
+            constraintName: fk_lessons_groups_lesson
+            referencedTableName: lessons
+            referencedColumnNames: id
+
+  - changeSet:
+      id: 03_create_table_lessons_professors
+      author: Muravev Ivan
+      changes:
+        - createTable:
+            tableName: lessons_professors
+            columns:
+              - column:
+                  name: lesson_id
+                  type: BIGINT
+              - column:
+                  name: professor_id
+                  type: BIGINT
+        - addPrimaryKey:
+            tableName: lessons_professors
+            columnNames: lesson_id, professor_id
+            constraintName: pk_lessons_professors
+        - addForeignKeyConstraint:
+            baseTableName: lessons_professors
+            baseColumnNames: lesson_id
+            constraintName: fk_lessons_professors_lesson
+            referencedTableName: lessons
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: lessons_professors
+            baseColumnNames: professor_id
+            constraintName: fk_lessons_professors_professor
+            referencedTableName: professors
+            referencedColumnNames: id

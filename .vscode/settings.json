@@ -9,6 +9,7 @@
         "createtask",
         "Hasher",
         "jdbc",
+        "liquibase",
         "mapstruct",
         "newgroup",
         "projectlombok",

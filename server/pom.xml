@@ -134,6 +134,17 @@
           </excludes>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.liquibase</groupId>
+        <artifactId>liquibase-maven-plugin</artifactId>
+        <configuration>
+          <changeLogFile>src/main/resources/db/changelog/master.yaml</changeLogFile>
+          <url>${MIGRATION_TARGET_DB_URL}</url>
+          <username>${MIGRATION_TARGET_DB_LOGIN}</username>
+          <password>${MIGRATION_TARGET_DB_PASSWORD}</password>
+          <!-- TODO add parameters for reference DB -->
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>

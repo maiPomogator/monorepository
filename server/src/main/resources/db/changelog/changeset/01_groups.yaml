@@ -1,0 +1,59 @@
+databaseChangeLog:
+  - changeSet:
+      id: 01_create_sequence_groups
+      author: Muravev Ivan
+      changes:
+        - createSequence:
+            sequenceName: groups_id_seq
+            incrementBy: 100
+            startValue: 1
+
+  - changeSet:
+      id: 01_create_table_groups
+      author: Muravev Ivan
+      changes:
+        - createTable:
+            tableName: groups
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_groups
+              - column:
+                  name: course
+                  type: INTEGER
+              - column:
+                  name: faculty
+                  type: INTEGER
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+              - column:
+                  name: last_modified
+                  type: TIMESTAMPTZ
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints: 
+                    unique: true
+                    uniqueConstraintName: uq_groups_name
+              - column:
+                  name: type
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 01_add_check_groups_type
+      author: Muravev Ivan
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE groups 
+              ADD CONSTRAINT chk_groups_type 
+              CHECK (type IN (
+                'BACHELOR', 'MAGISTRACY', 'POSTGRADUATE',
+                'SPECIALIST', 'BASIC_HIGHER_EDUCATION',
+                'SPECIALIZED_HIGHER_EDUCATION'
+              ))
+            dbms: postgresql
